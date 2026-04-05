@@ -2,80 +2,77 @@
 {% block title %}Fleet Lite – Dashboard{% endblock %}
 
 {% block content %}
-<main class="page-wrap">
     {% include "partials/stats_cards.html" %}
     {% include "partials/filters_bar.html" %}
 
-    <section class="vehicles-grid">
-        {% for vehicle in vehicles %}
-            {% include "partials/vehicle_card.html" %}
-        {% endfor %}
-    </section>
+    {% if vehicles %}
+        <section class="vehicles-grid">
+            {% for vehicle in vehicles %}
+                {% include "partials/vehicle_card.html" %}
+            {% endfor %}
+        </section>
+    {% else %}
+        {% with
+            title="Brak pojazdów",
+            text="Nie znaleziono pojazdów dla podanych filtrów.",
+            action_url=url_for('vehicles.add_vehicle'),
+            action_label="Dodaj pojazd"
+        %}
+            {% include "partials/empty_state.html" %}
+        {% endwith %}
+    {% endif %}
 
     <section class="dashboard-bottom-grid">
-    <div class="dashboard-panel">
-        <div class="panel-head">
-            <div>
-                <h3>Nadchodzące terminy</h3>
-                <p>Najważniejsze rzeczy do ogarnięcia</p>
+        <div class="dashboard-panel">
+            <div class="panel-head">
+                <div>
+                    <h3>Nadchodzące terminy</h3>
+                    <p>Najważniejsze rzeczy do ogarnięcia</p>
+                </div>
             </div>
+
+            {% if alerts %}
+                <div class="alert-list">
+                    {% for alert in alerts %}
+                        {% include "partials/alert_row.html" %}
+                    {% endfor %}
+                </div>
+            {% else %}
+                {% with
+                    title="Brak alertów",
+                    text="Na ten moment nie ma żadnych terminów do sprawdzenia.",
+                    action_url=None,
+                    action_label=None
+                %}
+                    {% include "partials/empty_state.html" %}
+                {% endwith %}
+            {% endif %}
         </div>
 
-        {% if alerts %}
-            <div class="alert-list">
-                {% for alert in alerts %}
-                    <div class="alert-row">
-                        <div class="alert-row-left">
-                            {% if alert.level == "danger" %}
-                                <span class="alert-icon danger">!</span>
-                            {% else %}
-                                <span class="alert-icon warning">!</span>
-                            {% endif %}
-                            <span>{{ alert.label }}</span>
-                        </div>
-                        <div class="alert-row-date">
-                            {{ alert.date.strftime('%d.%m.%Y') if alert.date else '-' }}
-                        </div>
-                    </div>
-                {% endfor %}
+        <div class="dashboard-panel">
+            <div class="panel-head">
+                <div>
+                    <h3>Ostatnie dokumenty</h3>
+                    <p>Najnowsze pliki dodane do systemu</p>
+                </div>
             </div>
-        {% else %}
-            <div class="empty-state-card">Brak alertów</div>
-        {% endif %}
-    </div>
 
-    <div class="dashboard-panel">
-        <div class="panel-head">
-            <div>
-                <h3>Ostatnie dokumenty</h3>
-                <p>Najnowsze pliki dodane do systemu</p>
-            </div>
+            {% if latest_documents %}
+                <div class="doc-list">
+                    {% for document in latest_documents %}
+                        {% include "partials/document_row.html" %}
+                    {% endfor %}
+                </div>
+            {% else %}
+                {% with
+                    title="Brak dokumentów",
+                    text="Nie dodano jeszcze żadnych plików.",
+                    action_url=None,
+                    action_label=None
+                %}
+                    {% include "partials/empty_state.html" %}
+                {% endwith %}
+            {% endif %}
         </div>
-
-        {% if latest_documents %}
-            <div class="doc-list">
-                {% for doc in latest_documents %}
-                    <div class="doc-row">
-                        <div class="doc-row-left">
-                            <div class="doc-icon">📄</div>
-                            <div>
-                                <div class="doc-name">{{ doc.name }}</div>
-                                <div class="doc-meta">
-                                    {{ doc.vehicle.name }} ({{ doc.vehicle.registration }})
-                                </div>
-                            </div>
-                        </div>
-                        <div class="doc-row-date">
-                            {{ doc.created_at.strftime('%d.%m.%Y') if doc.created_at else '-' }}
-                        </div>
-                    </div>
-                {% endfor %}
-            </div>
-        {% else %}
-            <div class="empty-state-card">Brak dokumentów</div>
-        {% endif %}
-    </div>
     </section>
-
-</main>
 {% endblock %}

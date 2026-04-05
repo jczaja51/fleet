@@ -9,27 +9,40 @@
     font-weight: 600;
     display: inline-flex;
     align-items: center;
+    justify-content: center;
     gap: 8px;
     cursor: pointer;
     box-shadow: var(--shadow-sm);
+    text-decoration: none;
+    transition: 0.2s ease;
 }
 
-.filter-chip i {
-    font-size: 12px;
+.filter-chip:hover {
+    background: #eef3fb;
+    color: #32445f;
+}
+
+.filter-chip.active {
+    background: #2f6fed;
+    border-color: #2f6fed;
+    color: #fff;
 }
 
 .vehicle-type-chip {
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    min-height: 30px;
+    min-height: 32px;
     padding: 0 12px;
     border-radius: 999px;
     background: #eef3fb;
-    color: #5e6c82;
-    font-size: 13px;
-    font-weight: 700;
+    color: #40506a;
+    font-size: 12px;
+    font-weight: 800;
     white-space: nowrap;
+    flex-shrink: 0;
+    position: relative;
+    z-index: 2;
 }
 
 .plate-chip {
@@ -62,7 +75,7 @@
 
 .filters-row {
     display: grid;
-    grid-template-columns: 1.35fr auto auto;
+    grid-template-columns: minmax(280px, 1.4fr) auto auto;
     gap: 18px;
     align-items: center;
     margin-bottom: 24px;
@@ -72,4 +85,5 @@
     display: flex;
     align-items: center;
     gap: 10px;
+    flex-wrap: wrap;
 }

@@ -3,15 +3,6 @@
     padding: 30px 10px;
 }
 
-.empty-state-card {
-    background: #ffffff;
-    border: 1px dashed #d9e2ef;
-    border-radius: 18px;
-    padding: 32px;
-    text-align: center;
-    color: #8b97aa;
-}
-
 .empty-box {
     min-height: 120px;
     border: 1px dashed #d9e2ef;
@@ -35,4 +26,43 @@
     color: #8b97aa;
     background: linear-gradient(180deg, #edf3fa 0%, #e4ecf6 100%);
     font-weight: 600;
+}
+
+.empty-state-card {
+    min-height: 180px;
+    border: 1px dashed #d8e1ee;
+    border-radius: 22px;
+    background: #fbfcfe;
+    padding: 28px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    text-align: center;
+}
+
+.empty-state-icon {
+    width: 54px;
+    height: 54px;
+    border-radius: 50%;
+    background: #eef3fb;
+    color: #5b6b84;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 22px;
+}
+
+.empty-state-card h3 {
+    margin: 0;
+    font-size: 20px;
+    color: #22324d;
+}
+
+.empty-state-card p {
+    margin: 0;
+    max-width: 420px;
+    color: #7b8798;
+    font-size: 14px;
 }

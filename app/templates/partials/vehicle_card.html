@@ -3,7 +3,9 @@
         <div class="vehicle-info">
             <div class="vehicle-topline">
                 <h3>{{ vehicle.name }}</h3>
-                <span class="vehicle-type-chip">{{ vehicle.type or "-" }}</span>
+                <span class="vehicle-type-chip">
+                    {{ vehicle.type or "Nie określono" }}
+                </span>
             </div>
 
             <div class="plate-chip">
@@ -55,7 +57,14 @@
             </div>
 
             <div class="meta-line">
-                <span>Paliwo: <strong>{{ vehicle.fuel_cards|length }} karty</strong></span>
+                <span>
+                    Paliwo:
+                    <strong>
+                        {{ vehicle.fuel_cards|length }}
+                        {% if vehicle.fuel_cards|length == 1 %}karta{% else %}karty{% endif %}
+                    </strong>
+                </span>
+
                 <span class="mini-inline-chip">
                     <i class="bi bi-fuel-pump"></i>
                 </span>

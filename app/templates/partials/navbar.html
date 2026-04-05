@@ -1,16 +1,34 @@
 <header class="topbar">
     <div class="topbar-inner">
-        <div class="brand">
+        <a href="{{ url_for('main.dashboard') }}" class="brand brand-link">
             <div class="brand-icon">
                 <i class="bi bi-car-front-fill"></i>
             </div>
             <div class="brand-text">Fleet Lite</div>
-        </div>
+        </a>
 
         <nav class="main-nav">
-            <a href="/" class="active">Pojazdy</a>
-            <a href="{{ url_for('maintenance.list_tasks') }}">Serwis</a>
-            <a href="{{ url_for('fuel_cards.list_cards') }}">Karty paliwowe</a>
+            <a
+                href="{{ url_for('main.dashboard') }}"
+                class="{% if request.endpoint == 'main.dashboard' %}active{% endif %}"
+            >
+                Pojazdy
+            </a>
+
+            <a
+                href="{{ url_for('maintenance.list_tasks') }}"
+                class="{% if request.endpoint and request.endpoint.startswith('maintenance.') %}active{% endif %}"
+            >
+                Serwis
+            </a>
+
+            <a
+                href="{{ url_for('fuel_cards.list_cards') }}"
+                class="{% if request.endpoint and request.endpoint.startswith('fuel_cards.') %}active{% endif %}"
+            >
+                Karty paliwowe
+            </a>
+
             <a href="#">Koszty</a>
             <a href="#">Alerty</a>
         </nav>

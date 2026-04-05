@@ -1,17 +1,45 @@
 <section class="filters-row">
-    <div class="search-box">
+    <form method="GET" action="{{ url_for('main.dashboard') }}" class="search-box">
         <i class="bi bi-search"></i>
-        <input type="text" placeholder="Szukaj pojazdu..." />
-    </div>
+        <input
+            type="text"
+            name="q"
+            value="{{ filters.q if filters else request.args.get('q', '') }}"
+            placeholder="Szukaj pojazdu..."
+        />
+    </form>
 
     <div class="filters-group">
-        <button class="filter-chip">Wszystkie <i class="bi bi-chevron-down"></i></button>
-        <button class="filter-chip">Firmowe <i class="bi bi-chevron-down"></i></button>
-        <button class="filter-chip">Leasing <i class="bi bi-chevron-down"></i></button>
-        <button class="filter-chip">Prywatne <i class="bi bi-chevron-down"></i></button>
+        <a
+            href="{{ url_for('main.dashboard', q=filters.q if filters else request.args.get('q', '')) }}"
+            class="filter-chip {% if not (filters.type if filters else request.args.get('type')) %}active{% endif %}"
+        >
+            Wszystkie
+        </a>
+
+        <a
+            href="{{ url_for('main.dashboard', type='firmowe', q=filters.q if filters else request.args.get('q', '')) }}"
+            class="filter-chip {% if (filters.type if filters else request.args.get('type')) == 'firmowe' %}active{% endif %}"
+        >
+            Firmowe
+        </a>
+
+        <a
+            href="{{ url_for('main.dashboard', type='leasing', q=filters.q if filters else request.args.get('q', '')) }}"
+            class="filter-chip {% if (filters.type if filters else request.args.get('type')) == 'leasing' %}active{% endif %}"
+        >
+            Leasing
+        </a>
+
+        <a
+            href="{{ url_for('main.dashboard', type='prywatne', q=filters.q if filters else request.args.get('q', '')) }}"
+            class="filter-chip {% if (filters.type if filters else request.args.get('type')) == 'prywatne' %}active{% endif %}"
+        >
+            Prywatne
+        </a>
     </div>
 
     <a href="{{ url_for('vehicles.add_vehicle') }}" class="btn-primary">
-        + Dodaj Pojazd
+        + Dodaj pojazd
     </a>
 </section>

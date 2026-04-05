@@ -1,7 +1,18 @@
-<div class="list-row">
-    <div class="list-left">
-        <span class="doc-icon"><i class="bi bi-file-earmark-text"></i></span>
-        <span>{{ document.name }}</span>
+<div class="doc-row">
+    <div class="doc-row-left">
+        <span class="doc-icon">
+            <i class="bi bi-file-earmark-text"></i>
+        </span>
+
+        <div>
+            <div class="doc-name">{{ document.name }}</div>
+            <div class="doc-meta">
+                {{ document.vehicle.name }} ({{ document.vehicle.registration }})
+            </div>
+        </div>
     </div>
-    <div class="doc-date">{{ document.date }}</div>
+
+    <div class="doc-row-date">
+        {{ document.created_at.strftime('%d.%m.%Y') if document.created_at else '-' }}
+    </div>
 </div>

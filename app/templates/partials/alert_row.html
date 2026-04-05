@@ -1,12 +1,19 @@
-<div class="list-row">
-    <div class="list-left">
+<div class="alert-row">
+    <div class="alert-row-left">
         {% if alert.level == "warning" %}
-            <span class="mini-alert yellow"><i class="bi bi-exclamation-triangle-fill"></i></span>
+            <span class="alert-icon warning">
+                <i class="bi bi-exclamation-triangle-fill"></i>
+            </span>
         {% else %}
-            <span class="mini-alert red"><i class="bi bi-exclamation-lg"></i></span>
+            <span class="alert-icon danger">
+                <i class="bi bi-exclamation-octagon-fill"></i>
+            </span>
         {% endif %}
 
         <span>{{ alert.label }}</span>
     </div>
-    <div class="list-date">{{ alert.date }}</div>
+
+    <div class="alert-row-date">
+        {{ alert.date.strftime('%d.%m.%Y') if alert.date else '-' }}
+    </div>
 </div>
