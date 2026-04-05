@@ -1,0 +1,27 @@
+<div class="fuel-row">
+    <div class="fuel-left">
+        <span class="fuel-icon">
+            <i class="bi bi-fuel-pump-fill"></i>
+        </span>
+
+        <div class="fuel-meta">
+            <div class="fuel-title">{{ card.station }}</div>
+            <div class="fuel-subline">
+                <span>Nr: {{ card.number }}</span>
+                <span>PIN: {{ card.pin }}</span>
+            </div>
+        </div>
+    </div>
+
+    <div class="fuel-right">
+        <div class="fuel-expiry">{{ card.expiry }}</div>
+
+        {% if card.status == "ok" %}
+            <span class="fuel-badge ok">OK</span>
+        {% elif card.status == "warning" %}
+            <span class="fuel-badge warning">Wkrótce</span>
+        {% else %}
+            <span class="fuel-badge danger">Pilne</span>
+        {% endif %}
+    </div>
+</div>

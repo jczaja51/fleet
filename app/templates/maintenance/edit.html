@@ -1,0 +1,112 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="page-header">
+    <h1>Edytuj serwis</h1>
+    <p>Zmień dane zadania serwisowego.</p>
+</div>
+
+<div class="card">
+    <form method="POST" class="maintenance-form">
+        <div class="form-grid">
+            <div class="form-group">
+                <label for="vehicle_id">Pojazd</label>
+                <select name="vehicle_id" id="vehicle_id" required>
+                    <option value="">Wybierz pojazd</option>
+                    {% for vehicle in vehicles %}
+                        <option value="{{ vehicle.id }}" {% if task.vehicle_id == vehicle.id %}selected{% endif %}>
+                            {{ vehicle.name }} ({{ vehicle.registration }})
+                        </option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="name">Nazwa serwisu</label>
+                <input
+                    type="text"
+                    name="name"
+                    id="name"
+                    required
+                    value="{{ task.name }}"
+                >
+            </div>
+
+            <div class="form-group">
+                <label for="category">Kategoria</label>
+                <select name="category" id="category">
+                    <option value="">Wybierz kategorię</option>
+                    <option value="oil" {% if task.category == 'oil' %}selected{% endif %}>Olej</option>
+                    <option value="timing_belt" {% if task.category == 'timing_belt' %}selected{% endif %}>Rozrząd</option>
+                    <option value="brakes" {% if task.category == 'brakes' %}selected{% endif %}>Klocki hamulcowe</option>
+                    <option value="tires" {% if task.category == 'tires' %}selected{% endif %}>Opony</option>
+                    <option value="ac" {% if task.category == 'ac' %}selected{% endif %}>Klimatyzacja</option>
+                    <option value="custom" {% if task.category == 'custom' %}selected{% endif %}>Inny</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="last_service_date">Data ostatniego serwisu</label>
+                <input
+                    type="date"
+                    name="last_service_date"
+                    id="last_service_date"
+                    value="{{ task.last_service_date.strftime('%Y-%m-%d') if task.last_service_date else '' }}"
+                >
+            </div>
+
+            <div class="form-group">
+                <label for="last_service_mileage">Przebieg przy ostatnim serwisie</label>
+                <input
+                    type="number"
+                    name="last_service_mileage"
+                    id="last_service_mileage"
+                    value="{{ task.last_service_mileage if task.last_service_mileage is not none else '' }}"
+                >
+            </div>
+
+            <div class="form-group">
+                <label for="interval_days">Interwał dni</label>
+                <input
+                    type="number"
+                    name="interval_days"
+                    id="interval_days"
+                    value="{{ task.interval_days if task.interval_days is not none else '' }}"
+                >
+            </div>
+
+            <div class="form-group">
+                <label for="interval_km">Interwał km</label>
+                <input
+                    type="number"
+                    name="interval_km"
+                    id="interval_km"
+                    value="{{ task.interval_km if task.interval_km is not none else '' }}"
+                >
+            </div>
+
+            <div class="form-group form-group-full">
+                <label for="notes">Notatki</label>
+                <textarea name="notes" id="notes" rows="4">{{ task.notes or '' }}</textarea>
+            </div>
+
+            <div class="form-group form-group-full checkbox-group">
+                <label>
+                    <input
+                        type="checkbox"
+                        name="is_active"
+                        value="1"
+                        {% if task.is_active %}checked{% endif %}
+                    >
+                    Serwis aktywny
+                </label>
+            </div>
+        </div>
+
+        <div class="form-actions">
+            <button type="submit" class="btn-primary">Zapisz zmiany</button>
+            <a href="{{ url_for('maintenance.list_tasks') }}" class="btn-secondary">Anuluj</a>
+        </div>
+    </form>
+</div>
+{% endblock %}

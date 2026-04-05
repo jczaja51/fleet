@@ -1,0 +1,97 @@
+{% extends "base.html" %}
+{% block content %}
+
+<main class="page-wrap">
+
+    <div class="page-header">
+        <div>
+            <h2>Dodaj pojazd</h2>
+            <div class="page-subtitle">Uzupełnij podstawowe dane i opcjonalnie dodaj dokumenty już na starcie</div>
+        </div>
+    </div>
+
+    <form method="POST" enctype="multipart/form-data" class="form-card">
+        <div class="form-section">
+            <h3 class="section-title">Podstawowe informacje</h3>
+
+            <div class="form-grid">
+
+                <div class="form-group">
+                    <label for="name">Nazwa pojazdu</label>
+                    <input type="text" id="name" name="name" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="registration">Rejestracja</label>
+                    <input type="text" id="registration" name="registration" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="mileage">Przebieg</label>
+                    <input type="number" id="mileage" name="mileage" min="0">
+                </div>
+
+                <div class="form-group">
+                    <label for="type">Typ</label>
+                    <select id="type" name="type">
+                        <option value="Firmowe">Firmowe</option>
+                        <option value="Leasing">Leasing</option>
+                        <option value="Prywatne">Prywatne</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="oc_date">Data OC</label>
+                    <input type="date" id="oc_date" name="oc_date">
+                </div>
+
+                <div class="form-group">
+                    <label for="inspection_date">Data przeglądu</label>
+                    <input type="date" id="inspection_date" name="inspection_date">
+                </div>
+
+                <div class="form-group form-group-full">
+                    <label for="image">Zdjęcie pojazdu</label>
+                    <input type="file" id="image" name="image" accept=".jpg,.jpeg,.png,.webp">
+                </div>
+
+            </div>
+        </div>
+
+        <div class="form-section">
+            <h3 class="section-title">Dokumenty przy dodawaniu pojazdu</h3>
+            <p class="section-subtitle">Opcjonalnie możesz od razu dodać najważniejsze pliki.</p>
+
+            <div class="form-grid">
+
+                <div class="form-group">
+                    <label for="oc_file">Polisa OC</label>
+                    <input type="file" id="oc_file" name="oc_file" accept=".pdf,.jpg,.jpeg,.png,.webp">
+                </div>
+
+                <div class="form-group">
+                    <label for="registration_file">Dowód rejestracyjny</label>
+                    <input type="file" id="registration_file" name="registration_file" accept=".pdf,.jpg,.jpeg,.png,.webp">
+                </div>
+
+                <div class="form-group">
+                    <label for="inspection_file">Dokument przeglądu</label>
+                    <input type="file" id="inspection_file" name="inspection_file" accept=".pdf,.jpg,.jpeg,.png,.webp">
+                </div>
+
+                <div class="form-group">
+                    <label for="lease_file">Dokument leasingowy</label>
+                    <input type="file" id="lease_file" name="lease_file" accept=".pdf,.jpg,.jpeg,.png,.webp">
+                </div>
+
+            </div>
+        </div>
+
+        <div class="form-actions">
+            <button type="submit" class="btn-primary">Zapisz pojazd</button>
+        </div>
+    </form>
+
+</main>
+
+{% endblock %}

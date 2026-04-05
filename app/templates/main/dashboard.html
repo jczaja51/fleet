@@ -1,0 +1,81 @@
+{% extends "base.html" %}
+{% block title %}Fleet Lite – Dashboard{% endblock %}
+
+{% block content %}
+<main class="page-wrap">
+    {% include "partials/stats_cards.html" %}
+    {% include "partials/filters_bar.html" %}
+
+    <section class="vehicles-grid">
+        {% for vehicle in vehicles %}
+            {% include "partials/vehicle_card.html" %}
+        {% endfor %}
+    </section>
+
+    <section class="dashboard-bottom-grid">
+    <div class="dashboard-panel">
+        <div class="panel-head">
+            <div>
+                <h3>Nadchodzące terminy</h3>
+                <p>Najważniejsze rzeczy do ogarnięcia</p>
+            </div>
+        </div>
+
+        {% if alerts %}
+            <div class="alert-list">
+                {% for alert in alerts %}
+                    <div class="alert-row">
+                        <div class="alert-row-left">
+                            {% if alert.level == "danger" %}
+                                <span class="alert-icon danger">!</span>
+                            {% else %}
+                                <span class="alert-icon warning">!</span>
+                            {% endif %}
+                            <span>{{ alert.label }}</span>
+                        </div>
+                        <div class="alert-row-date">
+                            {{ alert.date.strftime('%d.%m.%Y') if alert.date else '-' }}
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+        {% else %}
+            <div class="empty-state-card">Brak alertów</div>
+        {% endif %}
+    </div>
+
+    <div class="dashboard-panel">
+        <div class="panel-head">
+            <div>
+                <h3>Ostatnie dokumenty</h3>
+                <p>Najnowsze pliki dodane do systemu</p>
+            </div>
+        </div>
+
+        {% if latest_documents %}
+            <div class="doc-list">
+                {% for doc in latest_documents %}
+                    <div class="doc-row">
+                        <div class="doc-row-left">
+                            <div class="doc-icon">📄</div>
+                            <div>
+                                <div class="doc-name">{{ doc.name }}</div>
+                                <div class="doc-meta">
+                                    {{ doc.vehicle.name }} ({{ doc.vehicle.registration }})
+                                </div>
+                            </div>
+                        </div>
+                        <div class="doc-row-date">
+                            {{ doc.created_at.strftime('%d.%m.%Y') if doc.created_at else '-' }}
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+        {% else %}
+            <div class="empty-state-card">Brak dokumentów</div>
+        {% endif %}
+    </div>
+    </section>
+
+</main>
+{% endblock %}

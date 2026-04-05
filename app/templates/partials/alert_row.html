@@ -1,0 +1,12 @@
+<div class="list-row">
+    <div class="list-left">
+        {% if alert.level == "warning" %}
+            <span class="mini-alert yellow"><i class="bi bi-exclamation-triangle-fill"></i></span>
+        {% else %}
+            <span class="mini-alert red"><i class="bi bi-exclamation-lg"></i></span>
+        {% endif %}
+
+        <span>{{ alert.label }}</span>
+    </div>
+    <div class="list-date">{{ alert.date }}</div>
+</div>

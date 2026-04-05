@@ -1,0 +1,50 @@
+{% extends "base.html" %}
+{% block content %}
+
+<main class="page-wrap">
+    <div class="page-header">
+        <div>
+            <h2>Dodaj dokument</h2>
+            <div class="page-subtitle">{{ vehicle.name }} • {{ vehicle.registration }}</div>
+        </div>
+
+        <a href="{{ url_for('vehicles.detail', vehicle_id=vehicle.id) }}" class="btn-secondary">
+            ← Wróć
+        </a>
+    </div>
+
+    <form method="POST" enctype="multipart/form-data" class="form-card">
+        <div class="form-grid">
+            <div class="form-group">
+                <label for="name">Nazwa dokumentu</label>
+                <input type="text" id="name" name="name" required>
+            </div>
+
+            <div class="form-group">
+                <label for="document_type">Typ dokumentu</label>
+                <select id="document_type" name="document_type" required>
+                    <option value="">Wybierz typ</option>
+                    <option value="oc_policy">Polisa OC</option>
+                    <option value="registration_certificate">Dowód rejestracyjny</option>
+                    <option value="inspection_document">Dokument przeglądu</option>
+                    <option value="lease_document">Dokument leasingowy</option>
+                    <option value="other">Inny</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="expiry_date">Data ważności</label>
+                <input type="date" id="expiry_date" name="expiry_date">
+            </div>
+
+            <div class="form-group">
+                <label for="file">Plik</label>
+                <input type="file" id="file" name="file" accept=".pdf,.jpg,.jpeg,.png,.webp">
+            </div>
+        </div>
+
+        <button type="submit" class="btn-primary">Zapisz dokument</button>
+    </form>
+</main>
+
+{% endblock %}

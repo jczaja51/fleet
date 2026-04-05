@@ -1,0 +1,76 @@
+{% extends "base.html" %}
+{% block content %}
+
+<main class="page-wrap">
+    <div class="page-header">
+        <div>
+            <h2>Edytuj pojazd</h2>
+            <div class="page-subtitle">{{ vehicle.name }} • {{ vehicle.registration }}</div>
+        </div>
+
+        <a href="{{ url_for('vehicles.detail', vehicle_id=vehicle.id) }}" class="btn-secondary">
+            ← Wróć
+        </a>
+    </div>
+
+    <form method="POST" enctype="multipart/form-data" class="form-card">
+        <div class="form-grid">
+            <div class="form-group">
+                <label>Nazwa pojazdu</label>
+                <input type="text" name="name" value="{{ vehicle.name }}" required>
+            </div>
+
+            <div class="form-group">
+                <label>Rejestracja</label>
+                <input type="text" name="registration" value="{{ vehicle.registration }}" required>
+            </div>
+
+            <div class="form-group">
+                <label>Przebieg</label>
+                <input type="number" name="mileage" value="{{ vehicle.mileage or '' }}">
+            </div>
+
+            <div class="form-group">
+                <label>Typ</label>
+                <select name="type">
+                    <option value="Firmowe" {% if vehicle.type == "Firmowe" %}selected{% endif %}>Firmowe</option>
+                    <option value="Leasing" {% if vehicle.type == "Leasing" %}selected{% endif %}>Leasing</option>
+                    <option value="Prywatne" {% if vehicle.type == "Prywatne" %}selected{% endif %}>Prywatne</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label>Data OC</label>
+                <input
+                    type="date"
+                    name="oc_date"
+                    value="{{ vehicle.oc_date.strftime('%Y-%m-%d') if vehicle.oc_date else '' }}"
+                >
+            </div>
+
+            <div class="form-group">
+                <label>Data przeglądu</label>
+                <input
+                    type="date"
+                    name="inspection_date"
+                    value="{{ vehicle.inspection_date.strftime('%Y-%m-%d') if vehicle.inspection_date else '' }}"
+                >
+            </div>
+
+            <div class="form-group form-group-full">
+                <label>Nowe zdjęcie pojazdu</label>
+                <input type="file" name="image" accept=".jpg,.jpeg,.png,.webp">
+            </div>
+        </div>
+
+        {% if vehicle.image %}
+            <div class="image-preview-block">
+                <img src="{{ url_for('static', filename=vehicle.image) }}" alt="{{ vehicle.name }}" class="vehicle-form-preview">
+            </div>
+        {% endif %}
+
+        <button class="btn-primary">Zapisz zmiany</button>
+    </form>
+</main>
+
+{% endblock %}

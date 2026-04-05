@@ -1,0 +1,26 @@
+<header class="topbar">
+    <div class="topbar-inner">
+        <div class="brand">
+            <div class="brand-icon">
+                <i class="bi bi-car-front-fill"></i>
+            </div>
+            <div class="brand-text">Fleet Lite</div>
+        </div>
+
+        <nav class="main-nav">
+            <a href="/" class="active">Pojazdy</a>
+            <a href="{{ url_for('maintenance.list_tasks') }}">Serwis</a>
+            <a href="{{ url_for('fuel_cards.list_cards') }}">Karty paliwowe</a>
+            <a href="#">Koszty</a>
+            <a href="#">Alerty</a>
+        </nav>
+
+        <div class="profile-chip">
+            <div class="profile-avatar">
+                <i class="bi bi-person-fill"></i>
+            </div>
+            <span>Admin</span>
+            <i class="bi bi-chevron-down"></i>
+        </div>
+    </div>
+</header>

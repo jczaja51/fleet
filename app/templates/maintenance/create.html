@@ -1,0 +1,74 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="page-header">
+    <h1>Dodaj serwis</h1>
+    <p>Dodaj nowe zadanie serwisowe dla wybranego pojazdu.</p>
+</div>
+
+<div class="card">
+    <form method="POST" class="maintenance-form">
+        <div class="form-grid">
+            <div class="form-group">
+                <label for="vehicle_id">Pojazd</label>
+                <select name="vehicle_id" id="vehicle_id" required>
+                    <option value="">Wybierz pojazd</option>
+                    {% for vehicle in vehicles %}
+                        <option value="{{ vehicle.id }}">
+                            {{ vehicle.name }} ({{ vehicle.registration }})
+                        </option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="name">Nazwa serwisu</label>
+                <input type="text" name="name" id="name" required placeholder="Np. Wymiana oleju">
+            </div>
+
+            <div class="form-group">
+                <label for="category">Kategoria</label>
+                <select name="category" id="category">
+                    <option value="">Wybierz kategorię</option>
+                    <option value="oil">Olej</option>
+                    <option value="timing_belt">Rozrząd</option>
+                    <option value="brakes">Klocki hamulcowe</option>
+                    <option value="tires">Opony</option>
+                    <option value="ac">Klimatyzacja</option>
+                    <option value="custom">Inny</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="last_service_date">Data ostatniego serwisu</label>
+                <input type="date" name="last_service_date" id="last_service_date">
+            </div>
+
+            <div class="form-group">
+                <label for="last_service_mileage">Przebieg przy ostatnim serwisie</label>
+                <input type="number" name="last_service_mileage" id="last_service_mileage" placeholder="Np. 120000">
+            </div>
+
+            <div class="form-group">
+                <label for="interval_days">Interwał dni</label>
+                <input type="number" name="interval_days" id="interval_days" placeholder="Np. 365">
+            </div>
+
+            <div class="form-group">
+                <label for="interval_km">Interwał km</label>
+                <input type="number" name="interval_km" id="interval_km" placeholder="Np. 10000">
+            </div>
+
+            <div class="form-group form-group-full">
+                <label for="notes">Notatki</label>
+                <textarea name="notes" id="notes" rows="4" placeholder="Dodatkowe informacje o serwisie"></textarea>
+            </div>
+        </div>
+
+        <div class="form-actions">
+            <button type="submit" class="btn-primary">Zapisz</button>
+            <a href="{{ url_for('maintenance.list_tasks') }}" class="btn-secondary">Anuluj</a>
+        </div>
+    </form>
+</div>
+{% endblock %}

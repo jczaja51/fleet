@@ -1,0 +1,135 @@
+.vehicles-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 22px;
+    margin-bottom: 26px;
+}
+
+.vehicle-card-link {
+    display: block;
+    color: inherit;
+    text-decoration: none;
+}
+
+.vehicle-card {
+    min-height: 252px;
+    overflow: hidden;
+    display: grid;
+    grid-template-columns: 34% 66%;
+    background: var(--surface);
+    border: 1px solid var(--line-soft);
+    border-radius: 18px;
+    box-shadow: var(--shadow-sm);
+    transition: transform 0.18s ease, box-shadow 0.18s ease;
+}
+
+.vehicle-card:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-md);
+}
+
+.vehicle-image-wrap {
+    position: relative;
+    overflow: hidden;
+    min-height: 252px;
+    background: linear-gradient(180deg, #eaf1f9 0%, #dce7f4 100%);
+}
+
+.vehicle-image-wrap::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: 1;
+    background: linear-gradient(
+        90deg,
+        rgba(255, 255, 255, 1) 0%,
+        rgba(255, 255, 255, 0.97) 12%,
+        rgba(255, 255, 255, 0.42) 24%,
+        rgba(255, 255, 255, 0) 37%
+    );
+}
+
+.vehicle-image-wrap img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transform: scale(1.03);
+}
+
+.vehicle-info {
+    padding: 18px 22px 16px;
+    display: flex;
+    flex-direction: column;
+}
+
+.vehicle-info h3 {
+    margin: 0 0 12px;
+    font-size: 22px;
+    line-height: 1.15;
+    letter-spacing: -0.03em;
+}
+
+.vehicle-topline {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 12px;
+    margin-bottom: 12px;
+}
+
+.vehicle-topline h3 {
+    margin: 0;
+}
+
+.vehicle-divider {
+    height: 1px;
+    background: #ebeff5;
+    margin: 0 0 16px;
+}
+
+.mileage-row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 16px;
+    color: #40506a;
+    font-size: 17px;
+}
+
+.mileage-row i {
+    font-size: 20px;
+    color: #6c7b90;
+}
+
+.meta-line {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    margin-bottom: 8px;
+    font-size: 17px;
+    color: #53627a;
+}
+
+.meta-line strong {
+    color: #34445c;
+}
+
+.detail-hero-image {
+    margin-bottom: 22px;
+}
+
+.detail-hero-image img {
+    width: 100%;
+    max-height: 320px;
+    object-fit: cover;
+    border-radius: 22px;
+    display: block;
+    box-shadow: 0 12px 30px rgba(0, 0, 0, 0.08);
+}
+
+.services-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 18px;
+}

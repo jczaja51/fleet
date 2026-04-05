@@ -1,0 +1,186 @@
+{% extends "base.html" %}
+{% block content %}
+
+<main class="page-wrap">
+
+    <div class="page-header">
+        <div>
+            <h2>{{ vehicle.name }}</h2>
+            <div class="page-subtitle">{{ vehicle.registration }}</div>
+        </div>
+
+        <div class="actions-row">
+            <a href="{{ url_for('vehicles.edit_vehicle', vehicle_id=vehicle.id) }}" class="btn-primary">
+                Edytuj
+            </a>
+
+            <form method="POST" action="{{ url_for('vehicles.delete_vehicle', vehicle_id=vehicle.id) }}" onsubmit="return confirm('Na pewno usunąć pojazd?');">
+                <button type="submit" class="btn-danger">Usuń</button>
+            </form>
+
+            <a href="{{ url_for('main.dashboard') }}" class="btn-secondary">
+                ← Wróć
+            </a>
+        </div>
+    </div>
+
+    {% if vehicle.image %}
+    <div class="detail-hero-image">
+        <img src="{{ url_for('static', filename=vehicle.image) }}" alt="{{ vehicle.name }}">
+    </div>
+    {% endif %}
+
+    <section class="detail-grid">
+        <div class="detail-card">
+            <h3>Dane pojazdu</h3>
+
+            <div class="detail-list">
+                <div class="detail-row">
+                    <span>Typ</span>
+                    <strong>{{ vehicle.type or "-" }}</strong>
+                </div>
+
+                <div class="detail-row">
+                    <span>Przebieg</span>
+                    <strong>{{ vehicle.mileage or "-" }} km</strong>
+                </div>
+
+                <div class="detail-row">
+                    <span>Rejestracja</span>
+                    <strong>{{ vehicle.registration }}</strong>
+                </div>
+
+                <div class="detail-row">
+                    <span>Data OC</span>
+                    <strong>
+                        {% if vehicle.oc_date %}
+                            {{ vehicle.oc_date.strftime('%d.%m.%Y') }}
+                        {% else %}
+                            -
+                        {% endif %}
+                    </strong>
+                </div>
+
+                <div class="detail-row">
+                    <span>Data przeglądu</span>
+                    <strong>
+                        {% if vehicle.inspection_date %}
+                            {{ vehicle.inspection_date.strftime('%d.%m.%Y') }}
+                        {% else %}
+                            -
+                        {% endif %}
+                    </strong>
+                </div>
+            </div>
+        </div>
+
+        <div class="detail-card">
+            <h3>Karty paliwowe</h3>
+
+            {% if vehicle.fuel_cards %}
+                <div class="detail-list">
+                    {% for card in vehicle.fuel_cards %}
+                        <div class="detail-row detail-row-stack">
+                            <div>
+                                <strong>{{ card.station or "-" }}</strong>
+                                <div class="muted-line">
+                                    Nr: {{ card.number or "-" }} · PIN: {{ card.pin or "-" }}
+                                </div>
+                            </div>
+
+                            <div class="detail-right">
+                                <span class="muted-line">
+                                    {% if card.expiry %}
+                                        {{ card.expiry.strftime('%d.%m.%Y') }}
+                                    {% else %}
+                                        -
+                                    {% endif %}
+                                </span>
+                            </div>
+                        </div>
+                    {% endfor %}
+                </div>
+            {% else %}
+                <div class="empty-box">Brak przypisanych kart paliwowych</div>
+            {% endif %}
+        </div>
+
+        <div class="detail-card">
+            <h3>Alerty</h3>
+
+            {% if vehicle.alerts %}
+                <div class="detail-list">
+                    {% for alert in vehicle.alerts %}
+                        <div class="detail-row detail-row-stack">
+                            <span>{{ alert.label }}</span>
+                            <strong>
+                                {% if alert.date %}
+                                    {{ alert.date.strftime('%d.%m.%Y') }}
+                                {% else %}
+                                    -
+                                {% endif %}
+                            </strong>
+                        </div>
+                    {% endfor %}
+                </div>
+            {% else %}
+                <div class="empty-box">Brak alertów dla tego pojazdu</div>
+            {% endif %}
+        </div>
+
+        <div class="detail-card">
+    <div class="page-header" style="margin-bottom: 16px;">
+        <h3>Dokumenty</h3>
+        <a href="{{ url_for('documents.add_document', vehicle_id=vehicle.id) }}" class="btn-primary">
+            + Dodaj dokument
+        </a>
+    </div>
+
+        {% if vehicle.documents %}
+            <div class="detail-list">
+                {% for document in vehicle.documents %}
+                    <div class="detail-row detail-row-stack">
+                        <div>
+                            <strong>{{ document.name }}</strong>
+                            <div class="muted-line">{{ document.document_type }}</div>
+                        </div>
+
+                        <div class="detail-right">
+                            <div class="muted-line">
+                                {% if document.expiry_date %}
+                                    {{ document.expiry_date.strftime('%d.%m.%Y') }}
+                                {% else %}
+                                    Brak terminu
+                                {% endif %}
+                            </div>
+
+                            {% if document.file_path %}
+                                <a href="{{ url_for('static', filename=document.file_path) }}" target="_blank" class="inline-link">
+                                    Otwórz plik
+                                </a>
+                            {% endif %}
+
+                            <div class="row-actions">
+                                <a href="{{ url_for('documents.edit_document', document_id=document.id) }}" class="btn-ghost">
+                                    Edytuj
+                                </a>
+
+                                <form method="POST" action="{{ url_for('documents.delete_document', document_id=document.id) }}" onsubmit="return confirm('Usunąć dokument?');">
+                                    <button type="submit" class="btn-ghost btn-ghost-danger">
+                                        Usuń
+                                    </button>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+        {% else %}
+            <div class="empty-box">Brak dokumentów dla tego pojazdu</div>
+        {% endif %}
+    </div>
+    </section>
+
+</main>
+
+{% endblock %}

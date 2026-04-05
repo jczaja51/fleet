@@ -1,0 +1,17 @@
+<section class="filters-row">
+    <div class="search-box">
+        <i class="bi bi-search"></i>
+        <input type="text" placeholder="Szukaj pojazdu..." />
+    </div>
+
+    <div class="filters-group">
+        <button class="filter-chip">Wszystkie <i class="bi bi-chevron-down"></i></button>
+        <button class="filter-chip">Firmowe <i class="bi bi-chevron-down"></i></button>
+        <button class="filter-chip">Leasing <i class="bi bi-chevron-down"></i></button>
+        <button class="filter-chip">Prywatne <i class="bi bi-chevron-down"></i></button>
+    </div>
+
+    <a href="{{ url_for('vehicles.add_vehicle') }}" class="btn-primary">
+        + Dodaj Pojazd
+    </a>
+</section>

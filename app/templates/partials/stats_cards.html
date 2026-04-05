@@ -1,0 +1,53 @@
+<section class="stats-grid stats-grid-4">
+    <div class="stat-card">
+        <div class="stat-left">
+            <div class="stat-icon blue-soft">
+                <i class="bi bi-car-front-fill"></i>
+            </div>
+            <div>
+                <div class="stat-label">Pojazdy</div>
+                <div class="stat-subtext">Aktywne w systemie</div>
+            </div>
+        </div>
+        <div class="stat-value">{{ stats.total_vehicles }}</div>
+    </div>
+
+    <div class="stat-card">
+        <div class="stat-left">
+            <div class="stat-icon dark-soft">
+                <i class="bi bi-fuel-pump-fill"></i>
+            </div>
+            <div>
+                <div class="stat-label">Karty paliwowe</div>
+                <div class="stat-subtext">Aktywne i przypisane</div>
+            </div>
+        </div>
+        <div class="stat-value">{{ stats.fuel_cards }}</div>
+    </div>
+
+    <div class="stat-card">
+        <div class="stat-left">
+            <div class="stat-icon yellow-soft">
+                <i class="bi bi-exclamation-triangle-fill"></i>
+            </div>
+            <div>
+                <div class="stat-label">Ostrzeżenia</div>
+                <div class="stat-subtext">Do sprawdzenia</div>
+            </div>
+        </div>
+        <div class="stat-counter yellow">{{ stats.warning_alerts }}</div>
+    </div>
+
+    <div class="stat-card">
+        <div class="stat-left">
+            <div class="stat-icon red-soft">
+                <i class="bi bi-exclamation-octagon-fill"></i>
+            </div>
+            <div>
+                <div class="stat-label">Pilne alerty</div>
+                <div class="stat-subtext">Wymagają reakcji</div>
+            </div>
+        </div>
+        <div class="stat-counter red">{{ stats.danger_alerts }}</div>
+    </div>
+</section>

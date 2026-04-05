@@ -1,0 +1,75 @@
+.filter-chip {
+    height: 46px;
+    padding: 0 18px;
+    border: 1px solid var(--line-soft);
+    border-radius: 999px;
+    background: #f7f9fc;
+    color: #55657d;
+    font-size: 16px;
+    font-weight: 600;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    cursor: pointer;
+    box-shadow: var(--shadow-sm);
+}
+
+.filter-chip i {
+    font-size: 12px;
+}
+
+.vehicle-type-chip {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 30px;
+    padding: 0 12px;
+    border-radius: 999px;
+    background: #eef3fb;
+    color: #5e6c82;
+    font-size: 13px;
+    font-weight: 700;
+    white-space: nowrap;
+}
+
+.plate-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    width: fit-content;
+    min-height: 38px;
+    padding: 0 12px;
+    margin-bottom: 16px;
+    border-radius: 10px;
+    background: #f5f7fb;
+    border: 1px solid #ebeff5;
+    color: #40506a;
+    font-size: 16px;
+    font-weight: 700;
+}
+
+.mini-inline-chip {
+    width: 26px;
+    height: 26px;
+    border-radius: 50%;
+    background: #eef3fb;
+    color: #627289;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 13px;
+}
+
+.filters-row {
+    display: grid;
+    grid-template-columns: 1.35fr auto auto;
+    gap: 18px;
+    align-items: center;
+    margin-bottom: 24px;
+}
+
+.filters-group {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}

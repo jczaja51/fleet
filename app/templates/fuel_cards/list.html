@@ -1,0 +1,65 @@
+{% extends "base.html" %}
+{% block content %}
+
+<main class="page-wrap">
+
+    <div class="page-header">
+        <h2>Karty paliwowe</h2>
+        <a href="{{ url_for('fuel_cards.add_card') }}" class="btn-primary">+ Dodaj kartę</a>
+    </div>
+    {% if cards %}
+        <section class="fuel-cards-grid">
+        {% for card in cards %}
+            <div class="fuel-card">
+                <div class="fuel-card-top">
+                    <div>
+                        <h3>{{ card.station }}</h3>
+                        <span class="fuel-vehicle">
+                            {% if card.vehicle %}
+                                {{ card.vehicle.name }} • {{ card.vehicle.registration }}
+                            {% else %}
+                                Brak przypisania
+                            {% endif %}
+                        </span>
+                    </div>
+
+                    {% if card.status == "ok" %}
+                        <span class="badge ok">OK</span>
+                    {% elif card.status == "warning" %}
+                        <span class="badge warning">Wkrótce</span>
+                    {% else %}
+                        <span class="badge danger">Pilne</span>
+                    {% endif %}
+                </div>
+
+                <div class="fuel-details">
+                    <div>Numer: <strong>{{ card.number or "-" }}</strong></div>
+                    <div>PIN: <strong>{{ card.pin or "-" }}</strong></div>
+                    <div>
+                        Ważność:
+                        <strong>
+                            {{ card.expiry.strftime('%d.%m.%Y') if card.expiry else "-" }}
+                        </strong>
+                    </div>
+                </div>
+
+                <div class="row-actions fuel-actions">
+                    <a href="{{ url_for('fuel_cards.edit_card', card_id=card.id) }}" class="btn-ghost">
+                        Edytuj
+                    </a>
+
+                    <form method="POST" action="{{ url_for('fuel_cards.delete_card', card_id=card.id) }}" onsubmit="return confirm('Usunąć kartę paliwową?');">
+                        <button type="submit" class="btn-ghost btn-ghost-danger">
+                            Usuń
+                        </button>
+                    </form>
+                </div>
+            </div>
+        {% endfor %}
+    </section>
+    {% else %}
+        <div class="empty-state-card">Brak kart paliwowych</div>
+    {% endif %}
+</main>
+
+{% endblock %}

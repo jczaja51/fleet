@@ -1,0 +1,73 @@
+<a href="{{ url_for('vehicles.detail', vehicle_id=vehicle.id) }}" class="vehicle-card-link">
+    <article class="vehicle-card">
+        <div class="vehicle-info">
+            <div class="vehicle-topline">
+                <h3>{{ vehicle.name }}</h3>
+                <span class="vehicle-type-chip">{{ vehicle.type or "-" }}</span>
+            </div>
+
+            <div class="plate-chip">
+                {{ vehicle.registration }}
+                <i class="bi bi-chevron-right"></i>
+            </div>
+
+            <div class="vehicle-divider"></div>
+
+            <div class="mileage-row">
+                <i class="bi bi-speedometer2"></i>
+                <span><strong>{{ vehicle.mileage or "-" }}</strong> km</span>
+            </div>
+
+            <div class="vehicle-divider"></div>
+
+            <div class="meta-line">
+                <span>
+                    OC:
+                    <strong>
+                        {{ vehicle.oc_date.strftime('%d.%m.%Y') if vehicle.oc_date else '-' }}
+                    </strong>
+                </span>
+
+                {% if vehicle.oc_status == "ok" %}
+                    <span class="status-dot green"><i class="bi bi-check-lg"></i></span>
+                {% elif vehicle.oc_status == "warning" %}
+                    <span class="status-dot yellow small-number">1</span>
+                {% else %}
+                    <span class="status-dot red small-number">1</span>
+                {% endif %}
+            </div>
+
+            <div class="meta-line">
+                <span>
+                    Przegląd:
+                    <strong>
+                        {{ vehicle.inspection_date.strftime('%d.%m.%Y') if vehicle.inspection_date else '-' }}
+                    </strong>
+                </span>
+
+                {% if vehicle.inspection_status == "ok" %}
+                    <span class="status-dot green"><i class="bi bi-check-lg"></i></span>
+                {% elif vehicle.inspection_status == "warning" %}
+                    <span class="status-dot yellow small-number">1</span>
+                {% else %}
+                    <span class="status-dot red small-number">1</span>
+                {% endif %}
+            </div>
+
+            <div class="meta-line">
+                <span>Paliwo: <strong>{{ vehicle.fuel_cards|length }} karty</strong></span>
+                <span class="mini-inline-chip">
+                    <i class="bi bi-fuel-pump"></i>
+                </span>
+            </div>
+        </div>
+
+        <div class="vehicle-image-wrap">
+            {% if vehicle.image %}
+                <img src="{{ url_for('static', filename=vehicle.image) }}" alt="{{ vehicle.name }}">
+            {% else %}
+                <div class="vehicle-image-placeholder">Zdjęcie pojazdu</div>
+            {% endif %}
+        </div>
+    </article>
+</a>
