@@ -3,6 +3,15 @@
 
 <main class="page-wrap">
 
+
+    <div class="page-header">
+        <div>
+            <h2>Szczegóły pojazdu</h2>
+            <div class="page-subtitle">{{ vehicle.name }} • {{ vehicle.registration }}</div>
+        </div>
+
+    </div>
+
     <div class="vehicle-detail-layout">
 
         <aside class="vehicle-side">
@@ -225,21 +234,6 @@
                                             {% endif %}
                                         </div>
                                     </div>
-
-                                    <div class="document-actions">
-                                        <a href="{{ url_for('documents.edit_document', document_id=document.id) }}"
-                                           class="btn-secondary">
-                                            Edytuj
-                                        </a>
-
-                                        <form method="POST"
-                                              action="{{ url_for('documents.delete_document', document_id=document.id) }}"
-                                              onsubmit="return confirm('Usunąć dokument?');"
-                                              class="action-form">
-                                            <button type="submit" class="btn-danger-outline">
-                                                Usuń
-                                            </button>
-                                        </form>
                                     </div>
                                 </div>
                             {% endfor %}
