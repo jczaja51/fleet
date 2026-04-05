@@ -26,16 +26,35 @@
                 </thead>
                 <tbody>
                     {% for task in tasks %}
+                        {% set category_map = {
+                            "oil": "Wymiana oleju",
+                            "inspection": "Przegląd",
+                            "tires": "Opony",
+                            "brakes": "Hamulce",
+                            "insurance": "Ubezpieczenie",
+                            "other": "Inne"
+                        } %}
+
                         <tr>
                             <td>
-                                {{ task.vehicle.name }}<br>
-                                <small>{{ task.vehicle.registration }}</small>
+                                <strong>{{ task.vehicle.name }}</strong><br>
+                                <span class="muted-line">{{ task.vehicle.registration }}</span>
                             </td>
+
                             <td>{{ task.name }}</td>
-                            <td>{{ task.category or "-" }}</td>
+
                             <td>
-                                {{ task.next_due_date.strftime('%Y-%m-%d') if task.next_due_date else "-" }}
+                                {{ category_map.get(task.category, task.category or "-") }}
                             </td>
+
+                            <td>
+                                {% if task.next_due_date %}
+                                    {{ task.next_due_date.strftime('%d.%m.%Y') }}
+                                {% else %}
+                                    -
+                                {% endif %}
+                            </td>
+
                             <td>
                                 {% if task.next_due_mileage is not none %}
                                     {{ task.next_due_mileage }} km
@@ -43,21 +62,24 @@
                                     -
                                 {% endif %}
                             </td>
+
                             <td>
                                 {% if task.is_active %}
-                                    <span class="badge ok">Aktywny</span>
+                                    <span class="badge ok">Aktywne</span>
                                 {% else %}
-                                    <span class="badge danger">Nieaktywny</span>
+                                    <span class="badge danger">Nieaktywne</span>
                                 {% endif %}
                             </td>
+
                             <td>
                                 <div class="actions">
-                                    <a href="/maintenance/1/edit" class="btn-secondary btn-sm">
+                                    <a href="{{ url_for('maintenance.edit_task', task_id=task.id) }}"
+                                       class="btn-secondary btn-sm">
                                         Edytuj
                                     </a>
 
                                     <form method="POST"
-                                          action="/maintenance/1/delete"
+                                          action="{{ url_for('maintenance.delete_task', task_id=task.id) }}"
                                           onsubmit="return confirm('Na pewno usunąć ten serwis?');">
                                         <button type="submit" class="btn-danger btn-sm">Usuń</button>
                                     </form>
@@ -71,7 +93,9 @@
     {% else %}
         <div class="empty-state">
             <p>Brak zadań serwisowych.</p>
-            <a href="{{ url_for('maintenance.add_task') }}" class="btn-primary">Dodaj pierwszy serwis</a>
+            <a href="{{ url_for('maintenance.add_task') }}" class="btn-primary">
+                Dodaj pierwszy serwis
+            </a>
         </div>
     {% endif %}
 </div>
