@@ -256,8 +256,20 @@ span.flatpickr-weekday {
     display: none;
 }
 
-.checkbox-group {
-    margin-top: 8px;
+.checkbox-group input[type="checkbox"] {
+    width: 18px;
+    height: 18px;
+    accent-color: #2f6df6;
+    cursor: pointer;
+}
+
+.checkbox-group label {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 14px;
+    font-weight: 600;
+    color: #22314d;
 }
 
 .form-actions,
@@ -277,6 +289,7 @@ span.flatpickr-weekday {
 
 .action-form {
     margin: 0;
+    display: inline-flex;
 }
 
 .image-preview-block {
