@@ -154,3 +154,55 @@
         grid-template-columns: 1fr;
     }
 }
+
+@media (max-width: 1220px) {
+    .vehicle-detail-layout {
+        grid-template-columns: 320px minmax(0, 1fr);
+    }
+}
+
+@media (max-width: 1080px) {
+    .vehicle-detail-layout {
+        grid-template-columns: 1fr;
+    }
+
+    .vehicle-side {
+        position: static;
+    }
+
+    .detail-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+@media (max-width: 640px) {
+    .vehicle-side-actions {
+        flex-direction: column;
+    }
+
+    .detail-panel,
+    .vehicle-summary-body {
+        padding: 18px;
+    }
+
+    .detail-row {
+        grid-template-columns: 1fr;
+        gap: 6px;
+    }
+
+    .detail-right,
+    .document-side,
+    .alert-side {
+        text-align: left;
+    }
+
+    .document-top,
+    .alert-item {
+        flex-direction: column;
+        gap: 8px;
+    }
+
+    .document-actions {
+        justify-content: flex-start;
+    }
+}
