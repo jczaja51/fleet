@@ -178,8 +178,8 @@
 
                                             <form method="POST"
                                                   action="{{ url_for('fuel_cards.delete_card', card_id=card.id) }}"
-                                                  onsubmit="return confirm('Usunąć kartę paliwową?');"
-                                                  class="action-form">
+                                                  class="action-form"
+                                                  data-confirm="Usunąć kartę paliwową?">
                                                 <button type="submit" class="btn-danger-outline">
                                                     Usuń
                                                 </button>

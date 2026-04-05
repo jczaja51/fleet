@@ -47,8 +47,73 @@
             allowInput: false
         });
     });
+
+document.addEventListener("DOMContentLoaded", function () {
+    const modal = document.getElementById("confirmModal");
+    const modalText = document.getElementById("confirmModalText");
+    const cancelBtn = document.getElementById("confirmModalCancel");
+    const acceptBtn = document.getElementById("confirmModalAccept");
+    let activeForm = null;
+
+    function openConfirm(form, message) {
+        activeForm = form;
+        modalText.textContent = message || "Czy na pewno chcesz usunąć ten element?";
+        modal.classList.add("is-open");
+        modal.setAttribute("aria-hidden", "false");
+        document.body.classList.add("modal-open");
+    }
+
+    function closeConfirm() {
+        activeForm = null;
+        modal.classList.remove("is-open");
+        modal.setAttribute("aria-hidden", "true");
+        document.body.classList.remove("modal-open");
+    }
+
+    document.querySelectorAll("form[data-confirm]").forEach((form) => {
+        form.addEventListener("submit", function (event) {
+            event.preventDefault();
+            openConfirm(form, form.dataset.confirm);
+        });
+    });
+
+    acceptBtn.addEventListener("click", function () {
+        if (activeForm) {
+            const form = activeForm;
+            closeConfirm();
+            form.submit();
+        }
+    });
+
+    cancelBtn.addEventListener("click", closeConfirm);
+
+    modal.querySelectorAll("[data-confirm-close]").forEach((el) => {
+        el.addEventListener("click", closeConfirm);
+    });
+
+    document.addEventListener("keydown", function (event) {
+        if (event.key === "Escape" && modal.classList.contains("is-open")) {
+            closeConfirm();
+        }
+    });
+});
 </script>
 
+<div class="confirm-modal" id="confirmModal" aria-hidden="true">
+    <div class="confirm-modal-backdrop" data-confirm-close></div>
+
+    <div class="confirm-modal-dialog" role="dialog" aria-modal="true" aria-labelledby="confirmModalTitle">
+        <div class="confirm-modal-head">
+            <h3 id="confirmModalTitle">Potwierdzenie</h3>
+            <p id="confirmModalText">Czy na pewno chcesz usunąć ten element?</p>
+        </div>
+
+        <div class="confirm-modal-actions">
+            <button type="button" class="btn-secondary" id="confirmModalCancel">Anuluj</button>
+            <button type="button" class="btn-danger-solid" id="confirmModalAccept">Usuń</button>
+        </div>
+    </div>
+</div>
 {% block scripts %}{% endblock %}
 </body>
 </html>

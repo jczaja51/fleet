@@ -9,6 +9,7 @@
 @import url("./components/tables.css");
 @import url("./components/chips.css");
 @import url("./components/empty-states.css");
+@import url("./components/modals.css");
 
 @import url("./pages/dashboard.css");
 @import url("./pages/vehicles.css");

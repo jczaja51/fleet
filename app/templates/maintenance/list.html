@@ -80,7 +80,8 @@
 
                                     <form method="POST"
                                           action="{{ url_for('maintenance.delete_task', task_id=task.id) }}"
-                                          onsubmit="return confirm('Na pewno usunąć ten serwis?');">
+                                          class="action-form"
+                                          data-confirm="Na pewno usunąć ten serwis?">
                                         <button type="submit" class="btn-danger btn-sm">Usuń</button>
                                     </form>
                                 </div>

@@ -76,8 +76,8 @@
 
                 <form method="POST"
                       action="{{ url_for('vehicles.delete_vehicle', vehicle_id=vehicle.id) }}"
-                      onsubmit="return confirm('Na pewno usunąć pojazd?');"
-                      class="action-form">
+                      class="action-form"
+                      data-confirm="Na pewno usunąć pojazd?">
                     <button type="submit" class="btn-danger">
                         Usuń
                     </button>

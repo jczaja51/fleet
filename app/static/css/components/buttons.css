@@ -97,3 +97,35 @@
     padding: 8px 12px;
     font-size: 13px;
 }
+
+.btn-danger-solid {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 44px;
+    padding: 0 18px;
+    border: 0;
+    border-radius: 12px;
+    background: linear-gradient(135deg, #d83b3b 0%, #c92f2f 100%);
+    color: #fff;
+    font-size: 14px;
+    font-weight: 700;
+    text-decoration: none;
+    cursor: pointer;
+    transition: transform 0.18s ease, box-shadow 0.18s ease, filter 0.18s ease;
+}
+
+.btn-danger-solid:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 10px 22px rgba(201, 47, 47, 0.2);
+    filter: brightness(1.02);
+}
+
+.btn-danger-solid:focus {
+    outline: none;
+    box-shadow: 0 0 0 4px rgba(201, 47, 47, 0.12);
+}
+
+.btn-danger-solid:active {
+    transform: translateY(0);
+}
