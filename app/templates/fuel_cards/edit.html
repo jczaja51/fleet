@@ -33,12 +33,14 @@
 
             <div class="form-group">
                 <label for="expiry">Data ważności</label>
-                <input
-                    type="date"
-                    id="expiry"
-                    name="expiry"
-                    value="{{ card.expiry.strftime('%Y-%m-%d') if card.expiry else '' }}"
-                >
+                    <input
+                        type="text"
+                        id="expiry"
+                        name="expiry"
+                        class="js-date-picker"
+                        autocomplete="off"
+                        value="{{ card.expiry.strftime('%Y-%m-%d') if card.expiry else '' }}"
+                    >
             </div>
 
             <div class="form-group">

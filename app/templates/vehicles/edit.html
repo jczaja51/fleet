@@ -112,7 +112,9 @@
                             <div class="form-group">
                                 <label for="oc_date">Data OC</label>
                                 <input
-                                    type="date"
+                                    type="text"
+                                    class="js-date-picker"
+                                    autocomplete="off"
                                     id="oc_date"
                                     name="oc_date"
                                     value="{{ vehicle.oc_date.strftime('%Y-%m-%d') if vehicle.oc_date else '' }}"
@@ -122,7 +124,9 @@
                             <div class="form-group">
                                 <label for="inspection_date">Data przeglądu</label>
                                 <input
-                                    type="date"
+                                    type="text"
+                                    class="js-date-picker"
+                                    autocomplete="off"
                                     id="inspection_date"
                                     name="inspection_date"
                                     value="{{ vehicle.inspection_date.strftime('%Y-%m-%d') if vehicle.inspection_date else '' }}"
