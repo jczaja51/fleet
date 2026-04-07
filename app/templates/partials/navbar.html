@@ -10,27 +10,36 @@
         <nav class="main-nav">
             <a
                 href="{{ url_for('main.dashboard') }}"
-                class="{% if request.endpoint == 'main.dashboard' %}active{% endif %}"
+                class="nav-item {% if request.endpoint == 'main.dashboard' or (request.endpoint and request.endpoint.startswith('vehicles.')) %}active{% endif %}"
             >
-                Pojazdy
+                <span>Pojazdy</span>
+                <i class="bi bi-chevron-down"></i>
             </a>
 
             <a
                 href="{{ url_for('maintenance.list_tasks') }}"
-                class="{% if request.endpoint and request.endpoint.startswith('maintenance.') %}active{% endif %}"
+                class="nav-item {% if request.endpoint and request.endpoint.startswith('maintenance.') %}active{% endif %}"
             >
-                Serwis
+                <span>Serwis</span>
+                <i class="bi bi-chevron-down"></i>
             </a>
 
             <a
                 href="{{ url_for('fuel_cards.list_cards') }}"
-                class="{% if request.endpoint and request.endpoint.startswith('fuel_cards.') %}active{% endif %}"
+                class="nav-item {% if request.endpoint and request.endpoint.startswith('fuel_cards.') %}active{% endif %}"
             >
-                Karty paliwowe
+                <span>Karty paliwowe</span>
+                <i class="bi bi-chevron-down"></i>
             </a>
 
-            <a href="#">Koszty</a>
-            <a href="#">Alerty</a>
+            <a href="#" class="nav-item">
+                <span>Koszty</span>
+                <i class="bi bi-chevron-down"></i>
+            </a>
+
+            <a href="#" class="nav-item">
+                <span>Alerty</span>
+            </a>
         </nav>
 
         <div class="profile-chip">

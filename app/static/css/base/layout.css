@@ -12,8 +12,8 @@
     position: sticky;
     top: 0;
     z-index: 20;
-    background: rgba(255, 255, 255, 0.72);
-    backdrop-filter: blur(14px);
+    background: rgba(255, 255, 255, 0.84);
+    backdrop-filter: blur(16px);
     border-bottom: 1px solid var(--line);
 }
 
@@ -31,6 +31,8 @@
     display: flex;
     align-items: center;
     gap: 14px;
+    text-decoration: none;
+    color: inherit;
 }
 
 .brand-icon {
@@ -51,7 +53,7 @@
     display: flex;
     justify-content: center;
     align-items: center;
-    gap: 42px;
+    gap: 34px;
 }
 
 .nav-item {
@@ -59,15 +61,27 @@
     display: inline-flex;
     align-items: center;
     gap: 8px;
-    padding: 8px 0;
+    padding: 10px 2px 18px;
     color: var(--text-soft);
     font-size: 17px;
     font-weight: 600;
+    text-decoration: none;
+    transition: color 0.18s ease;
+}
+
+.nav-item:hover {
+    color: var(--text);
 }
 
 .nav-item i {
     font-size: 12px;
-    opacity: 0.8;
+    opacity: 0.7;
+    transition: transform 0.18s ease, opacity 0.18s ease;
+}
+
+.nav-item:hover i,
+.nav-item.active i {
+    opacity: 1;
 }
 
 .nav-item.active {
@@ -79,9 +93,10 @@
     position: absolute;
     left: 0;
     right: 0;
-    bottom: -15px;
+    bottom: 2px;
     margin: 0 auto;
-    width: 72px;
+    width: 100%;
+    max-width: 72px;
     height: 4px;
     border-radius: 999px;
     background: var(--blue);
@@ -95,7 +110,7 @@
     padding: 8px 16px 8px 10px;
     border: 1px solid var(--line);
     border-radius: 999px;
-    background: rgba(255, 255, 255, 0.9);
+    background: rgba(255, 255, 255, 0.96);
     box-shadow: var(--shadow-sm);
     color: #52627b;
     font-weight: 700;

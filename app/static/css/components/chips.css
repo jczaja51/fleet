@@ -1,20 +1,25 @@
 .filter-chip {
     height: 46px;
-    padding: 0 18px;
-    border: 1px solid var(--line-soft);
+    padding: 0 16px;
+    border: 1px solid transparent;
     border-radius: 999px;
-    background: #f7f9fc;
+    background: #f5f7fb;
     color: #55657d;
-    font-size: 16px;
+    font-size: 15px;
     font-weight: 600;
     display: inline-flex;
     align-items: center;
     justify-content: center;
     gap: 8px;
     cursor: pointer;
-    box-shadow: var(--shadow-sm);
     text-decoration: none;
     transition: 0.2s ease;
+    white-space: nowrap;
+}
+
+.filter-chip i {
+    font-size: 12px;
+    opacity: 0.72;
 }
 
 .filter-chip:hover {
@@ -23,9 +28,10 @@
 }
 
 .filter-chip.active {
-    background: #2f6fed;
-    border-color: #2f6fed;
-    color: #fff;
+    background: #ffffff;
+    border-color: #d7e4ff;
+    color: var(--blue);
+    box-shadow: 0 1px 0 rgba(40, 116, 234, 0.04), 0 8px 24px rgba(39, 63, 96, 0.06);
 }
 
 .vehicle-type-chip {
@@ -53,8 +59,8 @@
     min-height: 38px;
     padding: 0 12px;
     margin-bottom: 16px;
-    border-radius: 10px;
-    background: #f5f7fb;
+    border-radius: 12px;
+    background: #f4f7fb;
     border: 1px solid #ebeff5;
     color: #40506a;
     font-size: 16px;
@@ -75,10 +81,23 @@
 
 .filters-row {
     display: grid;
-    grid-template-columns: minmax(280px, 1.4fr) auto auto;
+    grid-template-columns: minmax(0, 1fr) auto;
     gap: 18px;
     align-items: center;
     margin-bottom: 24px;
+}
+
+.filters-shell {
+    min-height: 72px;
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    flex-wrap: wrap;
+    padding: 8px 12px;
+    background: #ffffff;
+    border: 1px solid var(--line-soft);
+    border-radius: 22px;
+    box-shadow: var(--shadow-sm);
 }
 
 .filters-group {
@@ -86,4 +105,13 @@
     align-items: center;
     gap: 10px;
     flex-wrap: wrap;
+}
+
+.btn-add-vehicle {
+    min-height: 56px;
+    padding: 0 22px;
+    border-radius: 16px;
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
 }
