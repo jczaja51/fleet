@@ -1,79 +1,232 @@
 {% extends "base.html" %}
+{% block title %}Fleet Lite – Dodaj pojazd{% endblock %}
+
 {% block content %}
-
-<main class="page-wrap">
-
-    <div class="page-header">
-        <div>
-            <h2>Dodaj pojazd</h2>
-            <div class="page-subtitle">Uzupełnij podstawowe dane pojazdu. Dokumenty dodasz po zapisaniu rekordu.</div>
-        </div>
+<div class="vehicle-create-page">
+    <div class="vehicle-create-header">
+        <div class="vehicle-create-breadcrumbs">Pojazdy / Dodaj pojazd</div>
+        <h1>Dodaj pojazd</h1>
+        <p>Wprowadź dane nowego pojazdu do swojej floty firmowej i przypisz go do kierowcy.</p>
     </div>
 
-    <form method="POST" enctype="multipart/form-data" class="form-card">
-        <div class="form-section">
-            <h3 class="section-title">Podstawowe informacje</h3>
+    <div class="vehicle-create-layout">
+        <form method="POST" enctype="multipart/form-data" class="vehicle-create-card">
+            <div class="vehicle-create-main">
+                <section class="vehicle-create-section vehicle-create-section-left">
+                    <h2>Dane pojazdu</h2>
 
-            <div class="form-grid">
+                    <div class="vehicle-create-grid">
+                        <div class="form-group">
+                            <label for="brand">Marka <span class="field-required">*</span></label>
+                            <input type="text" id="brand" name="brand" required>
+                        </div>
 
-                <div class="form-group">
-                    <label for="name">Nazwa pojazdu</label>
-                    <input type="text" id="name" name="name" required>
-                </div>
+                        <div class="form-group">
+                            <label for="model">Model <span class="field-required">*</span></label>
+                            <input type="text" id="model" name="model" required>
+                        </div>
 
-                <div class="form-group">
-                    <label for="registration">Rejestracja</label>
-                    <input type="text" id="registration" name="registration" required>
-                </div>
+                        <div class="form-group">
+                            <label for="type">Typ pojazdu <span class="field-required">*</span></label>
+                            <select id="type" name="type" required>
+                                <option value="">— Wybierz —</option>
+                                <option value="Firmowe">Firmowe</option>
+                                <option value="Leasing">Leasing</option>
+                                <option value="Prywatne">Prywatne</option>
+                            </select>
+                        </div>
 
-                <div class="form-group">
-                    <label for="mileage">Przebieg</label>
-                    <input type="number" id="mileage" name="mileage" min="0">
-                </div>
+                        <div class="form-group">
+                            <label for="category">Kategoria <span class="field-required">*</span></label>
+                            <select id="category" name="category" required>
+                                <option value="">— Wybierz —</option>
+                                <option value="Samochód osobowy do 3,5 t DMC">Samochód osobowy do 3,5 t DMC</option>
+                                <option value="Samochód ciężarowy do 3,5 t DMC">Samochód ciężarowy do 3,5 t DMC</option>
+                                <option value="Samochód ciężarowy powyżej 3,5 t DMC">Samochód ciężarowy powyżej 3,5 t DMC</option>
+                                <option value="Pojazd specjalny">Pojazd specjalny</option>
+                                <option value="Ciągnik siodłowy">Ciągnik siodłowy</option>
+                                <option value="Autobus">Autobus</option>
+                                <option value="Przyczepa / naczepa">Przyczepa / naczepa</option>
+                                <option value="Inne">Inne</option>
+                            </select>
+                        </div>
 
-                <div class="form-group">
-                    <label for="type">Typ</label>
-                    <select id="type" name="type">
-                        <option value="Firmowe">Firmowe</option>
-                        <option value="Leasing">Leasing</option>
-                        <option value="Prywatne">Prywatne</option>
-                    </select>
-                </div>
+                        <div class="form-group">
+                            <label for="registration">Numer rejestracyjny <span class="field-required">*</span></label>
+                            <input type="text" id="registration" name="registration" required>
+                        </div>
 
-                <div class="form-group">
-                    <label for="oc_date">Data OC</label>
-                    <input type="text" id="oc_date" name="oc_date" class="js-date-picker" autocomplete="off">
-                </div>
+                        <div class="form-group">
+                            <label for="production_year">Rok produkcji <span class="field-required">*</span></label>
+                            <input type="number" id="production_year" name="production_year" min="1950" max="2100" required>
+                        </div>
 
-                <div class="form-group">
-                    <label for="inspection_date">Data przeglądu</label>
-                    <input type="text" id="inspection_date" name="inspection_date" class="js-date-picker" autocomplete="off">
-                </div>
+                        <div class="form-group">
+                            <label for="mileage">Przebieg</label>
+                            <div class="input-with-suffix">
+                                <input type="number" id="mileage" name="mileage" min="0">
+                                <span>km</span>
+                            </div>
+                        </div>
 
-                <div class="form-group form-group-full">
-                    <label for="image">Zdjęcie pojazdu</label>
-                    <input type="file" id="image" name="image" accept=".jpg,.jpeg,.png,.webp">
-                </div>
+                        <div class="form-group">
+                            <label for="vin">Numer VIN</label>
+                            <input type="text" id="vin" name="vin" maxlength="32">
+                        </div>
 
+                        <div class="form-group form-group-full">
+                            <label for="assigned_driver">Przypisany kierowca</label>
+                            <input type="text" id="assigned_driver" name="assigned_driver" placeholder="Np. Jan Kowalski">
+                        </div>
+                    </div>
+                </section>
+
+                <section class="vehicle-create-section vehicle-create-section-right">
+                    <h2>Zdjęcie pojazdu</h2>
+
+                    <div class="upload-box">
+                        <div class="upload-box-icon">
+                            <i class="bi bi-image"></i>
+                            <i class="bi bi-plus-circle-fill upload-plus"></i>
+                        </div>
+                        <div class="upload-box-title">Dodaj zdjęcie pojazdu</div>
+                        <div class="upload-box-subtitle">Przeciągnij i upuść lub <span>wybierz plik</span></div>
+                        <div class="upload-box-note">JPG, PNG lub WEBP. Maks. 10 MB</div>
+                        <div class="upload-box-file-name" id="image-file-name">Nie wybrano pliku</div>
+                        <input type="file" id="image" name="image" accept=".jpg,.jpeg,.png,.webp">
+                    </div>
+
+                    <div class="upload-success" id="upload-success" hidden>
+                        <i class="bi bi-check-circle-fill"></i>
+                        <span>Plik został pomyślnie załadowany.</span>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="oc_date">Data ważności OC</label>
+                        <input type="text" id="oc_date" name="oc_date" class="js-date-picker" autocomplete="off">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="inspection_date">Data ważności przeglądu</label>
+                        <input type="text" id="inspection_date" name="inspection_date" class="js-date-picker" autocomplete="off">
+                    </div>
+
+                    <div class="form-group form-group-disabled" id="tachograph-group">
+                        <label for="tachograph_expiry_date">Data ważności tachografu</label>
+                        <input
+                            type="text"
+                            id="tachograph_expiry_date"
+                            name="tachograph_expiry_date"
+                            class="js-date-picker"
+                            autocomplete="off"
+                            disabled
+                        >
+                        <div class="field-helper-text" id="tachograph-helper">
+                            Dostępne tylko dla samochodów ciężarowych powyżej 3,5 t DMC oraz autobusów.
+                        </div>
+                    </div>
+                </section>
             </div>
-        </div>
 
-        <div class="form-section">
-            <h3 class="section-title">Dokumenty</h3>
-            <p class="section-subtitle">
-                Dokumenty dodasz po zapisaniu pojazdu z poziomu jego szczegółów lub edycji.
-            </p>
-
-            <div class="empty-box">
-                Najpierw zapisz pojazd, a następnie dodaj dokumenty osobno przez przycisk <strong>„+ Dodaj dokument”</strong>.
+            <div class="vehicle-create-actions">
+                <a href="{{ url_for('main.dashboard') }}" class="btn-secondary btn-create-cancel">Anuluj</a>
+                <button type="submit" class="btn-primary btn-create-submit">
+                    <i class="bi bi-floppy"></i>
+                    Zapisz pojazd
+                </button>
             </div>
-        </div>
+        </form>
 
-        <div class="form-actions">
-            <button type="submit" class="btn-primary">Zapisz pojazd</button>
-        </div>
-    </form>
+        <aside class="vehicle-create-tips">
+            <div class="vehicle-create-tips-head">
+                <i class="bi bi-lightbulb"></i>
+                <h3>Podpowiedzi</h3>
+            </div>
 
-</main>
+            <div class="vehicle-tip">
+                <i class="bi bi-car-front"></i>
+                <p>Podanie numeru rejestracyjnego pozwoli na automatyczne monitorowanie terminów ubezpieczenia OC i przeglądów.</p>
+            </div>
 
+            <div class="vehicle-tip">
+                <i class="bi bi-file-earmark-text"></i>
+                <p>Możesz przesłać zdjęcie pojazdu w formacie JPG, PNG lub WEBP o rozmiarze do 10 MB.</p>
+            </div>
+
+            <div class="vehicle-tip">
+                <i class="bi bi-truck"></i>
+                <p>Termin tachografu zapiszesz tylko dla pojazdów, które rzeczywiście go wymagają.</p>
+            </div>
+        </aside>
+    </div>
+</div>
+
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+    const categorySelect = document.getElementById("category");
+    const tachographGroup = document.getElementById("tachograph-group");
+    const tachographInput = document.getElementById("tachograph_expiry_date");
+
+    const imageInput = document.getElementById("image");
+    const imageFileName = document.getElementById("image-file-name");
+    const uploadSuccess = document.getElementById("upload-success");
+
+    const tachographCategories = [
+        "Samochód ciężarowy powyżej 3,5 t DMC",
+        "Autobus"
+    ];
+
+    function setFlatpickrEnabled(input, enabled) {
+        input.disabled = !enabled;
+
+        if (input._flatpickr) {
+            input._flatpickr._input.disabled = !enabled;
+
+            if (input._flatpickr.altInput) {
+                input._flatpickr.altInput.disabled = !enabled;
+            }
+
+            if (!enabled) {
+                input._flatpickr.clear();
+            }
+        }
+
+        if (enabled) {
+            tachographGroup.classList.remove("form-group-disabled");
+            tachographGroup.classList.add("form-group-enabled");
+        } else {
+            tachographGroup.classList.add("form-group-disabled");
+            tachographGroup.classList.remove("form-group-enabled");
+        }
+    }
+
+    function toggleTachographField() {
+        const selectedValue = categorySelect.value;
+        const shouldEnable = tachographCategories.includes(selectedValue);
+        setFlatpickrEnabled(tachographInput, shouldEnable);
+    }
+
+    function updateUploadState() {
+        const file = imageInput.files[0];
+
+        if (!file) {
+            imageFileName.textContent = "Nie wybrano pliku";
+            uploadSuccess.hidden = true;
+            return;
+        }
+
+        imageFileName.textContent = "Wybrano plik: " + file.name;
+        uploadSuccess.hidden = false;
+    }
+
+    categorySelect.addEventListener("change", toggleTachographField);
+    imageInput.addEventListener("change", updateUploadState);
+
+    uploadSuccess.hidden = true;
+    imageFileName.textContent = "Nie wybrano pliku";
+
+    toggleTachographField();
+    updateUploadState();
+});
+</script>
 {% endblock %}

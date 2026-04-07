@@ -7,17 +7,48 @@ class Vehicle(db.Model):
     __tablename__ = "vehicles"
 
     id = db.Column(db.Integer, primary_key=True)
+
     name = db.Column(db.String(120), nullable=False)
+
+    brand = db.Column(db.String(80), nullable=True)
+    model = db.Column(db.String(80), nullable=True)
+    category = db.Column(db.String(120), nullable=True)
+    production_year = db.Column(db.Integer, nullable=True)
+    vin = db.Column(db.String(32), nullable=True)
+    assigned_driver = db.Column(db.String(120), nullable=True)
+    tachograph_expiry_date = db.Column(db.Date, nullable=True)
+
     registration = db.Column(db.String(20), nullable=False)
     mileage = db.Column(db.Integer, nullable=True)
     type = db.Column(db.String(50), nullable=True)
+
     image = db.Column(db.String(255), nullable=True)
     oc_date = db.Column(db.Date, nullable=True)
     inspection_date = db.Column(db.Date, nullable=True)
+
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
 
+    @property
+    def display_name(self):
+        if self.brand and self.model:
+            return f"{self.brand} {self.model}"
+        return self.name
+
+    def sync_name(self):
+        if self.brand and self.model:
+            self.name = f"{self.brand} {self.model}"
+        elif not self.name and self.registration:
+            self.name = self.registration
+
+    @property
+    def requires_tachograph(self):
+        return self.category in {
+            "Samochód ciężarowy powyżej 3,5 t DMC",
+            "Autobus",
+        }
+
     def __repr__(self):
-        return f"<Vehicle {self.name} ({self.registration})>"
+        return f"<Vehicle {self.display_name} ({self.registration})>"
 
 
 class MaintenanceTask(db.Model):

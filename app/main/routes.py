@@ -40,7 +40,10 @@ def dashboard():
         vehicles_query = vehicles_query.filter(
             or_(
                 Vehicle.name.ilike(f"%{q}%"),
+                Vehicle.brand.ilike(f"%{q}%"),
+                Vehicle.model.ilike(f"%{q}%"),
                 Vehicle.registration.ilike(f"%{q}%"),
+                Vehicle.assigned_driver.ilike(f"%{q}%"),
             )
         )
 

@@ -1,283 +1,247 @@
 {% extends "base.html" %}
+{% block title %}Fleet Lite – Edytuj pojazd{% endblock %}
+
 {% block content %}
-
-<main class="page-wrap">
-
-    <div class="page-header">
-        <div>
-            <h2>Edytuj pojazd</h2>
-            <div class="page-subtitle">{{ vehicle.name }} • {{ vehicle.registration }}</div>
-        </div>
+<div class="vehicle-create-page">
+    <div class="vehicle-create-header">
+        <div class="vehicle-create-breadcrumbs">Pojazdy / Edytuj pojazd</div>
+        <h1>Edytuj pojazd</h1>
+        <p>Zmień dane pojazdu i zaktualizuj przypisane informacje.</p>
     </div>
 
-    <form method="POST" enctype="multipart/form-data" class="edit-vehicle-form">
-        <div class="vehicle-detail-layout edit-detail-layout">
+    <div class="vehicle-create-layout">
+        <form method="POST" enctype="multipart/form-data" class="vehicle-create-card">
+            <div class="vehicle-create-main">
+                <section class="vehicle-create-section vehicle-create-section-left">
+                    <h2>Dane pojazdu</h2>
 
-            <aside class="vehicle-side">
+                    <div class="vehicle-create-grid">
+                        <div class="form-group">
+                            <label for="brand">Marka <span class="field-required">*</span></label>
+                            <input type="text" id="brand" name="brand" value="{{ vehicle.brand or '' }}" required>
+                        </div>
 
-                <div class="vehicle-summary-card">
+                        <div class="form-group">
+                            <label for="model">Model <span class="field-required">*</span></label>
+                            <input type="text" id="model" name="model" value="{{ vehicle.model or '' }}" required>
+                        </div>
 
-                    <div class="vehicle-summary-image">
-                        <a href="{{ url_for('vehicles.detail', vehicle_id=vehicle.id) }}" class="detail-back-btn">
-                            <i class="bi bi-chevron-left"></i>
-                        </a>
+                        <div class="form-group">
+                            <label for="type">Typ pojazdu <span class="field-required">*</span></label>
+                            <select id="type" name="type" required>
+                                <option value="">— Wybierz —</option>
+                                <option value="Firmowe" {% if vehicle.type == "Firmowe" %}selected{% endif %}>Firmowe</option>
+                                <option value="Leasing" {% if vehicle.type == "Leasing" %}selected{% endif %}>Leasing</option>
+                                <option value="Prywatne" {% if vehicle.type == "Prywatne" %}selected{% endif %}>Prywatne</option>
+                            </select>
+                        </div>
 
-                        {% if vehicle.image %}
-                            <img src="{{ url_for('static', filename=vehicle.image) }}" alt="{{ vehicle.name }}">
-                        {% else %}
-                            <img src="{{ url_for('static', filename='img/car-placeholder.jpg') }}" alt="{{ vehicle.name }}">
-                        {% endif %}
+                        <div class="form-group">
+                            <label for="category">Kategoria <span class="field-required">*</span></label>
+                            <select id="category" name="category" required>
+                                <option value="">— Wybierz —</option>
+                                <option value="Samochód osobowy do 3,5 t DMC" {% if vehicle.category == "Samochód osobowy do 3,5 t DMC" %}selected{% endif %}>Samochód osobowy do 3,5 t DMC</option>
+                                <option value="Samochód ciężarowy do 3,5 t DMC" {% if vehicle.category == "Samochód ciężarowy do 3,5 t DMC" %}selected{% endif %}>Samochód ciężarowy do 3,5 t DMC</option>
+                                <option value="Samochód ciężarowy powyżej 3,5 t DMC" {% if vehicle.category == "Samochód ciężarowy powyżej 3,5 t DMC" %}selected{% endif %}>Samochód ciężarowy powyżej 3,5 t DMC</option>
+                                <option value="Pojazd specjalny" {% if vehicle.category == "Pojazd specjalny" %}selected{% endif %}>Pojazd specjalny</option>
+                                <option value="Ciągnik siodłowy" {% if vehicle.category == "Ciągnik siodłowy" %}selected{% endif %}>Ciągnik siodłowy</option>
+                                <option value="Autobus" {% if vehicle.category == "Autobus" %}selected{% endif %}>Autobus</option>
+                                <option value="Przyczepa / naczepa" {% if vehicle.category == "Przyczepa / naczepa" %}selected{% endif %}>Przyczepa / naczepa</option>
+                                <option value="Inne" {% if vehicle.category == "Inne" %}selected{% endif %}>Inne</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="registration">Numer rejestracyjny <span class="field-required">*</span></label>
+                            <input type="text" id="registration" name="registration" value="{{ vehicle.registration }}" required>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="production_year">Rok produkcji <span class="field-required">*</span></label>
+                            <input type="number" id="production_year" name="production_year" min="1950" max="2100" value="{{ vehicle.production_year or '' }}" required>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="mileage">Przebieg</label>
+                            <div class="input-with-suffix">
+                                <input type="number" id="mileage" name="mileage" min="0" value="{{ vehicle.mileage or '' }}">
+                                <span>km</span>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="vin">Numer VIN</label>
+                            <input type="text" id="vin" name="vin" maxlength="32" value="{{ vehicle.vin or '' }}">
+                        </div>
+
+                        <div class="form-group form-group-full">
+                            <label for="assigned_driver">Przypisany kierowca</label>
+                            <input type="text" id="assigned_driver" name="assigned_driver" value="{{ vehicle.assigned_driver or '' }}">
+                        </div>
+                    </div>
+                </section>
+
+                <section class="vehicle-create-section vehicle-create-section-right">
+                    <h2>Zdjęcie pojazdu</h2>
+
+                    <div class="upload-box">
+                        <div class="upload-box-icon">
+                            <i class="bi bi-image"></i>
+                            <i class="bi bi-plus-circle-fill upload-plus"></i>
+                        </div>
+                        <div class="upload-box-title">Zmień zdjęcie pojazdu</div>
+                        <div class="upload-box-subtitle">Przeciągnij i upuść lub <span>wybierz plik</span></div>
+                        <div class="upload-box-note">JPG, PNG lub WEBP. Maks. 10 MB</div>
+                        <div class="upload-box-file-name" id="image-file-name">
+                            {% if vehicle.image %}Aktualne zdjęcie zapisane w systemie{% else %}Nie wybrano pliku{% endif %}
+                        </div>
+                        <input type="file" id="image" name="image" accept=".jpg,.jpeg,.png,.webp">
                     </div>
 
-                    <div class="vehicle-summary-body">
-                        <h1 class="vehicle-summary-title">{{ vehicle.name }}</h1>
-                        <div class="vehicle-summary-subtitle">{{ vehicle.registration }}</div>
+                    <div class="upload-success" id="upload-success" hidden>
+                        <i class="bi bi-check-circle-fill"></i>
+                        <span>Plik został pomyślnie załadowany.</span>
+                    </div>
 
-                        <div class="vehicle-summary-badge">
-                            {{ vehicle.type or "Brak typu" }}
-                        </div>
+                    <div class="form-group">
+                        <label for="oc_date">Data ważności OC</label>
+                        <input
+                            type="text"
+                            id="oc_date"
+                            name="oc_date"
+                            class="js-date-picker"
+                            autocomplete="off"
+                            value="{{ vehicle.oc_date.strftime('%Y-%m-%d') if vehicle.oc_date else '' }}"
+                        >
+                    </div>
 
-                        <div class="vehicle-summary-stats">
-                            <div class="vehicle-summary-stat">
-                                <span class="vehicle-summary-label">Przebieg</span>
-                                <span class="vehicle-summary-value">{{ vehicle.mileage or "-" }} km</span>
-                            </div>
+                    <div class="form-group">
+                        <label for="inspection_date">Data ważności przeglądu</label>
+                        <input
+                            type="text"
+                            id="inspection_date"
+                            name="inspection_date"
+                            class="js-date-picker"
+                            autocomplete="off"
+                            value="{{ vehicle.inspection_date.strftime('%Y-%m-%d') if vehicle.inspection_date else '' }}"
+                        >
+                    </div>
 
-                            <div class="vehicle-summary-stat">
-                                <span class="vehicle-summary-label">OC</span>
-                                <span class="vehicle-summary-value">
-                                    {% if vehicle.oc_date %}
-                                        {{ vehicle.oc_date.strftime('%d.%m.%Y') }}
-                                    {% else %}
-                                        -
-                                    {% endif %}
-                                </span>
-                            </div>
-
-                            <div class="vehicle-summary-stat">
-                                <span class="vehicle-summary-label">Przegląd</span>
-                                <span class="vehicle-summary-value">
-                                    {% if vehicle.inspection_date %}
-                                        {{ vehicle.inspection_date.strftime('%d.%m.%Y') }}
-                                    {% else %}
-                                        -
-                                    {% endif %}
-                                </span>
-                            </div>
+                    <div class="form-group {% if not vehicle.requires_tachograph %}form-group-disabled{% else %}form-group-enabled{% endif %}" id="tachograph-group">
+                        <label for="tachograph_expiry_date">Data ważności tachografu</label>
+                        <input
+                            type="text"
+                            id="tachograph_expiry_date"
+                            name="tachograph_expiry_date"
+                            class="js-date-picker"
+                            autocomplete="off"
+                            value="{{ vehicle.tachograph_expiry_date.strftime('%Y-%m-%d') if vehicle.tachograph_expiry_date else '' }}"
+                            {% if not vehicle.requires_tachograph %}disabled{% endif %}
+                        >
+                        <div class="field-helper-text" id="tachograph-helper">
+                            Dostępne tylko dla samochodów ciężarowych powyżej 3,5 t DMC oraz autobusów.
                         </div>
                     </div>
-                </div>
+                </section>
+            </div>
 
-                <div class="vehicle-side-actions">
-                    <button type="submit" class="btn-primary">Zapisz zmiany</button>
-                    <a href="{{ url_for('vehicles.detail', vehicle_id=vehicle.id) }}" class="btn-secondary">Anuluj</a>
-                </div>
+            <div class="vehicle-create-actions">
+                <a href="{{ url_for('vehicles.detail', vehicle_id=vehicle.id) }}" class="btn-secondary btn-create-cancel">Anuluj</a>
+                <button type="submit" class="btn-primary btn-create-submit">
+                    <i class="bi bi-floppy"></i>
+                    Zapisz zmiany
+                </button>
+            </div>
+        </form>
 
-            </aside>
+        <aside class="vehicle-create-tips">
+            <div class="vehicle-create-tips-head">
+                <i class="bi bi-lightbulb"></i>
+                <h3>Podpowiedzi</h3>
+            </div>
 
-            <section class="vehicle-main">
+            <div class="vehicle-tip">
+                <i class="bi bi-car-front"></i>
+                <p>Warto zachować spójny format nazw modeli i rejestracji, żeby łatwiej filtrować pojazdy na dashboardzie.</p>
+            </div>
 
-                <div class="detail-grid">
+            <div class="vehicle-tip">
+                <i class="bi bi-image"></i>
+                <p>Nowe zdjęcie zastąpi poprzednie. Najlepiej używać proporcji poziomych, żeby dobrze wyglądało na kafelkach.</p>
+            </div>
 
-                    <section class="detail-panel">
-                        <div class="panel-head">
-                            <h3>Dane pojazdu</h3>
-                        </div>
+            <div class="vehicle-tip">
+                <i class="bi bi-truck"></i>
+                <p>Termin tachografu zapiszesz tylko dla pojazdów, które rzeczywiście go wymagają.</p>
+            </div>
+        </aside>
+    </div>
+</div>
 
-                        <div class="form-grid">
-                            <div class="form-group">
-                                <label for="name">Nazwa pojazdu</label>
-                                <input type="text" id="name" name="name" value="{{ vehicle.name }}" required>
-                            </div>
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+    const categorySelect = document.getElementById("category");
+    const tachographGroup = document.getElementById("tachograph-group");
+    const tachographInput = document.getElementById("tachograph_expiry_date");
 
-                            <div class="form-group">
-                                <label for="registration">Rejestracja</label>
-                                <input type="text" id="registration" name="registration" value="{{ vehicle.registration }}" required>
-                            </div>
+    const imageInput = document.getElementById("image");
+    const imageFileName = document.getElementById("image-file-name");
+    const uploadSuccess = document.getElementById("upload-success");
 
-                            <div class="form-group">
-                                <label for="mileage">Przebieg</label>
-                                <input type="number" id="mileage" name="mileage" value="{{ vehicle.mileage or '' }}">
-                            </div>
+    const tachographCategories = [
+        "Samochód ciężarowy powyżej 3,5 t DMC",
+        "Autobus"
+    ];
 
-                            <div class="form-group">
-                                <label for="type">Typ</label>
-                                <select id="type" name="type">
-                                    <option value="Firmowe" {% if vehicle.type == "Firmowe" %}selected{% endif %}>Firmowe</option>
-                                    <option value="Leasing" {% if vehicle.type == "Leasing" %}selected{% endif %}>Leasing</option>
-                                    <option value="Prywatne" {% if vehicle.type == "Prywatne" %}selected{% endif %}>Prywatne</option>
-                                </select>
-                            </div>
+    function setFlatpickrEnabled(input, enabled) {
+        input.disabled = !enabled;
 
-                            <div class="form-group">
-                                <label for="oc_date">Data OC</label>
-                                <input
-                                    type="text"
-                                    class="js-date-picker"
-                                    autocomplete="off"
-                                    id="oc_date"
-                                    name="oc_date"
-                                    value="{{ vehicle.oc_date.strftime('%Y-%m-%d') if vehicle.oc_date else '' }}"
-                                >
-                            </div>
+        if (input._flatpickr) {
+            input._flatpickr._input.disabled = !enabled;
 
-                            <div class="form-group">
-                                <label for="inspection_date">Data przeglądu</label>
-                                <input
-                                    type="text"
-                                    class="js-date-picker"
-                                    autocomplete="off"
-                                    id="inspection_date"
-                                    name="inspection_date"
-                                    value="{{ vehicle.inspection_date.strftime('%Y-%m-%d') if vehicle.inspection_date else '' }}"
-                                >
-                            </div>
+            if (input._flatpickr.altInput) {
+                input._flatpickr.altInput.disabled = !enabled;
+            }
 
-                            <div class="form-group form-group-full">
-                                <label for="image">Nowe zdjęcie pojazdu</label>
-                                <input type="file" id="image" name="image" accept=".jpg,.jpeg,.png,.webp">
-                            </div>
-                        </div>
-                    </section>
+            if (!enabled) {
+                input._flatpickr.clear();
+            }
+        }
 
-                    <section class="detail-panel">
-                        <div class="panel-head">
-                            <h3>Karty paliwowe</h3>
-                            <a href="{{ url_for('fuel_cards.add_card', vehicle_id=vehicle.id) }}" class="btn-secondary">
-                                + Dodaj kartę
-                            </a>
-                        </div>
+        if (enabled) {
+            tachographGroup.classList.remove("form-group-disabled");
+            tachographGroup.classList.add("form-group-enabled");
+        } else {
+            tachographGroup.classList.add("form-group-disabled");
+            tachographGroup.classList.remove("form-group-enabled");
+        }
+    }
 
-                        {% if vehicle.fuel_cards %}
-                            <div class="docs-list">
-                                {% for card in vehicle.fuel_cards %}
-                                    <div class="document-item">
-                                        <div class="document-top">
-                                            <div class="document-main">
-                                                <div class="document-title">{{ card.station or "-" }}</div>
-                                                <div class="document-meta">
-                                                    Nr: {{ card.number or "-" }} · PIN: {{ card.pin or "-" }}
-                                                </div>
-                                            </div>
+    function toggleTachographField() {
+        const selectedValue = categorySelect.value;
+        const shouldEnable = tachographCategories.includes(selectedValue);
+        setFlatpickrEnabled(tachographInput, shouldEnable);
+    }
 
-                                            <div class="document-side">
-                                                <div class="document-date">
-                                                    {% if card.expiry %}
-                                                        {{ card.expiry.strftime('%d.%m.%Y') }}
-                                                    {% else %}
-                                                        -
-                                                    {% endif %}
-                                                </div>
-                                            </div>
-                                        </div>
+    function updateUploadState() {
+        const file = imageInput.files[0];
 
-                                        <div class="document-actions">
-                                            <a href="{{ url_for('fuel_cards.edit_card', card_id=card.id) }}" class="btn-secondary">
-                                                Edytuj
-                                            </a>
+        if (!file) {
+            uploadSuccess.hidden = true;
+            return;
+        }
 
-                                            <form method="POST"
-                                                  action="{{ url_for('fuel_cards.delete_card', card_id=card.id) }}"
-                                                  class="action-form"
-                                                  data-confirm="Usunąć kartę paliwową?">
-                                                <button type="submit" class="btn-danger-outline">
-                                                    Usuń
-                                                </button>
-                                            </form>
-                                        </div>
-                                    </div>
-                                {% endfor %}
-                            </div>
-                        {% else %}
-                            <div class="empty-box">Brak kart paliwowych</div>
-                        {% endif %}
-                    </section>
+        imageFileName.textContent = "Wybrano plik: " + file.name;
+        uploadSuccess.hidden = false;
+    }
 
-                </div>
+    categorySelect.addEventListener("change", toggleTachographField);
+    imageInput.addEventListener("change", updateUploadState);
 
-                <div class="detail-grid">
+    uploadSuccess.hidden = true;
 
-                    <section class="detail-panel">
-                        <div class="panel-head">
-                            <h3>Alerty</h3>
-                        </div>
-
-                        {% if vehicle.alerts %}
-                            <div class="alerts-list">
-                                {% for alert in vehicle.alerts %}
-                                    <div class="alert-item">
-                                        <div class="alert-copy">
-                                            <div class="alert-title">{{ alert.label }}</div>
-                                        </div>
-
-                                        <div class="alert-side">
-                                            <div class="alert-date">
-                                                {% if alert.date %}
-                                                    {{ alert.date.strftime('%d.%m.%Y') }}
-                                                {% else %}
-                                                    -
-                                                {% endif %}
-                                            </div>
-                                        </div>
-                                    </div>
-                                {% endfor %}
-                            </div>
-                        {% else %}
-                            <div class="empty-box">Brak alertów dla tego pojazdu</div>
-                        {% endif %}
-                    </section>
-
-                    <section class="detail-panel documents-panel">
-                        <div class="panel-head">
-                            <h3>Dokumenty</h3>
-                            <a href="{{ url_for('documents.add_document', vehicle_id=vehicle.id) }}" class="btn-primary">
-                                + Dodaj dokument
-                            </a>
-                        </div>
-
-                        {% if vehicle.documents %}
-                            <div class="docs-list">
-                                {% for document in vehicle.documents %}
-                                    <div class="document-item">
-                                        <div class="document-top">
-                                            <div class="document-main">
-                                                <div class="document-title">{{ document.name }}</div>
-                                                <div class="document-meta">{{ document.document_type }}</div>
-                                            </div>
-
-                                            <div class="document-side">
-                                                <div class="document-date">
-                                                    {% if document.expiry_date %}
-                                                        {{ document.expiry_date.strftime('%d.%m.%Y') }}
-                                                    {% else %}
-                                                        Brak terminu
-                                                    {% endif %}
-                                                </div>
-
-                                                {% if document.file_path %}
-                                                    <a href="{{ url_for('static', filename=document.file_path) }}"
-                                                       target="_blank"
-                                                       class="document-link">
-                                                        Otwórz plik
-                                                    </a>
-                                                {% endif %}
-                                            </div>
-                                        </div>
-                                    </div>
-                                {% endfor %}
-                            </div>
-                        {% else %}
-                            <div class="empty-box">Brak dokumentów dla tego pojazdu</div>
-                        {% endif %}
-                    </section>
-
-                </div>
-
-            </section>
-
-        </div>
-    </form>
-
-</main>
-
+    toggleTachographField();
+    updateUploadState();
+});
+</script>
 {% endblock %}
