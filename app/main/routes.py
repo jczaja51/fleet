@@ -1,5 +1,5 @@
 from flask import Blueprint, render_template, request
-from sqlalchemy import or_
+from sqlalchemy import or_, case
 
 from app.models import Vehicle, Alert, FuelCard, VehicleDocument
 from app.services.alert_service import refresh_all_alerts
@@ -27,14 +27,87 @@ def normalize_vehicle_type(value: str | None) -> str:
     return mapping.get(value, value)
 
 
+def normalize_sort(value: str | None) -> str:
+    if not value:
+        return ""
+
+    value = value.strip().lower()
+
+    allowed = {
+        "brand_asc",
+        "brand_desc",
+        "registration_asc",
+        "registration_desc",
+        "oc_asc",
+        "inspection_asc",
+        "mileage_desc",
+        "mileage_asc",
+    }
+
+    return value if value in allowed else ""
+
+
+def apply_vehicle_sort(query, sort_key: str):
+    if sort_key == "brand_asc":
+        return query.order_by(
+            Vehicle.brand.asc(),
+            Vehicle.model.asc(),
+            Vehicle.registration.asc(),
+        )
+
+    if sort_key == "brand_desc":
+        return query.order_by(
+            Vehicle.brand.desc(),
+            Vehicle.model.desc(),
+            Vehicle.registration.desc(),
+        )
+
+    if sort_key == "registration_asc":
+        return query.order_by(Vehicle.registration.asc())
+
+    if sort_key == "registration_desc":
+        return query.order_by(Vehicle.registration.desc())
+
+    if sort_key == "oc_asc":
+        return query.order_by(
+            case((Vehicle.oc_date.is_(None), 1), else_=0),
+            Vehicle.oc_date.asc(),
+            Vehicle.id.desc(),
+        )
+
+    if sort_key == "inspection_asc":
+        return query.order_by(
+            case((Vehicle.inspection_date.is_(None), 1), else_=0),
+            Vehicle.inspection_date.asc(),
+            Vehicle.id.desc(),
+        )
+
+    if sort_key == "mileage_desc":
+        return query.order_by(
+            case((Vehicle.mileage.is_(None), 1), else_=0),
+            Vehicle.mileage.desc(),
+            Vehicle.id.desc(),
+        )
+
+    if sort_key == "mileage_asc":
+        return query.order_by(
+            case((Vehicle.mileage.is_(None), 1), else_=0),
+            Vehicle.mileage.asc(),
+            Vehicle.id.desc(),
+        )
+
+    return query.order_by(Vehicle.id.desc())
+
+
 @main_bp.route("/")
 def dashboard():
     refresh_all_alerts()
 
     q = request.args.get("q", "").strip()
     selected_type = normalize_vehicle_type(request.args.get("type"))
+    selected_sort = normalize_sort(request.args.get("sort"))
 
-    vehicles_query = Vehicle.query.order_by(Vehicle.id.desc())
+    vehicles_query = Vehicle.query
 
     if q:
         vehicles_query = vehicles_query.filter(
@@ -71,8 +144,11 @@ def dashboard():
                 )
             )
         else:
-            vehicles_query = vehicles_query.filter(Vehicle.type.ilike(f"%{selected_type}%"))
+            vehicles_query = vehicles_query.filter(
+                Vehicle.type.ilike(f"%{selected_type}%")
+            )
 
+    vehicles_query = apply_vehicle_sort(vehicles_query, selected_sort)
     vehicles = vehicles_query.all()
 
     alerts = Alert.query.order_by(Alert.date.asc()).all()
@@ -104,5 +180,6 @@ def dashboard():
         filters={
             "q": q,
             "type": selected_type,
+            "sort": selected_sort,
         },
     )

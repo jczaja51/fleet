@@ -8,36 +8,118 @@
                 value="{{ filters.q if filters else request.args.get('q', '') }}"
                 placeholder="Szukaj pojazdu..."
             />
+
+            {% if filters and filters.type %}
+                <input type="hidden" name="type" value="{{ filters.type }}">
+            {% elif request.args.get('type') %}
+                <input type="hidden" name="type" value="{{ request.args.get('type') }}">
+            {% endif %}
+
+            {% if filters and filters.sort %}
+                <input type="hidden" name="sort" value="{{ filters.sort }}">
+            {% elif request.args.get('sort') %}
+                <input type="hidden" name="sort" value="{{ request.args.get('sort') }}">
+            {% endif %}
         </form>
 
         <div class="filters-group">
             <a
-                href="{{ url_for('main.dashboard', q=filters.q if filters else request.args.get('q', '')) }}"
+                href="{{ url_for('main.dashboard', q=filters.q if filters else request.args.get('q', ''), sort=filters.sort if filters else request.args.get('sort', '')) }}"
                 class="filter-chip {% if not (filters.type if filters else request.args.get('type')) %}active{% endif %}"
             >
-                Wszystkie <i class="bi bi-chevron-down"></i>
+                Wszystkie
             </a>
 
             <a
-                href="{{ url_for('main.dashboard', type='firmowe', q=filters.q if filters else request.args.get('q', '')) }}"
+                href="{{ url_for('main.dashboard', type='firmowe', q=filters.q if filters else request.args.get('q', ''), sort=filters.sort if filters else request.args.get('sort', '')) }}"
                 class="filter-chip {% if (filters.type if filters else request.args.get('type')) == 'firmowe' %}active{% endif %}"
             >
-                Firmowe <i class="bi bi-chevron-down"></i>
+                Firmowe
             </a>
 
             <a
-                href="{{ url_for('main.dashboard', type='leasing', q=filters.q if filters else request.args.get('q', '')) }}"
+                href="{{ url_for('main.dashboard', type='leasing', q=filters.q if filters else request.args.get('q', ''), sort=filters.sort if filters else request.args.get('sort', '')) }}"
                 class="filter-chip {% if (filters.type if filters else request.args.get('type')) == 'leasing' %}active{% endif %}"
             >
-                Leasing <i class="bi bi-chevron-down"></i>
+                Leasing
             </a>
 
             <a
-                href="{{ url_for('main.dashboard', type='prywatne', q=filters.q if filters else request.args.get('q', '')) }}"
+                href="{{ url_for('main.dashboard', type='prywatne', q=filters.q if filters else request.args.get('q', ''), sort=filters.sort if filters else request.args.get('sort', '')) }}"
                 class="filter-chip {% if (filters.type if filters else request.args.get('type')) == 'prywatne' %}active{% endif %}"
             >
-                Prywatne <i class="bi bi-chevron-down"></i>
+                Prywatne
             </a>
+        </div>
+
+        <div class="sort-dropdown" data-sort-dropdown>
+            <button type="button" class="sort-dropdown-toggle">
+                <span>
+                    {% set current_sort = filters.sort if filters else request.args.get('sort', '') %}
+                    {% if current_sort == 'brand_asc' %}
+                        Marka A–Z
+                    {% elif current_sort == 'brand_desc' %}
+                        Marka Z–A
+                    {% elif current_sort == 'registration_asc' %}
+                        Nr rej. A–Z
+                    {% elif current_sort == 'registration_desc' %}
+                        Nr rej. Z–A
+                    {% elif current_sort == 'oc_asc' %}
+                        Najbliższe OC
+                    {% elif current_sort == 'inspection_asc' %}
+                        Najbliższy przegląd
+                    {% elif current_sort == 'mileage_desc' %}
+                        Najwyższy przebieg
+                    {% elif current_sort == 'mileage_asc' %}
+                        Najniższy przebieg
+                    {% else %}
+                        Sortuj
+                    {% endif %}
+                </span>
+                <i class="bi bi-chevron-down"></i>
+            </button>
+
+            <div class="sort-dropdown-menu">
+                <a href="{{ url_for('main.dashboard', type=filters.type if filters else request.args.get('type', ''), q=filters.q if filters else request.args.get('q', ''), sort='brand_asc') }}"
+                   class="sort-dropdown-item {% if current_sort == 'brand_asc' %}active{% endif %}">
+                    Marka A–Z
+                </a>
+
+                <a href="{{ url_for('main.dashboard', type=filters.type if filters else request.args.get('type', ''), q=filters.q if filters else request.args.get('q', ''), sort='brand_desc') }}"
+                   class="sort-dropdown-item {% if current_sort == 'brand_desc' %}active{% endif %}">
+                    Marka Z–A
+                </a>
+
+                <a href="{{ url_for('main.dashboard', type=filters.type if filters else request.args.get('type', ''), q=filters.q if filters else request.args.get('q', ''), sort='registration_asc') }}"
+                   class="sort-dropdown-item {% if current_sort == 'registration_asc' %}active{% endif %}">
+                    Nr rej. A–Z
+                </a>
+
+                <a href="{{ url_for('main.dashboard', type=filters.type if filters else request.args.get('type', ''), q=filters.q if filters else request.args.get('q', ''), sort='registration_desc') }}"
+                   class="sort-dropdown-item {% if current_sort == 'registration_desc' %}active{% endif %}">
+                    Nr rej. Z–A
+                </a>
+
+                <a href="{{ url_for('main.dashboard', type=filters.type if filters else request.args.get('type', ''), q=filters.q if filters else request.args.get('q', ''), sort='oc_asc') }}"
+                   class="sort-dropdown-item {% if current_sort == 'oc_asc' %}active{% endif %}">
+                    Najbliższe OC
+                </a>
+
+                <a href="{{ url_for('main.dashboard', type=filters.type if filters else request.args.get('type', ''), q=filters.q if filters else request.args.get('q', ''), sort='inspection_asc') }}"
+                   class="sort-dropdown-item {% if current_sort == 'inspection_asc' %}active{% endif %}">
+                    Najbliższy przegląd
+                </a>
+
+                <a href="{{ url_for('main.dashboard', type=filters.type if filters else request.args.get('type', ''), q=filters.q if filters else request.args.get('q', ''), sort='mileage_desc') }}"
+                   class="sort-dropdown-item {% if current_sort == 'mileage_desc' %}active{% endif %}">
+                    Najwyższy przebieg
+                </a>
+
+                <a href="{{ url_for('main.dashboard', type=filters.type if filters else request.args.get('type', ''), q=filters.q if filters else request.args.get('q', ''), sort='mileage_asc') }}"
+                   class="sort-dropdown-item {% if current_sort == 'mileage_asc' %}active{% endif %}">
+                    Najniższy przebieg
+                </a>
+            </div>
         </div>
     </div>
 

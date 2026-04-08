@@ -97,6 +97,30 @@ document.addEventListener("DOMContentLoaded", function () {
         }
     });
 });
+
+document.addEventListener("DOMContentLoaded", function () {
+    const dropdowns = document.querySelectorAll("[data-sort-dropdown]");
+
+    dropdowns.forEach(dropdown => {
+        const button = dropdown.querySelector(".sort-dropdown-toggle");
+
+        button.addEventListener("click", function (e) {
+            e.stopPropagation();
+
+            dropdowns.forEach(item => {
+                if (item !== dropdown) {
+                    item.classList.remove("open");
+                }
+            });
+
+            dropdown.classList.toggle("open");
+        });
+    });
+
+    document.addEventListener("click", function () {
+        dropdowns.forEach(dropdown => dropdown.classList.remove("open"));
+    });
+});
 </script>
 
 <div class="confirm-modal" id="confirmModal" aria-hidden="true">
