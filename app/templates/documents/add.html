@@ -1,50 +1,133 @@
 {% extends "base.html" %}
+{% block title %}Fleet Lite – Dodaj dokument{% endblock %}
+
 {% block content %}
-
-<main class="page-wrap">
-    <div class="page-header">
-        <div>
-            <h2>Dodaj dokument</h2>
-            <div class="page-subtitle">{{ vehicle.name }} • {{ vehicle.registration }}</div>
+<main class="page-wrap vehicle-create-page document-create-page">
+    <div class="vehicle-create-header">
+        <div class="vehicle-create-breadcrumbs">
+            Pojazdy / {{ vehicle.display_name }} / Dokumenty / Dodaj dokument
         </div>
-
-        <a href="{{ url_for('vehicles.detail', vehicle_id=vehicle.id) }}" class="btn-secondary">
-            ← Wróć
-        </a>
+        <h1>Dodaj dokument</h1>
+        <p>Dodaj nowy dokument przypisany do pojazdu i uzupełnij jego podstawowe dane.</p>
     </div>
 
-    <form method="POST" enctype="multipart/form-data" class="form-card">
-        <div class="form-grid">
-            <div class="form-group">
-                <label for="name">Nazwa dokumentu</label>
-                <input type="text" id="name" name="name" required>
+    <div class="vehicle-create-layout">
+        <section class="vehicle-create-form-card document-create-card">
+            <form method="POST" enctype="multipart/form-data" class="vehicle-create-form">
+                <div class="vehicle-create-grid">
+                    <div class="form-group form-group-full">
+                        <label for="vehicle_preview">Pojazd</label>
+                        <input
+                            type="text"
+                            id="vehicle_preview"
+                            value="{{ vehicle.display_name }} ({{ vehicle.registration }})"
+                            class="form-control"
+                            disabled
+                        >
+                    </div>
+
+                    <div class="form-group">
+                        <label for="name">Nazwa dokumentu</label>
+                        <input
+                            type="text"
+                            id="name"
+                            name="name"
+                            class="form-control"
+                            placeholder="Np. Polisa OC, Dowód rejestracyjny, Umowa leasingu"
+                            required
+                        >
+                    </div>
+
+                    <div class="form-group">
+                        <label for="document_type">Typ dokumentu</label>
+                        <select id="document_type" name="document_type" class="form-control" required>
+                            <option value="">Wybierz typ dokumentu</option>
+                            <option value="Dowód rejestracyjny">Dowód rejestracyjny</option>
+                            <option value="Polisa OC">Polisa OC</option>
+                            <option value="AC">AC</option>
+                            <option value="Leasing">Leasing</option>
+                            <option value="Przegląd">Przegląd</option>
+                            <option value="Tachograf">Tachograf</option>
+                            <option value="Serwis">Serwis</option>
+                            <option value="Inne">Inne</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="expiry_date">Data ważności</label>
+                        <input
+                            type="date"
+                            id="expiry_date"
+                            name="expiry_date"
+                            class="form-control"
+                        >
+                    </div>
+
+                    <div class="form-group">
+                        <label for="file">Załącz plik</label>
+                        <input
+                            type="file"
+                            id="file"
+                            name="file"
+                            class="form-control"
+                            accept=".pdf,.jpg,.jpeg,.png,.webp,.doc,.docx"
+                        >
+                    </div>
+
+                    <div class="form-group form-group-full">
+                        <label for="notes">Notatki</label>
+                        <textarea
+                            id="notes"
+                            name="notes"
+                            class="form-control form-textarea"
+                            rows="5"
+                            placeholder="Dodatkowe informacje o dokumencie..."
+                        ></textarea>
+                    </div>
+                </div>
+
+                <div class="document-upload-box">
+                    <div class="document-upload-icon">
+                        <i class="bi bi-file-earmark-arrow-up"></i>
+                    </div>
+                    <div class="document-upload-content">
+                        <h3>Plik dokumentu</h3>
+                        <p>Możesz dodać skan, PDF albo zdjęcie dokumentu. Najlepiej w formacie PDF lub JPG/PNG.</p>
+                    </div>
+                </div>
+
+                <div class="vehicle-create-actions">
+                    <a href="{{ url_for('vehicles.detail', vehicle_id=vehicle.id) }}" class="btn-secondary">
+                        Anuluj
+                    </a>
+                    <button type="submit" class="btn-primary">
+                        Zapisz dokument
+                    </button>
+                </div>
+            </form>
+        </section>
+
+        <aside class="vehicle-create-tips">
+            <div class="vehicle-create-tips-head">
+                <i class="bi bi-lightbulb"></i>
+                <h3>Podpowiedzi</h3>
             </div>
 
-            <div class="form-group">
-                <label for="document_type">Typ dokumentu</label>
-                <select id="document_type" name="document_type" required>
-                    <option value="">Wybierz typ</option>
-                    <option value="oc_policy">Polisa OC</option>
-                    <option value="registration_certificate">Dowód rejestracyjny</option>
-                    <option value="inspection_document">Dokument przeglądu</option>
-                    <option value="lease_document">Dokument leasingowy</option>
-                    <option value="other">Inny</option>
-                </select>
+            <div class="vehicle-tip">
+                <i class="bi bi-folder2-open"></i>
+                <p>Nazwa dokumentu powinna być krótka i jednoznaczna, żeby łatwo było go później znaleźć.</p>
             </div>
 
-            <div class="form-group">
-                <label for="expiry_date">Data ważności</label>
-                <input type="text" id="expiry_date" name="expiry_date" class="js-date-picker" autocomplete="off">
+            <div class="vehicle-tip">
+                <i class="bi bi-calendar-check"></i>
+                <p>Dodanie daty ważności ułatwia monitorowanie terminów i późniejsze przypomnienia.</p>
             </div>
 
-            <div class="form-group">
-                <label for="file">Plik</label>
-                <input type="file" id="file" name="file" accept=".pdf,.jpg,.jpeg,.png,.webp">
+            <div class="vehicle-tip">
+                <i class="bi bi-paperclip"></i>
+                <p>Najwygodniej dodawać dokumenty w PDF, ale możesz też wrzucić zdjęcia lub skany.</p>
             </div>
-        </div>
-
-        <button type="submit" class="btn-primary">Zapisz dokument</button>
-    </form>
+        </aside>
+    </div>
 </main>
-
 {% endblock %}
