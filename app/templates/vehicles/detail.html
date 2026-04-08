@@ -31,7 +31,6 @@
                             <img src="{{ url_for('static', filename='img/car-placeholder.jpg') }}" alt="{{ vehicle.display_name }}">
                         {% endif %}
                     </div>
-
                     <div class="vehicle-documents-card">
                         <div class="vehicle-documents-head">
                             <h3>Dokumenty</h3>
@@ -44,8 +43,9 @@
                             <div class="vehicle-documents-list">
                                 {% for document in vehicle.documents %}
                                     <div class="vehicle-document-row">
-                                        <div>
-                                            <div class="vehicle-document-title">{{ document.name }}</div>
+                                        <div class="vehicle-document-main">
+                                            <div>
+                                                <div class="vehicle-document-title">{{ document.name }}</div>
                                                 <div class="vehicle-document-meta">
                                                     {% if document.expiry_date %}
                                                         Ważny do: {{ document.expiry_date.strftime('%d.%m.%Y') }}
@@ -53,21 +53,31 @@
                                                         Bez terminu ważności
                                                     {% endif %}
                                                 </div>
-                                        </div>
-                                        <div class="vehicle-document-side">
-                                            <div class="vehicle-document-date">
-                                                {% if document.expiry_date %}
-                                                    {{ document.expiry_date.strftime('%d.%m.%Y') }}
-                                                {% else %}
-                                                    Brak terminu
-                                                {% endif %}
                                             </div>
 
-                                            {% if document.file_path %}
-                                                <a href="{{ url_for('static', filename=document.file_path) }}" target="_blank" class="vehicle-document-link">
-                                                    Otwórz plik
-                                                </a>
-                                            {% endif %}
+                                            <div class="vehicle-document-side">
+                                                {% if document.file_path %}
+                                                    <a href="{{ url_for('static', filename=document.file_path) }}" target="_blank" class="vehicle-document-link">
+                                                        Otwórz plik
+                                                    </a>
+                                                {% endif %}
+                                            </div>
+                                        </div>
+
+                                        <div class="vehicle-document-actions">
+                                            <a href="{{ url_for('documents.edit_document', document_id=document.id) }}"
+                                               class="btn-ghost btn-sm">
+                                                Edytuj
+                                            </a>
+
+                                            <form method="POST"
+                                                  action="{{ url_for('documents.delete_document_route', document_id=document.id) }}"
+                                                  class="vehicle-document-delete-form"
+                                                  data-confirm="Na pewno usunąć ten dokument?">
+                                                <button type="submit" class="btn-ghost btn-ghost-danger btn-sm">
+                                                    Usuń
+                                                </button>
+                                            </form>
                                         </div>
                                     </div>
                                 {% endfor %}

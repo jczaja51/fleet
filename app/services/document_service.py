@@ -3,16 +3,13 @@ from __future__ import annotations
 from datetime import datetime
 
 from app import db
-from app.constants import ALLOWED_DOCUMENT_TYPES, DOCUMENT_TYPE_LABELS
 from app.models import Vehicle, VehicleDocument
 from app.services.storage_service import (
-    StorageError,
     delete_relative_static_file,
     save_document_file,
 )
 
 __all__ = [
-    "DOCUMENT_TYPE_LABELS",
     "DocumentValidationError",
     "parse_optional_date",
     "normalize_document_name",

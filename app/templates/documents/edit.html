@@ -1,53 +1,154 @@
 {% extends "base.html" %}
-{% block content %}
+{% block title %}Fleet Lite – Edytuj dokument{% endblock %}
 
-<main class="page-wrap">
-    <div class="page-header">
-        <div>
-            <h2>Edytuj dokument</h2>
-            <div class="page-subtitle">{{ vehicle.name }} • {{ vehicle.registration }}</div>
+{% block content %}
+<main class="page-wrap vehicle-create-page document-create-page">
+    <div class="vehicle-create-header">
+        <div class="vehicle-create-breadcrumbs">
+            <a href="{{ url_for('main.dashboard') }}">Pojazdy</a> /
+            <a href="{{ url_for('vehicles.detail', vehicle_id=vehicle.id) }}">{{ vehicle.display_name }}</a> /
+            Dokumenty / Edytuj dokument
         </div>
 
-        <a href="{{ url_for('vehicles.detail', vehicle_id=vehicle.id) }}" class="btn-secondary">
-            ← Wróć
-        </a>
+        <h1>Edytuj dokument</h1>
+        <p>Zmień dane dokumentu lub podmień plik.</p>
     </div>
 
-    <form method="POST" enctype="multipart/form-data" class="form-card">
-        <div class="form-grid">
-            <div class="form-group">
-                <label for="name">Nazwa dokumentu</label>
-                <input type="text" id="name" name="name" value="{{ document.name }}" required>
+    <div class="vehicle-create-layout">
+        <section class="vehicle-create-form-card document-create-card">
+            <form method="POST" enctype="multipart/form-data" class="vehicle-create-form">
+                <div class="vehicle-create-grid">
+
+                    <!-- POJAZD -->
+                    <div class="form-group form-group-full">
+                        <label>Pojazd</label>
+                        <input
+                            type="text"
+                            value="{{ vehicle.display_name }} ({{ vehicle.registration }})"
+                            class="form-control"
+                            disabled
+                        >
+                    </div>
+
+                    <!-- NAZWA -->
+                    <div class="form-group">
+                        <label for="name">Nazwa dokumentu</label>
+                        <input
+                            type="text"
+                            id="name"
+                            name="name"
+                            class="form-control"
+                            value="{{ document.name }}"
+                            required
+                        >
+                    </div>
+
+                    <!-- DATA -->
+                    <div class="form-group">
+                        <label for="expiry_date">Data ważności</label>
+                        <input
+                            type="date"
+                            id="expiry_date"
+                            name="expiry_date"
+                            class="form-control"
+                            value="{{ document.expiry_date.strftime('%Y-%m-%d') if document.expiry_date else '' }}"
+                        >
+                    </div>
+
+                    <!-- PLIK -->
+                    <div class="form-group">
+                        <label for="file">Podmień plik</label>
+                        <input
+                            type="file"
+                            id="file"
+                            name="file"
+                            class="form-control"
+                            accept=".pdf,.jpg,.jpeg,.png,.webp,.doc,.docx"
+                        >
+                    </div>
+
+                    <!-- AKTUALNY PLIK -->
+                    <div class="form-group form-group-full">
+                        <label>Obecny plik</label>
+
+                        {% if document.file_path %}
+                            <div class="document-current-file-inline">
+                                <span>
+                                    {{ document.original_filename if document.original_filename else "Plik dokumentu" }}
+                                </span>
+
+                                <a href="{{ url_for('static', filename=document.file_path) }}"
+                                   target="_blank"
+                                   class="inline-link">
+                                    Otwórz
+                                </a>
+                            </div>
+                        {% else %}
+                            <div class="document-current-file-inline empty">
+                                Brak pliku
+                            </div>
+                        {% endif %}
+                    </div>
+
+                    <!-- NOTATKI -->
+                    <div class="form-group form-group-full">
+                        <label for="notes">Notatki</label>
+                        <textarea
+                            id="notes"
+                            name="notes"
+                            class="form-control form-textarea"
+                            rows="5"
+                        >{{ document.notes or '' }}</textarea>
+                    </div>
+
+                </div>
+
+                <!-- BOX INFO -->
+                <div class="document-upload-box">
+                    <div class="document-upload-icon">
+                        <i class="bi bi-file-earmark-arrow-up"></i>
+                    </div>
+                    <div class="document-upload-content">
+                        <h3>Plik dokumentu</h3>
+                        <p>Możesz podmienić istniejący plik lub zostawić obecny.</p>
+                    </div>
+                </div>
+
+                <!-- BUTTONY -->
+                <div class="vehicle-create-actions">
+                    <a href="{{ url_for('vehicles.detail', vehicle_id=vehicle.id) }}" class="btn-secondary">
+                        Anuluj
+                    </a>
+
+                    <button type="submit" class="btn-primary">
+                        Zapisz zmiany
+                    </button>
+                </div>
+            </form>
+        </section>
+
+        <!-- PRAWA KOLUMNA -->
+        <aside class="vehicle-create-tips">
+            <div class="vehicle-create-tips-head">
+                <i class="bi bi-lightbulb"></i>
+                <h3>Podpowiedzi</h3>
             </div>
 
-            <div class="form-group">
-                <label for="expiry_date">Data ważności</label>
-                    <input
-                        type="text"
-                        id="expiry_date"
-                        name="expiry_date"
-                        class="js-date-picker"
-                        autocomplete="off"
-                        value="{{ document.expiry_date.strftime('%Y-%m-%d') if document.expiry_date else '' }}"
-                    >
+            <div class="vehicle-tip">
+                <i class="bi bi-pencil-square"></i>
+                <p>Możesz zmienić nazwę dokumentu bez zmiany pliku.</p>
             </div>
 
-            <div class="form-group">
-                <label for="file">Nowy plik</label>
-                <input type="file" id="file" name="file" accept=".pdf,.jpg,.jpeg,.png,.webp">
+            <div class="vehicle-tip">
+                <i class="bi bi-arrow-repeat"></i>
+                <p>Dodanie nowego pliku automatycznie nadpisze poprzedni.</p>
             </div>
-        </div>
 
-        {% if document.file_path %}
-            <div style="margin-bottom: 18px;">
-                <a href="{{ url_for('static', filename=document.file_path) }}" target="_blank" class="inline-link">
-                    Otwórz obecny plik
-                </a>
+            <div class="vehicle-tip">
+                <i class="bi bi-calendar-check"></i>
+                <p>Aktualizuj daty ważności, żeby system mógł pilnować terminów.</p>
             </div>
-        {% endif %}
-
-        <button type="submit" class="btn-primary">Zapisz zmiany</button>
-    </form>
+        </aside>
+    </div>
 </main>
-
 {% endblock %}

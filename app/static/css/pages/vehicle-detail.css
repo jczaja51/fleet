@@ -136,12 +136,18 @@
     border-top: 1px solid #edf2f7;
     display: flex;
     flex-direction: column;
-    gap: 10px;
+    gap: 12px;
 }
 
 .vehicle-document-row:first-child {
     border-top: 0;
     padding-top: 0;
+}
+
+.vehicle-document-main {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
 }
 
 .vehicle-document-title {
@@ -172,6 +178,16 @@
     color: #3a72e8;
     font-weight: 700;
     text-decoration: none;
+}
+
+.vehicle-document-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+}
+
+.vehicle-document-delete-form {
+    margin: 0;
 }
 
 .vehicle-details-title-row {
@@ -358,4 +374,20 @@
     .vehicle-details-side-panel {
         display: block;
     }
+}
+
+.document-current-file-inline {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 12px 14px;
+    border-radius: 12px;
+    background: #f6f8fc;
+    border: 1px solid #e2e8f0;
+    font-size: 14px;
+}
+
+.document-current-file-inline.empty {
+    justify-content: flex-start;
+    color: #8a97ad;
 }
