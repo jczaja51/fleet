@@ -46,9 +46,14 @@
                                     <div class="vehicle-document-row">
                                         <div>
                                             <div class="vehicle-document-title">{{ document.name }}</div>
-                                            <div class="vehicle-document-meta">{{ document.document_type }}</div>
+                                                <div class="vehicle-document-meta">
+                                                    {% if document.expiry_date %}
+                                                        Ważny do: {{ document.expiry_date.strftime('%d.%m.%Y') }}
+                                                    {% else %}
+                                                        Bez terminu ważności
+                                                    {% endif %}
+                                                </div>
                                         </div>
-
                                         <div class="vehicle-document-side">
                                             <div class="vehicle-document-date">
                                                 {% if document.expiry_date %}

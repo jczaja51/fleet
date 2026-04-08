@@ -21,17 +21,6 @@
             </div>
 
             <div class="form-group">
-                <label for="document_type">Typ dokumentu</label>
-                <select id="document_type" name="document_type" required>
-                    <option value="oc_policy" {% if document.document_type == "oc_policy" %}selected{% endif %}>Polisa OC</option>
-                    <option value="registration_certificate" {% if document.document_type == "registration_certificate" %}selected{% endif %}>Dowód rejestracyjny</option>
-                    <option value="inspection_document" {% if document.document_type == "inspection_document" %}selected{% endif %}>Dokument przeglądu</option>
-                    <option value="lease_document" {% if document.document_type == "lease_document" %}selected{% endif %}>Dokument leasingowy</option>
-                    <option value="other" {% if document.document_type == "other" %}selected{% endif %}>Inny</option>
-                </select>
-            </div>
-
-            <div class="form-group">
                 <label for="expiry_date">Data ważności</label>
                     <input
                         type="text"
