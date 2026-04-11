@@ -40,9 +40,9 @@
                             <label for="category">Kategoria <span class="field-required">*</span></label>
                             <select id="category" name="category" required>
                                 <option value="">— Wybierz —</option>
-                                <option value="Samochód osobowy do 3,5 t DMC" {% if vehicle.category == "Samochód osobowy do 3,5 t DMC" %}selected{% endif %}>Samochód osobowy do 3,5 t DMC</option>
-                                <option value="Samochód ciężarowy do 3,5 t DMC" {% if vehicle.category == "Samochód ciężarowy do 3,5 t DMC" %}selected{% endif %}>Samochód ciężarowy do 3,5 t DMC</option>
-                                <option value="Samochód ciężarowy powyżej 3,5 t DMC" {% if vehicle.category == "Samochód ciężarowy powyżej 3,5 t DMC" %}selected{% endif %}>Samochód ciężarowy powyżej 3,5 t DMC</option>
+                                <option value="Samochód osobowy do 3,5 t DMC" {% if vehicle.category == "Samochód osobowy do 3,5 t" %}selected{% endif %}>Samochód osobowy do 3,5 t</option>
+                                <option value="Samochód ciężarowy do 3,5 t DMC" {% if vehicle.category == "Samochód ciężarowy do 3,5 t" %}selected{% endif %}>Samochód ciężarowy do 3,5 t</option>
+                                <option value="Samochód ciężarowy powyżej 3,5 t DMC" {% if vehicle.category == "Samochód ciężarowy powyżej 3,5 t" %}selected{% endif %}>Samochód ciężarowy powyżej 3,5 t</option>
                                 <option value="Pojazd specjalny" {% if vehicle.category == "Pojazd specjalny" %}selected{% endif %}>Pojazd specjalny</option>
                                 <option value="Ciągnik siodłowy" {% if vehicle.category == "Ciągnik siodłowy" %}selected{% endif %}>Ciągnik siodłowy</option>
                                 <option value="Autobus" {% if vehicle.category == "Autobus" %}selected{% endif %}>Autobus</option>
@@ -139,7 +139,7 @@
                             {% if not vehicle.requires_tachograph %}disabled{% endif %}
                         >
                         <div class="field-helper-text" id="tachograph-helper">
-                            Dostępne tylko dla samochodów ciężarowych powyżej 3,5 t DMC oraz autobusów.
+                            Dostępne tylko dla samochodów ciężarowych powyżej 3,5 t oraz autobusów.
                         </div>
                     </div>
                 </section>

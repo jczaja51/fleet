@@ -129,3 +129,10 @@
 .btn-danger-solid:active {
     transform: translateY(0);
 }
+
+@media (max-width: 640px) {
+    .add-btn,
+    .btn-primary {
+        width: 100%;
+    }
+}

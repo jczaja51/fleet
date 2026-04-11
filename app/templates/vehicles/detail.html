@@ -114,9 +114,11 @@
 
                         <div class="vehicle-info-item vehicle-info-item-wide">
                             <span>Typ pojazdu</span>
-                            <strong>{{ vehicle.category or vehicle.type or '-' }}</strong>
-                        </div>
-
+                                <strong>
+                                    {{ (vehicle.category or vehicle.type or '-')
+                                        | replace(' DMC', '')
+                                        | replace('dmc', '') }}
+                                </strong>                        </div>
                         <div class="vehicle-info-item">
                             <span>Kategoria własności</span>
                             <strong>{{ vehicle.type or '-' }}</strong>

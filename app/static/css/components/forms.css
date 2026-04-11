@@ -226,3 +226,28 @@ span.flatpickr-weekday {
     border-color: #cfe0ff;
     background: #f6f9ff;
 }
+
+@media (max-width: 1080px) {
+    .edit-vehicle-layout,
+    .detail-grid,
+    .form-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+@media (max-width: 768px) {
+    .document-top,
+    .alert-item {
+        grid-template-columns: 1fr;
+    }
+
+    .document-side,
+    .alert-side {
+        text-align: left;
+        white-space: normal;
+    }
+
+    .document-actions {
+        justify-content: flex-start;
+    }
+}

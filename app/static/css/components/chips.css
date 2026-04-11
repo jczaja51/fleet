@@ -1,19 +1,19 @@
 .filter-chip {
-    height: 46px;
-    padding: 0 16px;
-    border: 1px solid transparent;
-    border-radius: 999px;
-    background: #f5f7fb;
-    color: #55657d;
-    font-size: 15px;
-    font-weight: 600;
     display: inline-flex;
     align-items: center;
     justify-content: center;
+    min-height: 42px;
+    padding: 0 18px;
+    border: 1px solid #e2e8f0;
+    border-radius: 999px;
+    background: #f3f6fb;
+    color: #4a5a75;
+    font-size: 15px;
+    font-weight: 600;
     gap: 8px;
     cursor: pointer;
     text-decoration: none;
-    transition: 0.2s ease;
+    transition: background 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease, color 0.2s ease;
     white-space: nowrap;
 }
 
@@ -23,15 +23,15 @@
 }
 
 .filter-chip:hover {
-    background: #eef3fb;
-    color: #32445f;
+    background: #eaf0fb;
+    color: #24324a;
 }
 
 .filter-chip.active {
     background: #ffffff;
-    border-color: #d7e4ff;
-    color: var(--blue);
-    box-shadow: 0 1px 0 rgba(40, 116, 234, 0.04), 0 8px 24px rgba(39, 63, 96, 0.06);
+    border-color: #cfd8e6;
+    box-shadow: 0 4px 14px rgba(42, 67, 113, 0.08);
+    color: #21314d;
 }
 
 .vehicle-type-chip {
@@ -58,7 +58,6 @@
     width: fit-content;
     min-height: 38px;
     padding: 0 12px;
-    margin-bottom: 16px;
     border-radius: 12px;
     background: #f4f7fb;
     border: 1px solid #ebeff5;
@@ -80,15 +79,16 @@
 }
 
 .filters-row {
-    display: grid;
-    grid-template-columns: minmax(0, 1fr) auto;
-    gap: 18px;
+    display: flex;
     align-items: center;
-    margin-bottom: 24px;
+    justify-content: space-between;
+    gap: 16px;
+    margin-bottom: 28px;
 }
 
 .filters-shell {
-    min-height: 72px;
+    flex: 1;
+    min-width: 0;
     display: flex;
     align-items: center;
     gap: 14px;
@@ -108,10 +108,110 @@
 }
 
 .btn-add-vehicle {
+    flex-shrink: 0;
     min-height: 56px;
     padding: 0 22px;
     border-radius: 16px;
     display: inline-flex;
     align-items: center;
     gap: 10px;
+}
+
+.sort-dropdown {
+    position: relative;
+}
+
+.sort-dropdown-toggle {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    min-height: 42px;
+    padding: 0 18px;
+    border: 1px solid #e2e8f0;
+    border-radius: 999px;
+    background: #f3f6fb;
+    color: #4a5a75;
+    font-weight: 700;
+    cursor: pointer;
+    transition: background 0.2s ease, color 0.2s ease;
+}
+
+.sort-dropdown-toggle:hover {
+    background: #eaf0fb;
+    color: #24324a;
+}
+
+.sort-dropdown-menu {
+    position: absolute;
+    top: calc(100% + 10px);
+    left: 0;
+    min-width: 230px;
+    padding: 10px;
+    display: none;
+    z-index: 50;
+    background: #ffffff;
+    border: 1px solid #e2e8f0;
+    border-radius: 18px;
+    box-shadow: 0 18px 40px rgba(31, 45, 90, 0.12);
+}
+
+.sort-dropdown.open .sort-dropdown-menu {
+    display: block;
+}
+
+.sort-dropdown-item {
+    display: flex;
+    align-items: center;
+    min-height: 42px;
+    padding: 0 14px;
+    border-radius: 12px;
+    color: #33425f;
+    text-decoration: none;
+    font-weight: 600;
+    transition: background 0.2s ease, color 0.2s ease;
+}
+
+.sort-dropdown-item:hover {
+    background: #f5f8fd;
+    color: #1f3050;
+}
+
+.sort-dropdown-item.active {
+    background: #eef4ff;
+    color: #2e63e6;
+}
+
+@media (max-width: 1100px) {
+    .filters-row {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .btn-add-vehicle {
+        width: 100%;
+        justify-content: center;
+    }
+}
+
+@media (max-width: 760px) {
+    .filters-shell {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .filters-group,
+    .sort-dropdown {
+        width: 100%;
+    }
+
+    .sort-dropdown-toggle {
+        width: 100%;
+        justify-content: space-between;
+    }
+
+    .sort-dropdown-menu {
+        left: 0;
+        right: 0;
+        min-width: 100%;
+    }
 }
