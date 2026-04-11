@@ -5,11 +5,13 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>{% block title %}Fleet Lite{% endblock %}</title>
 
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap">
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/themes/airbnb.css">
-<link rel="stylesheet" href="{{ url_for('static', filename='css/main.css') }}">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/themes/airbnb.css">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/main.css') }}">
+
+    <script src="https://unpkg.com/htmx.org@2.0.4"></script>
 
     {% block head %}{% endblock %}
 </head>
@@ -35,109 +37,130 @@
         </main>
     </div>
 
-<script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
-<script src="https://cdn.jsdelivr.net/npm/flatpickr/dist/l10n/pl.js"></script>
-<script>
-    document.addEventListener("DOMContentLoaded", function () {
-        flatpickr(".js-date-picker", {
-            locale: "pl",
-            dateFormat: "Y-m-d",
-            altInput: true,
-            altFormat: "d.m.Y",
-            allowInput: false
+    <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+    <script src="https://cdn.jsdelivr.net/npm/flatpickr/dist/l10n/pl.js"></script>
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            flatpickr(".js-date-picker", {
+                locale: "pl",
+                dateFormat: "Y-m-d",
+                altInput: true,
+                altFormat: "d.m.Y",
+                allowInput: false
+            });
         });
-    });
 
-document.addEventListener("DOMContentLoaded", function () {
-    const modal = document.getElementById("confirmModal");
-    const modalText = document.getElementById("confirmModalText");
-    const cancelBtn = document.getElementById("confirmModalCancel");
-    const acceptBtn = document.getElementById("confirmModalAccept");
-    let activeForm = null;
+        document.addEventListener("DOMContentLoaded", function () {
+            const modal = document.getElementById("confirmModal");
+            const modalText = document.getElementById("confirmModalText");
+            const cancelBtn = document.getElementById("confirmModalCancel");
+            const acceptBtn = document.getElementById("confirmModalAccept");
+            let activeForm = null;
 
-    function openConfirm(form, message) {
-        activeForm = form;
-        modalText.textContent = message || "Czy na pewno chcesz usunąć ten element?";
-        modal.classList.add("is-open");
-        modal.setAttribute("aria-hidden", "false");
-        document.body.classList.add("modal-open");
-    }
+            function openConfirm(form, message) {
+                activeForm = form;
+                modalText.textContent = message || "Czy na pewno chcesz usunąć ten element?";
+                modal.classList.add("is-open");
+                modal.setAttribute("aria-hidden", "false");
+                document.body.classList.add("modal-open");
+            }
 
-    function closeConfirm() {
-        activeForm = null;
-        modal.classList.remove("is-open");
-        modal.setAttribute("aria-hidden", "true");
-        document.body.classList.remove("modal-open");
-    }
+            function closeConfirm() {
+                activeForm = null;
+                modal.classList.remove("is-open");
+                modal.setAttribute("aria-hidden", "true");
+                document.body.classList.remove("modal-open");
+            }
 
-    document.querySelectorAll("form[data-confirm]").forEach((form) => {
-        form.addEventListener("submit", function (event) {
-            event.preventDefault();
-            openConfirm(form, form.dataset.confirm);
-        });
-    });
+            document.addEventListener("submit", function (event) {
+                const form = event.target;
 
-    acceptBtn.addEventListener("click", function () {
-        if (activeForm) {
-            const form = activeForm;
-            closeConfirm();
-            form.submit();
-        }
-    });
+                if (!form.matches("form[data-confirm]")) {
+                    return;
+                }
 
-    cancelBtn.addEventListener("click", closeConfirm);
+                if (form.dataset.confirmApproved === "true") {
+                    form.dataset.confirmApproved = "false";
+                    return;
+                }
 
-    modal.querySelectorAll("[data-confirm-close]").forEach((el) => {
-        el.addEventListener("click", closeConfirm);
-    });
+                event.preventDefault();
+                openConfirm(form, form.dataset.confirm);
+            });
 
-    document.addEventListener("keydown", function (event) {
-        if (event.key === "Escape" && modal.classList.contains("is-open")) {
-            closeConfirm();
-        }
-    });
-});
-
-document.addEventListener("DOMContentLoaded", function () {
-    const dropdowns = document.querySelectorAll("[data-sort-dropdown]");
-
-    dropdowns.forEach(dropdown => {
-        const button = dropdown.querySelector(".sort-dropdown-toggle");
-
-        button.addEventListener("click", function (e) {
-            e.stopPropagation();
-
-            dropdowns.forEach(item => {
-                if (item !== dropdown) {
-                    item.classList.remove("open");
+            acceptBtn.addEventListener("click", function () {
+                if (activeForm) {
+                    const form = activeForm;
+                    form.dataset.confirmApproved = "true";
+                    closeConfirm();
+                    form.requestSubmit();
                 }
             });
 
-            dropdown.classList.toggle("open");
+            cancelBtn.addEventListener("click", closeConfirm);
+
+            modal.querySelectorAll("[data-confirm-close]").forEach((el) => {
+                el.addEventListener("click", closeConfirm);
+            });
+
+            document.addEventListener("keydown", function (event) {
+                if (event.key === "Escape" && modal.classList.contains("is-open")) {
+                    closeConfirm();
+                }
+            });
         });
-    });
 
-    document.addEventListener("click", function () {
-        dropdowns.forEach(dropdown => dropdown.classList.remove("open"));
-    });
-});
-</script>
+        document.addEventListener("DOMContentLoaded", function () {
+            document.addEventListener("click", function (event) {
+                const toggle = event.target.closest(".sort-dropdown-toggle");
 
-<div class="confirm-modal" id="confirmModal" aria-hidden="true">
-    <div class="confirm-modal-backdrop" data-confirm-close></div>
+                if (toggle) {
+                    const dropdown = toggle.closest("[data-sort-dropdown]");
+                    const allDropdowns = document.querySelectorAll("[data-sort-dropdown]");
 
-    <div class="confirm-modal-dialog" role="dialog" aria-modal="true" aria-labelledby="confirmModalTitle">
-        <div class="confirm-modal-head">
-            <h3 id="confirmModalTitle">Potwierdzenie</h3>
-            <p id="confirmModalText">Czy na pewno chcesz usunąć ten element?</p>
-        </div>
+                    event.preventDefault();
+                    event.stopPropagation();
 
-        <div class="confirm-modal-actions">
-            <button type="button" class="btn-secondary" id="confirmModalCancel">Anuluj</button>
-            <button type="button" class="btn-danger-solid" id="confirmModalAccept">Usuń</button>
+                    allDropdowns.forEach((item) => {
+                        if (item !== dropdown) {
+                            item.classList.remove("open");
+                        }
+                    });
+
+                    dropdown.classList.toggle("open");
+                    return;
+                }
+
+                if (!event.target.closest("[data-sort-dropdown]")) {
+                    document.querySelectorAll("[data-sort-dropdown]").forEach((dropdown) => {
+                        dropdown.classList.remove("open");
+                    });
+                }
+            });
+
+            document.body.addEventListener("htmx:afterSwap", function () {
+                document.querySelectorAll("[data-sort-dropdown]").forEach((dropdown) => {
+                    dropdown.classList.remove("open");
+                });
+            });
+        });
+    </script>
+
+    <div class="confirm-modal" id="confirmModal" aria-hidden="true">
+        <div class="confirm-modal-backdrop" data-confirm-close></div>
+
+        <div class="confirm-modal-dialog" role="dialog" aria-modal="true" aria-labelledby="confirmModalTitle">
+            <div class="confirm-modal-head">
+                <h3 id="confirmModalTitle">Potwierdzenie</h3>
+                <p id="confirmModalText">Czy na pewno chcesz usunąć ten element?</p>
+            </div>
+
+            <div class="confirm-modal-actions">
+                <button type="button" class="btn-secondary" id="confirmModalCancel">Anuluj</button>
+                <button type="button" class="btn-danger-solid" id="confirmModalAccept">Usuń</button>
+            </div>
         </div>
     </div>
-</div>
-{% block scripts %}{% endblock %}
+    {% block scripts %}{% endblock %}
 </body>
 </html>

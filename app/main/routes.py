@@ -1,7 +1,7 @@
 from flask import Blueprint, render_template, request
-from sqlalchemy import or_, case
+from sqlalchemy import case, or_
 
-from app.models import Vehicle, Alert, FuelCard, VehicleDocument
+from app.models import Alert, FuelCard, Vehicle, VehicleDocument
 from app.services.alert_service import refresh_all_alerts
 from app.utils import calculate_status
 
@@ -152,7 +152,6 @@ def dashboard():
     vehicles = vehicles_query.all()
 
     alerts = Alert.query.order_by(Alert.date.asc()).all()
-    fuel_cards = FuelCard.query.all()
     latest_documents = (
         VehicleDocument.query
         .order_by(VehicleDocument.created_at.desc())
@@ -171,15 +170,19 @@ def dashboard():
         "danger_alerts": Alert.query.filter_by(level="danger").count(),
     }
 
-    return render_template(
-        "main/dashboard.html",
-        vehicles=vehicles,
-        alerts=alerts[:6],
-        latest_documents=latest_documents,
-        stats=stats,
-        filters={
+    context = {
+        "vehicles": vehicles,
+        "alerts": alerts[:6],
+        "latest_documents": latest_documents,
+        "stats": stats,
+        "filters": {
             "q": q,
             "type": selected_type,
             "sort": selected_sort,
         },
-    )
+    }
+
+    if request.headers.get("HX-Request") == "true":
+        return render_template("partials/dashboard_content.html", **context)
+
+    return render_template("main/dashboard.html", **context)

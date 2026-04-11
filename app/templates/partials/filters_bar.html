@@ -1,52 +1,73 @@
+{% set current_q = filters.q if filters else request.args.get('q', '') %}
+{% set current_type = filters.type if filters else request.args.get('type', '') %}
+{% set current_sort = filters.sort if filters else request.args.get('sort', '') %}
+
 <section class="filters-row">
     <div class="filters-shell">
-        <form method="GET" action="{{ url_for('main.dashboard') }}" class="search-box search-box-inline">
+        <form
+            method="GET"
+            action="{{ url_for('main.dashboard') }}"
+            class="search-box search-box-inline"
+            hx-get="{{ url_for('main.dashboard') }}"
+            hx-trigger="keyup changed delay:300ms from:input[name='q']"
+            hx-target="#dashboard-content"
+            hx-swap="outerHTML"
+            hx-push-url="true"
+        >
             <i class="bi bi-search"></i>
             <input
                 type="text"
                 name="q"
-                value="{{ filters.q if filters else request.args.get('q', '') }}"
+                value="{{ current_q }}"
                 placeholder="Szukaj pojazdu..."
+                autocomplete="off"
             />
 
-            {% if filters and filters.type %}
-                <input type="hidden" name="type" value="{{ filters.type }}">
-            {% elif request.args.get('type') %}
-                <input type="hidden" name="type" value="{{ request.args.get('type') }}">
-            {% endif %}
-
-            {% if filters and filters.sort %}
-                <input type="hidden" name="sort" value="{{ filters.sort }}">
-            {% elif request.args.get('sort') %}
-                <input type="hidden" name="sort" value="{{ request.args.get('sort') }}">
-            {% endif %}
+            <input type="hidden" name="type" value="{{ current_type }}" />
+            <input type="hidden" name="sort" value="{{ current_sort }}" />
         </form>
 
         <div class="filters-group">
             <a
-                href="{{ url_for('main.dashboard', q=filters.q if filters else request.args.get('q', ''), sort=filters.sort if filters else request.args.get('sort', '')) }}"
-                class="filter-chip {% if not (filters.type if filters else request.args.get('type')) %}active{% endif %}"
+                href="{{ url_for('main.dashboard', q=current_q, sort=current_sort) }}"
+                class="filter-chip {% if not current_type %}active{% endif %}"
+                hx-get="{{ url_for('main.dashboard', q=current_q, sort=current_sort) }}"
+                hx-target="#dashboard-content"
+                hx-swap="outerHTML"
+                hx-push-url="true"
             >
                 Wszystkie
             </a>
 
             <a
-                href="{{ url_for('main.dashboard', type='firmowe', q=filters.q if filters else request.args.get('q', ''), sort=filters.sort if filters else request.args.get('sort', '')) }}"
-                class="filter-chip {% if (filters.type if filters else request.args.get('type')) == 'firmowe' %}active{% endif %}"
+                href="{{ url_for('main.dashboard', type='firmowe', q=current_q, sort=current_sort) }}"
+                class="filter-chip {% if current_type == 'firmowe' %}active{% endif %}"
+                hx-get="{{ url_for('main.dashboard', type='firmowe', q=current_q, sort=current_sort) }}"
+                hx-target="#dashboard-content"
+                hx-swap="outerHTML"
+                hx-push-url="true"
             >
                 Firmowe
             </a>
 
             <a
-                href="{{ url_for('main.dashboard', type='leasing', q=filters.q if filters else request.args.get('q', ''), sort=filters.sort if filters else request.args.get('sort', '')) }}"
-                class="filter-chip {% if (filters.type if filters else request.args.get('type')) == 'leasing' %}active{% endif %}"
+                href="{{ url_for('main.dashboard', type='leasing', q=current_q, sort=current_sort) }}"
+                class="filter-chip {% if current_type == 'leasing' %}active{% endif %}"
+                hx-get="{{ url_for('main.dashboard', type='leasing', q=current_q, sort=current_sort) }}"
+                hx-target="#dashboard-content"
+                hx-swap="outerHTML"
+                hx-push-url="true"
             >
                 Leasing
             </a>
 
             <a
-                href="{{ url_for('main.dashboard', type='prywatne', q=filters.q if filters else request.args.get('q', ''), sort=filters.sort if filters else request.args.get('sort', '')) }}"
-                class="filter-chip {% if (filters.type if filters else request.args.get('type')) == 'prywatne' %}active{% endif %}"
+                href="{{ url_for('main.dashboard', type='prywatne', q=current_q, sort=current_sort) }}"
+                class="filter-chip {% if current_type == 'prywatne' %}active{% endif %}"
+                hx-get="{{ url_for('main.dashboard', type='prywatne', q=current_q, sort=current_sort) }}"
+                hx-target="#dashboard-content"
+                hx-swap="outerHTML"
+                hx-push-url="true"
             >
                 Prywatne
             </a>
@@ -55,7 +76,6 @@
         <div class="sort-dropdown" data-sort-dropdown>
             <button type="button" class="sort-dropdown-toggle">
                 <span>
-                    {% set current_sort = filters.sort if filters else request.args.get('sort', '') %}
                     {% if current_sort == 'brand_asc' %}
                         Marka A–Z
                     {% elif current_sort == 'brand_desc' %}
@@ -80,43 +100,91 @@
             </button>
 
             <div class="sort-dropdown-menu">
-                <a href="{{ url_for('main.dashboard', type=filters.type if filters else request.args.get('type', ''), q=filters.q if filters else request.args.get('q', ''), sort='brand_asc') }}"
-                   class="sort-dropdown-item {% if current_sort == 'brand_asc' %}active{% endif %}">
+                <a
+                    href="{{ url_for('main.dashboard', type=current_type, q=current_q, sort='brand_asc') }}"
+                    class="sort-dropdown-item {% if current_sort == 'brand_asc' %}active{% endif %}"
+                    hx-get="{{ url_for('main.dashboard', type=current_type, q=current_q, sort='brand_asc') }}"
+                    hx-target="#dashboard-content"
+                    hx-swap="outerHTML"
+                    hx-push-url="true"
+                >
                     Marka A–Z
                 </a>
 
-                <a href="{{ url_for('main.dashboard', type=filters.type if filters else request.args.get('type', ''), q=filters.q if filters else request.args.get('q', ''), sort='brand_desc') }}"
-                   class="sort-dropdown-item {% if current_sort == 'brand_desc' %}active{% endif %}">
+                <a
+                    href="{{ url_for('main.dashboard', type=current_type, q=current_q, sort='brand_desc') }}"
+                    class="sort-dropdown-item {% if current_sort == 'brand_desc' %}active{% endif %}"
+                    hx-get="{{ url_for('main.dashboard', type=current_type, q=current_q, sort='brand_desc') }}"
+                    hx-target="#dashboard-content"
+                    hx-swap="outerHTML"
+                    hx-push-url="true"
+                >
                     Marka Z–A
                 </a>
 
-                <a href="{{ url_for('main.dashboard', type=filters.type if filters else request.args.get('type', ''), q=filters.q if filters else request.args.get('q', ''), sort='registration_asc') }}"
-                   class="sort-dropdown-item {% if current_sort == 'registration_asc' %}active{% endif %}">
+                <a
+                    href="{{ url_for('main.dashboard', type=current_type, q=current_q, sort='registration_asc') }}"
+                    class="sort-dropdown-item {% if current_sort == 'registration_asc' %}active{% endif %}"
+                    hx-get="{{ url_for('main.dashboard', type=current_type, q=current_q, sort='registration_asc') }}"
+                    hx-target="#dashboard-content"
+                    hx-swap="outerHTML"
+                    hx-push-url="true"
+                >
                     Nr rej. A–Z
                 </a>
 
-                <a href="{{ url_for('main.dashboard', type=filters.type if filters else request.args.get('type', ''), q=filters.q if filters else request.args.get('q', ''), sort='registration_desc') }}"
-                   class="sort-dropdown-item {% if current_sort == 'registration_desc' %}active{% endif %}">
+                <a
+                    href="{{ url_for('main.dashboard', type=current_type, q=current_q, sort='registration_desc') }}"
+                    class="sort-dropdown-item {% if current_sort == 'registration_desc' %}active{% endif %}"
+                    hx-get="{{ url_for('main.dashboard', type=current_type, q=current_q, sort='registration_desc') }}"
+                    hx-target="#dashboard-content"
+                    hx-swap="outerHTML"
+                    hx-push-url="true"
+                >
                     Nr rej. Z–A
                 </a>
 
-                <a href="{{ url_for('main.dashboard', type=filters.type if filters else request.args.get('type', ''), q=filters.q if filters else request.args.get('q', ''), sort='oc_asc') }}"
-                   class="sort-dropdown-item {% if current_sort == 'oc_asc' %}active{% endif %}">
+                <a
+                    href="{{ url_for('main.dashboard', type=current_type, q=current_q, sort='oc_asc') }}"
+                    class="sort-dropdown-item {% if current_sort == 'oc_asc' %}active{% endif %}"
+                    hx-get="{{ url_for('main.dashboard', type=current_type, q=current_q, sort='oc_asc') }}"
+                    hx-target="#dashboard-content"
+                    hx-swap="outerHTML"
+                    hx-push-url="true"
+                >
                     Najbliższe OC
                 </a>
 
-                <a href="{{ url_for('main.dashboard', type=filters.type if filters else request.args.get('type', ''), q=filters.q if filters else request.args.get('q', ''), sort='inspection_asc') }}"
-                   class="sort-dropdown-item {% if current_sort == 'inspection_asc' %}active{% endif %}">
+                <a
+                    href="{{ url_for('main.dashboard', type=current_type, q=current_q, sort='inspection_asc') }}"
+                    class="sort-dropdown-item {% if current_sort == 'inspection_asc' %}active{% endif %}"
+                    hx-get="{{ url_for('main.dashboard', type=current_type, q=current_q, sort='inspection_asc') }}"
+                    hx-target="#dashboard-content"
+                    hx-swap="outerHTML"
+                    hx-push-url="true"
+                >
                     Najbliższy przegląd
                 </a>
 
-                <a href="{{ url_for('main.dashboard', type=filters.type if filters else request.args.get('type', ''), q=filters.q if filters else request.args.get('q', ''), sort='mileage_desc') }}"
-                   class="sort-dropdown-item {% if current_sort == 'mileage_desc' %}active{% endif %}">
+                <a
+                    href="{{ url_for('main.dashboard', type=current_type, q=current_q, sort='mileage_desc') }}"
+                    class="sort-dropdown-item {% if current_sort == 'mileage_desc' %}active{% endif %}"
+                    hx-get="{{ url_for('main.dashboard', type=current_type, q=current_q, sort='mileage_desc') }}"
+                    hx-target="#dashboard-content"
+                    hx-swap="outerHTML"
+                    hx-push-url="true"
+                >
                     Najwyższy przebieg
                 </a>
 
-                <a href="{{ url_for('main.dashboard', type=filters.type if filters else request.args.get('type', ''), q=filters.q if filters else request.args.get('q', ''), sort='mileage_asc') }}"
-                   class="sort-dropdown-item {% if current_sort == 'mileage_asc' %}active{% endif %}">
+                <a
+                    href="{{ url_for('main.dashboard', type=current_type, q=current_q, sort='mileage_asc') }}"
+                    class="sort-dropdown-item {% if current_sort == 'mileage_asc' %}active{% endif %}"
+                    hx-get="{{ url_for('main.dashboard', type=current_type, q=current_q, sort='mileage_asc') }}"
+                    hx-target="#dashboard-content"
+                    hx-swap="outerHTML"
+                    hx-push-url="true"
+                >
                     Najniższy przebieg
                 </a>
             </div>

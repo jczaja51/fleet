@@ -3,24 +3,10 @@
 
 {% block content %}
     {% include "partials/stats_cards.html" %}
-    {% include "partials/filters_bar.html" %}
 
-    {% if vehicles %}
-        <section class="vehicles-grid">
-            {% for vehicle in vehicles %}
-                {% include "partials/vehicle_card.html" %}
-            {% endfor %}
-        </section>
-    {% else %}
-        {% with
-            title="Brak pojazdów",
-            text="Nie znaleziono pojazdów dla podanych filtrów.",
-            action_url=url_for('vehicles.add_vehicle'),
-            action_label="Dodaj pojazd"
-        %}
-            {% include "partials/empty_state.html" %}
-        {% endwith %}
-    {% endif %}
+    <div id="dashboard-content">
+        {% include "partials/dashboard_content.html" %}
+    </div>
 
     <section class="dashboard-bottom-grid">
         <div class="dashboard-panel">
