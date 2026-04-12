@@ -45,7 +45,7 @@ def create_document_for_vehicle(vehicle: Vehicle, form, uploaded_file) -> Vehicl
     original_filename = None
 
     if uploaded_file and uploaded_file.filename:
-        file_path, original_filename = save_document_file(uploaded_file, vehicle.id)
+        file_path, original_filename = save_document_file(uploaded_file, vehicle.registration)
 
     document = VehicleDocument(
         name=normalize_document_name(form.get("name")),
@@ -66,7 +66,7 @@ def update_document(document: VehicleDocument, form, uploaded_file) -> VehicleDo
     document.notes = normalize_notes(form.get("notes"))
 
     if uploaded_file and uploaded_file.filename:
-        new_path, original_filename = save_document_file(uploaded_file, document.vehicle_id)
+        new_path, original_filename = save_document_file(uploaded_file, document.vehicle.registration)
         delete_relative_static_file(document.file_path)
         document.file_path = new_path
         document.original_filename = original_filename

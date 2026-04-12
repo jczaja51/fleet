@@ -3,7 +3,7 @@ from datetime import datetime
 from sqlalchemy import event
 
 from app import db
-from app.services.storage_service import delete_relative_static_file
+from app.services.storage_service import delete_relative_static_file, delete_vehicle_storage_dir
 
 
 class Vehicle(db.Model):
@@ -136,7 +136,6 @@ class VehicleDocument(db.Model):
     file_path = db.Column(db.String(255), nullable=True)
     original_filename = db.Column(db.String(255), nullable=True)
     notes = db.Column(db.Text, nullable=True)
-    expiry_date = db.Column(db.Date, nullable=True)
 
     vehicle_id = db.Column(db.Integer, db.ForeignKey("vehicles.id", ondelete="CASCADE"), nullable=False, index=True)
 
@@ -157,5 +156,6 @@ def cleanup_document_file(mapper, connection, target):
 
 
 @event.listens_for(Vehicle, "after_delete")
-def cleanup_vehicle_image(mapper, connection, target):
+def cleanup_vehicle_storage(mapper, connection, target):
     delete_relative_static_file(target.image)
+    delete_vehicle_storage_dir(target.registration)

@@ -8,7 +8,9 @@ from app.models import Vehicle
 from app.services.storage_service import (
     StorageError,
     delete_relative_static_file,
+    move_vehicle_storage_dir,
     save_vehicle_image,
+    update_vehicle_file_references,
 )
 
 vehicles_bp = Blueprint("vehicles", __name__, url_prefix="/vehicles")
@@ -56,7 +58,7 @@ def add_vehicle():
         uploaded_image = request.files.get("image")
         if uploaded_image and uploaded_image.filename:
             try:
-                image_path = save_vehicle_image(uploaded_image)
+                image_path = save_vehicle_image(uploaded_image, registration)
             except StorageError as exc:
                 flash(str(exc), "error")
                 return render_template("vehicles/create.html")
@@ -106,7 +108,9 @@ def edit_vehicle(vehicle_id):
     vehicle = Vehicle.query.get_or_404(vehicle_id)
 
     if request.method == "POST":
+        old_registration = vehicle.registration
         registration = request.form.get("registration", "").strip().upper()
+
         if not registration:
             flash("Numer rejestracyjny jest wymagany.", "error")
             return render_template("vehicles/edit.html", vehicle=vehicle)
@@ -131,10 +135,21 @@ def edit_vehicle(vehicle_id):
             else None
         )
 
+        registration_changed = old_registration != registration
+
+        if registration_changed:
+            try:
+                move_vehicle_storage_dir(old_registration, registration)
+                update_vehicle_file_references(vehicle, old_registration, registration)
+            except StorageError as exc:
+                flash(str(exc), "error")
+                vehicle.registration = old_registration
+                return render_template("vehicles/edit.html", vehicle=vehicle)
+
         uploaded_image = request.files.get("image")
         if uploaded_image and uploaded_image.filename:
             try:
-                new_image_path = save_vehicle_image(uploaded_image)
+                new_image_path = save_vehicle_image(uploaded_image, registration)
             except StorageError as exc:
                 flash(str(exc), "error")
                 return render_template("vehicles/edit.html", vehicle=vehicle)
