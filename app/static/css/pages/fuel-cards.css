@@ -1,118 +1,408 @@
+.fuel-cards-page {
+    padding: 24px;
+}
+
+.fuel-cards-topbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    margin-bottom: 24px;
+    flex-wrap: wrap;
+}
+
+.fuel-cards-title {
+    margin: 0;
+    font-size: 2.2rem;
+    font-weight: 800;
+    color: #1e293b;
+}
+
+.fuel-cards-subtitle {
+    margin: 6px 0 0;
+    color: #64748b;
+    font-size: 1rem;
+}
+
+.fuel-add-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 12px 18px;
+    border-radius: 16px;
+    background: linear-gradient(135deg, #2563eb, #1d4ed8);
+    color: #fff;
+    text-decoration: none;
+    font-weight: 700;
+    box-shadow: 0 10px 22px rgba(37, 99, 235, 0.22);
+    transition: transform 0.18s ease, box-shadow 0.18s ease;
+}
+
+.fuel-add-btn:hover {
+    color: #fff;
+    transform: translateY(-2px);
+    box-shadow: 0 16px 28px rgba(37, 99, 235, 0.28);
+}
+
+.fuel-cards-layout {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 430px;
+    gap: 22px;
+    align-items: start;
+}
+
 .fuel-cards-grid {
     display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 24px;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 18px;
+    align-items: start;
 }
 
-.fuel-card {
-    background: #fff;
-    border-radius: 20px;
-    padding: 20px;
-    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.06);
+.fuel-card-tile {
+    border: 0;
+    background: transparent;
+    padding: 0;
+    text-align: left;
+    cursor: pointer;
+    width: 100%;
 }
 
-.fuel-card-top {
-    display: flex;
-    justify-content: space-between;
-    gap: 12px;
-    margin-bottom: 16px;
+.fuel-card-tile.active .fuel-card-visual {
+    transform: translateY(-2px);
+    box-shadow: 0 20px 36px rgba(15, 23, 42, 0.18);
+    outline: 3px solid rgba(37, 99, 235, 0.18);
 }
 
-.fuel-card h3 {
-    margin: 0;
+.fuel-card-visual {
+    position: relative;
+    width: 100%;
+    aspect-ratio: 1.58 / 1;
+    border-radius: 22px;
+    overflow: hidden;
+    padding: 16px;
+    background:
+        radial-gradient(circle at top left, rgba(255,255,255,0.18), transparent 28%),
+        radial-gradient(circle at bottom right, rgba(255,255,255,0.10), transparent 24%),
+        linear-gradient(135deg, #0f172a, #1d4ed8 58%, #60a5fa);
+    color: #fff;
+    box-shadow: 0 14px 30px rgba(15, 23, 42, 0.12);
+    transition: transform 0.18s ease, box-shadow 0.18s ease;
 }
 
-.fuel-vehicle {
-    font-size: 13px;
-    color: #7c8aa0;
+.fuel-card-tile:hover .fuel-card-visual {
+    transform: translateY(-4px);
+    box-shadow: 0 20px 36px rgba(15, 23, 42, 0.16);
 }
 
-.fuel-details div {
-    margin-bottom: 6px;
+.fuel-card-visual.large {
+    max-width: 100%;
 }
 
-.fuel-row {
-    min-height: 66px;
-    padding: 8px 0;
-    border-top: 1px solid #edf1f6;
+.fuel-card-chip {
+    position: absolute;
+    top: 16px;
+    left: 16px;
+    width: 38px;
+    height: 28px;
+    border-radius: 8px;
+    background: linear-gradient(135deg, #fde68a, #fbbf24);
+    box-shadow: inset 0 0 0 1px rgba(255,255,255,0.22);
+}
+
+.fuel-card-logo {
+    position: absolute;
+    top: 16px;
+    right: 16px;
     display: flex;
     align-items: center;
-    justify-content: space-between;
-    gap: 14px;
+    gap: 7px;
+    font-weight: 800;
+    font-size: 0.95rem;
 }
 
-.fuel-left {
+.fuel-card-status {
+    position: absolute;
+    top: 16px;
+    left: 64px;
+    padding: 5px 10px;
+    border-radius: 999px;
+    font-size: 0.7rem;
+    font-weight: 800;
+    border: 1px solid rgba(255,255,255,0.18);
+    backdrop-filter: blur(8px);
+}
+
+.fuel-card-number {
+    position: absolute;
+    left: 16px;
+    right: 16px;
+    top: 52%;
+    transform: translateY(-50%);
+    font-size: clamp(0.95rem, 1.3vw, 1.35rem);
+    font-weight: 800;
+    letter-spacing: 0.1em;
+    text-shadow: 0 2px 12px rgba(0, 0, 0, 0.16);
+}
+
+.fuel-card-bottom {
+    position: absolute;
+    left: 16px;
+    right: 16px;
+    bottom: 16px;
     display: flex;
-    align-items: center;
-    gap: 12px;
+    justify-content: space-between;
+    gap: 10px;
+    align-items: flex-end;
+}
+
+.fuel-card-meta {
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
     min-width: 0;
 }
 
-.fuel-icon {
-    width: 34px;
-    height: 34px;
-    flex-shrink: 0;
-    border-radius: 12px;
-    background: #eef4ff;
-    color: var(--blue);
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 16px;
+.fuel-card-meta.text-end {
+    text-align: right;
 }
 
-.fuel-title {
-    margin-bottom: 4px;
-    font-size: 16px;
+.meta-label {
+    font-size: 0.65rem;
     font-weight: 700;
-    color: #3a4a63;
+    letter-spacing: 0.08em;
+    opacity: 0.72;
 }
 
-.fuel-subline {
+.meta-value {
+    font-size: 0.95rem;
+    font-weight: 800;
+    line-height: 1.1;
+    word-break: break-word;
+}
+
+.fuel-side-panel {
+    position: sticky;
+    top: 20px;
+}
+
+.fuel-side-panel.is-hidden {
+    visibility: hidden;
+    pointer-events: none;
+}
+
+.fuel-side-panel-inner {
+    background: linear-gradient(180deg, #f8fbff, #f1f5f9);
+    border: 1px solid #dbe7f3;
+    border-radius: 24px;
+    padding: 22px;
+    box-shadow: 0 18px 38px rgba(15, 23, 42, 0.08);
+}
+
+.fuel-side-header h3 {
+    margin: 0;
     display: flex;
-    flex-wrap: wrap;
-    gap: 10px;
-    font-size: 13px;
-    color: #7c8aa0;
-    font-weight: 600;
+    align-items: center;
+    gap: 8px;
+    color: #1e293b;
+    font-size: 1.35rem;
+    font-weight: 800;
 }
 
-.fuel-right {
+.fuel-side-header p {
+    margin: 8px 0 18px;
+    color: #64748b;
+}
+
+.fuel-side-preview {
+    margin-bottom: 22px;
+}
+
+.fuel-details-list {
     display: flex;
     flex-direction: column;
-    align-items: flex-end;
-    gap: 6px;
-    flex-shrink: 0;
 }
 
-.fuel-expiry {
-    font-size: 13px;
-    color: #7c8aa0;
+.fuel-detail-row {
+    display: flex;
+    justify-content: space-between;
+    gap: 16px;
+    padding: 14px 0;
+    border-bottom: 1px solid #dbe3ee;
+}
+
+.fuel-detail-row .label {
+    color: #64748b;
     font-weight: 700;
+}
+
+.fuel-detail-row .value {
+    color: #0f172a;
+    font-weight: 800;
+    text-align: right;
+    word-break: break-word;
+}
+
+.fuel-badge {
+    display: inline-flex;
+    align-items: center;
+    padding: 7px 12px;
+    border-radius: 999px;
+    font-size: 0.78rem;
+    font-weight: 800;
+}
+
+.fuel-card-status.ok,
+.fuel-badge.ok {
+    background: rgba(34, 197, 94, 0.16);
+    color: #dcfce7;
+}
+
+.fuel-card-status.warning,
+.fuel-badge.warning {
+    background: rgba(245, 158, 11, 0.18);
+    color: #fef3c7;
+}
+
+.fuel-card-status.danger,
+.fuel-card-status.expired,
+.fuel-badge.danger,
+.fuel-badge.expired {
+    background: rgba(239, 68, 68, 0.18);
+    color: #fee2e2;
+}
+
+.fuel-card-status.neutral {
+    background: rgba(255, 255, 255, 0.14);
+    color: #eff6ff;
+}
+
+.fuel-badge.neutral {
+    background: #e2e8f0;
+    color: #334155;
 }
 
 .fuel-actions {
-    margin-top: 18px;
-    justify-content: flex-start;
+    display: flex;
+    gap: 12px;
+    margin-top: 20px;
+    justify-content: space-between;
+    align-items: center;
 }
 
-@media (max-width: 1100px) {
-    .fuel-cards-grid {
-        grid-template-columns: repeat(2, minmax(0, 1fr));
-    }
+.fuel-actions form {
+    margin: 0;
 }
 
-@media (max-width: 640px) {
-    .fuel-cards-grid {
+.fuel-action-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    min-width: 132px;
+    padding: 12px 16px;
+    border: 0;
+    border-radius: 14px;
+    text-decoration: none;
+    font-weight: 700;
+    transition: transform 0.18s ease, box-shadow 0.18s ease;
+}
+
+.fuel-action-btn.secondary {
+    background: #e8f0fb;
+    color: #1d4ed8;
+}
+
+.fuel-action-btn.secondary:hover {
+    color: #1d4ed8;
+    transform: translateY(-2px);
+}
+
+.fuel-action-btn.danger {
+    background: linear-gradient(135deg, #ef4444, #dc2626);
+    color: #fff;
+    box-shadow: 0 10px 20px rgba(220, 38, 38, 0.18);
+}
+
+.fuel-action-btn.danger:hover {
+    color: #fff;
+    transform: translateY(-2px);
+}
+
+.fuel-empty-state {
+    padding: 54px 24px;
+    border-radius: 24px;
+    background: linear-gradient(180deg, #ffffff, #f8fbff);
+    border: 1px solid #dbe7f3;
+    text-align: center;
+    box-shadow: 0 18px 36px rgba(15, 23, 42, 0.05);
+}
+
+.fuel-empty-icon {
+    font-size: 3rem;
+    color: #2563eb;
+    margin-bottom: 12px;
+}
+
+.fuel-empty-state h3 {
+    margin-bottom: 8px;
+    color: #0f172a;
+}
+
+.fuel-empty-state p {
+    margin-bottom: 20px;
+    color: #64748b;
+}
+
+@media (max-width: 1200px) {
+    .fuel-cards-layout {
         grid-template-columns: 1fr;
     }
 
-    .fuel-row {
-        flex-direction: column;
-        align-items: flex-start;
+    .fuel-cards-grid {
+        grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
     }
 
-    .fuel-right {
-        align-items: flex-start;
+    .fuel-side-panel {
+        position: static;
+    }
+
+    .fuel-side-panel.is-hidden {
+        display: none;
+    }
+
+    .fuel-side-panel:not(.is-hidden) {
+        visibility: visible;
+        pointer-events: auto;
+        display: block;
+    }
+}
+
+@media (max-width: 768px) {
+    .fuel-cards-page {
+        padding: 16px;
+    }
+
+    .fuel-cards-grid {
+        grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+        gap: 14px;
+    }
+
+    .fuel-actions {
+        flex-direction: column;
+    }
+
+    .fuel-action-btn,
+    .fuel-actions form,
+    .fuel-actions form button {
+        width: 100%;
+    }
+
+    .fuel-detail-row {
+        flex-direction: column;
+        gap: 6px;
+    }
+
+    .fuel-detail-row .value {
+        text-align: left;
     }
 }

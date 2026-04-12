@@ -1,4 +1,4 @@
-from datetime import datetime
+from datetime import datetime, date
 
 from flask import Blueprint, render_template, request, redirect, url_for
 from app import db
@@ -15,13 +15,13 @@ def list_cards():
     for c in cards:
         c.status = calculate_status(c.expiry)
 
-    return render_template("fuel_cards/list.html", cards=cards)
+    return render_template("fuel_cards/list.html", cards=cards, today=date.today())
 
 
 @fuel_bp.route("/add", methods=["GET", "POST"])
 def add_card():
     vehicles = Vehicle.query.order_by(Vehicle.registration.asc()).all()
-    
+
     if request.method == "POST":
         station = request.form.get("station")
         number = request.form.get("number")
