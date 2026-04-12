@@ -151,7 +151,15 @@ def dashboard():
     vehicles_query = apply_vehicle_sort(vehicles_query, selected_sort)
     vehicles = vehicles_query.all()
 
-    alerts = Alert.query.order_by(Alert.date.asc()).all()
+    alerts = sorted(
+        Alert.query.all(),
+        key=lambda alert: (
+            0 if alert.level == "danger" else 1,
+            alert.date is None,
+            alert.date
+        )
+    )
+
     latest_documents = (
         VehicleDocument.query
         .order_by(VehicleDocument.created_at.desc())

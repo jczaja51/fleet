@@ -10,7 +10,16 @@
             </span>
         {% endif %}
 
-        <span>{{ alert.label }}</span>
+        <div class="alert-copy">
+            <div class="alert-title">{{ alert.label }}</div>
+            <div class="alert-meta">
+                {% if alert.level == "danger" %}
+                    Pilne
+                {% else %}
+                    Ostrzeżenie
+                {% endif %}
+            </div>
+        </div>
     </div>
 
     <div class="alert-row-date">

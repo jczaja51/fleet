@@ -19,8 +19,13 @@ def refresh_vehicle_alerts(vehicle):
 
     oc_status = calculate_status(vehicle.oc_date)
     if oc_status != "ok":
+        label = (
+            f"OC po terminie — {vehicle_name}"
+            if oc_status == "danger"
+            else f"Kończy się OC — {vehicle_name}"
+        )
         db.session.add(Alert(
-            label=f"Kończy się OC — {vehicle_name}",
+            label=label,
             date=vehicle.oc_date,
             level=oc_status,
             vehicle_id=vehicle.id
@@ -28,8 +33,13 @@ def refresh_vehicle_alerts(vehicle):
 
     inspection_status = calculate_status(vehicle.inspection_date)
     if inspection_status != "ok":
+        label = (
+            f"Przegląd po terminie — {vehicle_name}"
+            if inspection_status == "danger"
+            else f"Kończy się przegląd — {vehicle_name}"
+        )
         db.session.add(Alert(
-            label=f"Kończy się przegląd — {vehicle_name}",
+            label=label,
             date=vehicle.inspection_date,
             level=inspection_status,
             vehicle_id=vehicle.id
@@ -39,21 +49,18 @@ def refresh_vehicle_alerts(vehicle):
         card_status = calculate_status(card.expiry)
         if card_status != "ok":
             station = card.station or "Karta paliwowa"
-            number = card.number or ""
+            last4 = card.number[-4:] if card.number and len(card.number) >= 4 else (card.number or "")
+
+            label = (
+                f"{station} • karta {last4} po terminie — {vehicle_name}"
+                if card_status == "danger"
+                else f"Kończy się {station} • karta {last4} — {vehicle_name}"
+            )
+
             db.session.add(Alert(
-                label=f"{station} {number} — {vehicle_name}".strip(),
+                label=label,
                 date=card.expiry,
                 level=card_status,
-                vehicle_id=vehicle.id
-            ))
-
-    for doc in vehicle.documents:
-        doc_status = calculate_status(doc.expiry_date)
-        if doc_status != "ok":
-            db.session.add(Alert(
-                label=f"Dokument: {doc.name} — {vehicle_name}",
-                date=doc.expiry_date,
-                level=doc_status,
                 vehicle_id=vehicle.id
             ))
 
@@ -68,7 +75,13 @@ def refresh_vehicle_alerts(vehicle):
         if final_status == "ok":
             continue
 
-        label_parts = [f"Serwis: {task.name}", vehicle_name]
+        label_parts = []
+        if final_status == "danger":
+            label_parts.append(f"Serwis pilny: {task.name}")
+        else:
+            label_parts.append(f"Zbliża się serwis: {task.name}")
+
+        label_parts.append(vehicle_name)
 
         if task.next_due_date:
             label_parts.append(f"do {task.next_due_date.strftime('%d.%m.%Y')}")

@@ -18,19 +18,17 @@
         <section class="vehicle-create-form-card document-create-card">
             <form method="POST" enctype="multipart/form-data" class="vehicle-create-form">
                 <div class="vehicle-create-grid">
-
-                    <!-- POJAZD -->
                     <div class="form-group form-group-full">
-                        <label>Pojazd</label>
+                        <label for="vehicle_preview">Pojazd</label>
                         <input
                             type="text"
+                            id="vehicle_preview"
                             value="{{ vehicle.display_name }} ({{ vehicle.registration }})"
                             class="form-control"
                             disabled
                         >
                     </div>
 
-                    <!-- NAZWA -->
                     <div class="form-group">
                         <label for="name">Nazwa dokumentu</label>
                         <input
@@ -43,19 +41,6 @@
                         >
                     </div>
 
-                    <!-- DATA -->
-                    <div class="form-group">
-                        <label for="expiry_date">Data ważności</label>
-                        <input
-                            type="date"
-                            id="expiry_date"
-                            name="expiry_date"
-                            class="form-control"
-                            value="{{ document.expiry_date.strftime('%Y-%m-%d') if document.expiry_date else '' }}"
-                        >
-                    </div>
-
-                    <!-- PLIK -->
                     <div class="form-group">
                         <label for="file">Podmień plik</label>
                         <input
@@ -67,30 +52,6 @@
                         >
                     </div>
 
-                    <!-- AKTUALNY PLIK -->
-                    <div class="form-group form-group-full">
-                        <label>Obecny plik</label>
-
-                        {% if document.file_path %}
-                            <div class="document-current-file-inline">
-                                <span>
-                                    {{ document.original_filename if document.original_filename else "Plik dokumentu" }}
-                                </span>
-
-                                <a href="{{ url_for('static', filename=document.file_path) }}"
-                                   target="_blank"
-                                   class="inline-link">
-                                    Otwórz
-                                </a>
-                            </div>
-                        {% else %}
-                            <div class="document-current-file-inline empty">
-                                Brak pliku
-                            </div>
-                        {% endif %}
-                    </div>
-
-                    <!-- NOTATKI -->
                     <div class="form-group form-group-full">
                         <label for="notes">Notatki</label>
                         <textarea
@@ -98,28 +59,33 @@
                             name="notes"
                             class="form-control form-textarea"
                             rows="5"
+                            placeholder="Dodatkowe informacje o dokumencie..."
                         >{{ document.notes or '' }}</textarea>
                     </div>
-
                 </div>
 
-                <!-- BOX INFO -->
                 <div class="document-upload-box">
                     <div class="document-upload-icon">
                         <i class="bi bi-file-earmark-arrow-up"></i>
                     </div>
                     <div class="document-upload-content">
-                        <h3>Plik dokumentu</h3>
-                        <p>Możesz podmienić istniejący plik lub zostawić obecny.</p>
+                        <h3>Aktualny plik</h3>
+                        <p>
+                            {% if document.original_filename %}
+                                {{ document.original_filename }}
+                            {% elif document.file_path %}
+                                Plik został dodany do dokumentu.
+                            {% else %}
+                                Brak załączonego pliku.
+                            {% endif %}
+                        </p>
                     </div>
                 </div>
 
-                <!-- BUTTONY -->
                 <div class="vehicle-create-actions">
                     <a href="{{ url_for('vehicles.detail', vehicle_id=vehicle.id) }}" class="btn-secondary">
                         Anuluj
                     </a>
-
                     <button type="submit" class="btn-primary">
                         Zapisz zmiany
                     </button>
@@ -127,16 +93,10 @@
             </form>
         </section>
 
-        <!-- PRAWA KOLUMNA -->
         <aside class="vehicle-create-tips">
             <div class="vehicle-create-tips-head">
                 <i class="bi bi-lightbulb"></i>
                 <h3>Podpowiedzi</h3>
-            </div>
-
-            <div class="vehicle-tip">
-                <i class="bi bi-pencil-square"></i>
-                <p>Możesz zmienić nazwę dokumentu bez zmiany pliku.</p>
             </div>
 
             <div class="vehicle-tip">
@@ -145,8 +105,8 @@
             </div>
 
             <div class="vehicle-tip">
-                <i class="bi bi-calendar-check"></i>
-                <p>Aktualizuj daty ważności, żeby system mógł pilnować terminów.</p>
+                <i class="bi bi-paperclip"></i>
+                <p>Najwygodniej trzymać dokumenty w PDF, ale możesz też dodać zdjęcia lub skany.</p>
             </div>
         </aside>
     </div>

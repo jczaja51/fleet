@@ -1,6 +1,10 @@
 from datetime import date, timedelta
 
 
+DANGER_DAYS_THRESHOLD = 7
+WARNING_DAYS_THRESHOLD = 30
+
+
 def calculate_status(target_date):
     if not target_date:
         return "ok"
@@ -10,7 +14,9 @@ def calculate_status(target_date):
 
     if diff < 0:
         return "danger"
-    if diff <= 30:
+    if diff <= DANGER_DAYS_THRESHOLD:
+        return "danger"
+    if diff <= WARNING_DAYS_THRESHOLD:
         return "warning"
     return "ok"
 
@@ -24,7 +30,9 @@ def calculate_service_date_status(next_due_date):
 
     if diff < 0:
         return "danger"
-    if diff <= 30:
+    if diff <= DANGER_DAYS_THRESHOLD:
+        return "danger"
+    if diff <= WARNING_DAYS_THRESHOLD:
         return "warning"
     return "ok"
 
@@ -36,6 +44,8 @@ def calculate_service_mileage_status(current_mileage, next_due_mileage):
     remaining = next_due_mileage - current_mileage
 
     if remaining < 0:
+        return "danger"
+    if remaining <= 300:
         return "danger"
     if remaining <= 1000:
         return "warning"

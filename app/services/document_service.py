@@ -1,7 +1,5 @@
 from __future__ import annotations
 
-from datetime import datetime
-
 from app import db
 from app.models import Vehicle, VehicleDocument
 from app.services.storage_service import (
@@ -11,7 +9,6 @@ from app.services.storage_service import (
 
 __all__ = [
     "DocumentValidationError",
-    "parse_optional_date",
     "normalize_document_name",
     "normalize_document_type",
     "normalize_notes",
@@ -23,15 +20,6 @@ __all__ = [
 
 class DocumentValidationError(ValueError):
     pass
-
-
-def parse_optional_date(value: str | None):
-    if not value:
-        return None
-    try:
-        return datetime.strptime(value, "%Y-%m-%d").date()
-    except ValueError as exc:
-        raise DocumentValidationError("Nieprawidłowy format daty.") from exc
 
 
 def normalize_document_name(value: str | None) -> str:
@@ -62,7 +50,6 @@ def create_document_for_vehicle(vehicle: Vehicle, form, uploaded_file) -> Vehicl
     document = VehicleDocument(
         name=normalize_document_name(form.get("name")),
         document_type=normalize_document_type(),
-        expiry_date=parse_optional_date(form.get("expiry_date")),
         notes=normalize_notes(form.get("notes")),
         file_path=file_path,
         original_filename=original_filename,
@@ -76,7 +63,6 @@ def create_document_for_vehicle(vehicle: Vehicle, form, uploaded_file) -> Vehicl
 def update_document(document: VehicleDocument, form, uploaded_file) -> VehicleDocument:
     document.name = normalize_document_name(form.get("name"))
     document.document_type = normalize_document_type()
-    document.expiry_date = parse_optional_date(form.get("expiry_date"))
     document.notes = normalize_notes(form.get("notes"))
 
     if uploaded_file and uploaded_file.filename:
