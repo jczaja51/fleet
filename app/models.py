@@ -21,7 +21,7 @@ class Vehicle(db.Model):
     assigned_driver = db.Column(db.String(120), nullable=True)
     tachograph_expiry_date = db.Column(db.Date, nullable=True)
 
-    registration = db.Column(db.String(20), nullable=False, index=True)
+    registration = db.Column(db.String(20), nullable=False, index=True, unique=True)
     mileage = db.Column(db.Integer, nullable=True)
     type = db.Column(db.String(50), nullable=True)
 

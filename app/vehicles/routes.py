@@ -1,3 +1,4 @@
+import re
 from datetime import datetime
 
 from flask import Blueprint, flash, redirect, render_template, request, url_for
@@ -34,56 +35,169 @@ def parse_int(value):
         return None
 
 
+def normalize_spaces(value):
+    return re.sub(r"\s+", " ", (value or "").strip())
+
+
+def normalize_registration(value):
+    value = normalize_spaces(value).upper()
+    return re.sub(r"[^A-Z0-9]", "", value)
+
+
+def normalize_identifier(value):
+    value = normalize_spaces(value).upper()
+    value = re.sub(r"\s+", "", value)
+    return value
+
+
+def validate_vehicle_form(form, uploaded_image=None, current_vehicle_id=None):
+    errors = []
+
+    brand = normalize_spaces(form.get("brand"))
+    model = normalize_spaces(form.get("model"))
+    vehicle_type = normalize_spaces(form.get("type"))
+    category = normalize_spaces(form.get("category"))
+    registration = normalize_registration(form.get("registration"))
+    production_year = parse_int(form.get("production_year"))
+    mileage = parse_int(form.get("mileage"))
+    vin = normalize_identifier(form.get("vin"))
+    assigned_driver = normalize_spaces(form.get("assigned_driver"))
+
+    oc_date_raw = normalize_spaces(form.get("oc_date"))
+    inspection_date_raw = normalize_spaces(form.get("inspection_date"))
+    tachograph_date_raw = normalize_spaces(form.get("tachograph_expiry_date"))
+
+    current_year = datetime.now().year + 1
+
+    if not brand:
+        errors.append("Marka jest wymagana.")
+    elif len(brand) < 2 or len(brand) > 40:
+        errors.append("Marka musi mieć od 2 do 40 znaków.")
+    elif not re.fullmatch(r"[A-Za-zÀ-ž0-9 .,'/\-()]+", brand):
+        errors.append("Marka zawiera niedozwolone znaki.")
+
+    if not model:
+        errors.append("Model jest wymagany.")
+    elif len(model) > 60:
+        errors.append("Model może mieć maksymalnie 60 znaków.")
+    elif not re.fullmatch(r"[A-Za-zÀ-ž0-9 .,'/\-()]+", model):
+        errors.append("Model zawiera niedozwolone znaki.")
+
+    if vehicle_type not in {"Firmowe", "Leasing", "Prywatne"}:
+        errors.append("Wybierz poprawny typ pojazdu.")
+
+    allowed_categories = {
+        "Samochód osobowy do 3,5 t DMC",
+        "Samochód ciężarowy do 3,5 t DMC",
+        "Samochód ciężarowy powyżej 3,5 t DMC",
+        "Pojazd specjalny",
+        "Ciągnik siodłowy",
+        "Autobus",
+        "Przyczepa / naczepa",
+        "Inne",
+    }
+
+    if category not in allowed_categories:
+        errors.append("Wybierz poprawną kategorię pojazdu.")
+
+    if not registration:
+        errors.append("Numer rejestracyjny jest wymagany.")
+    elif len(registration) < 3 or len(registration) > 12:
+        errors.append("Numer rejestracyjny musi mieć od 3 do 12 znaków.")
+
+    existing_vehicle = Vehicle.query.filter_by(registration=registration).first()
+    if existing_vehicle and existing_vehicle.id != current_vehicle_id:
+        errors.append("Pojazd o takim numerze rejestracyjnym już istnieje.")
+
+    if production_year is None:
+        errors.append("Rok produkcji jest wymagany.")
+    elif production_year < 1950 or production_year > current_year:
+        errors.append("Podaj poprawny rok produkcji.")
+
+    if mileage is not None:
+        if mileage < 0:
+            errors.append("Przebieg nie może być ujemny.")
+        elif mileage > 9999999:
+            errors.append("Przebieg jest zbyt duży.")
+
+    if vin:
+        if len(vin) < 3 or len(vin) > 32:
+            errors.append("VIN / identyfikator musi mieć od 3 do 32 znaków.")
+        elif not re.fullmatch(r"[A-Z0-9\-/]+", vin):
+            errors.append("VIN / identyfikator zawiera niedozwolone znaki.")
+
+    if assigned_driver:
+        if len(assigned_driver) > 80:
+            errors.append("Przypisany kierowca może mieć maksymalnie 80 znaków.")
+        elif not re.fullmatch(r"[A-Za-zÀ-ž .'\-]+", assigned_driver):
+            errors.append("Pole kierowcy zawiera niedozwolone znaki.")
+
+    if oc_date_raw and not parse_date(oc_date_raw):
+        errors.append("Data ważności OC ma niepoprawny format.")
+
+    if inspection_date_raw and not parse_date(inspection_date_raw):
+        errors.append("Data ważności przeglądu ma niepoprawny format.")
+
+    if category in TACHOGRAPH_CATEGORIES and tachograph_date_raw and not parse_date(tachograph_date_raw):
+        errors.append("Data ważności tachografu ma niepoprawny format.")
+
+    if uploaded_image and uploaded_image.filename:
+        content_length = uploaded_image.content_length
+        if content_length and content_length > 10 * 1024 * 1024:
+            errors.append("Zdjęcie jest za duże. Maksymalny rozmiar to 10 MB.")
+
+    cleaned_data = {
+        "brand": brand or None,
+        "model": model or None,
+        "vehicle_type": vehicle_type or None,
+        "category": category or None,
+        "registration": registration,
+        "production_year": production_year,
+        "mileage": mileage,
+        "vin": vin or None,
+        "assigned_driver": assigned_driver or None,
+        "oc_date": parse_date(oc_date_raw),
+        "inspection_date": parse_date(inspection_date_raw),
+        "tachograph_expiry_date": parse_date(tachograph_date_raw) if category in TACHOGRAPH_CATEGORIES and tachograph_date_raw else None,
+    }
+
+    return errors, cleaned_data
+
+
 @vehicles_bp.route("/add", methods=["GET", "POST"])
 def add_vehicle():
     if request.method == "POST":
-        brand = request.form.get("brand", "").strip()
-        model = request.form.get("model", "").strip()
-        registration = request.form.get("registration", "").strip().upper()
-        mileage = parse_int(request.form.get("mileage"))
-        vehicle_type = request.form.get("type")
-        category = request.form.get("category", "").strip()
-        production_year = parse_int(request.form.get("production_year"))
-        vin = request.form.get("vin", "").strip().upper()
-        assigned_driver = request.form.get("assigned_driver", "").strip()
-        oc_date = parse_date(request.form.get("oc_date"))
-        inspection_date = parse_date(request.form.get("inspection_date"))
-        tachograph_expiry_date_raw = request.form.get("tachograph_expiry_date")
+        uploaded_image = request.files.get("image")
+        errors, data = validate_vehicle_form(request.form, uploaded_image=uploaded_image)
 
-        if not registration:
-            flash("Numer rejestracyjny jest wymagany.", "error")
+        if errors:
+            for error in errors:
+                flash(error, "error")
             return render_template("vehicles/create.html")
 
         image_path = None
-        uploaded_image = request.files.get("image")
         if uploaded_image and uploaded_image.filename:
             try:
-                image_path = save_vehicle_image(uploaded_image, registration)
+                image_path = save_vehicle_image(uploaded_image, data["registration"])
             except StorageError as exc:
                 flash(str(exc), "error")
                 return render_template("vehicles/create.html")
 
-        tachograph_expiry_date = (
-            parse_date(tachograph_expiry_date_raw)
-            if category in TACHOGRAPH_CATEGORIES and tachograph_expiry_date_raw
-            else None
-        )
-
         vehicle = Vehicle(
-            name=f"{brand} {model}".strip() if brand or model else registration,
-            brand=brand or None,
-            model=model or None,
-            registration=registration,
-            mileage=mileage,
-            type=vehicle_type or None,
-            category=category or None,
-            production_year=production_year,
-            vin=vin or None,
-            assigned_driver=assigned_driver or None,
+            name=f"{data['brand'] or ''} {data['model'] or ''}".strip() or data["registration"],
+            brand=data["brand"],
+            model=data["model"],
+            registration=data["registration"],
+            mileage=data["mileage"],
+            type=data["vehicle_type"],
+            category=data["category"],
+            production_year=data["production_year"],
+            vin=data["vin"],
+            assigned_driver=data["assigned_driver"],
             image=image_path,
-            oc_date=oc_date,
-            inspection_date=inspection_date,
-            tachograph_expiry_date=tachograph_expiry_date,
+            oc_date=data["oc_date"],
+            inspection_date=data["inspection_date"],
+            tachograph_expiry_date=data["tachograph_expiry_date"],
         )
 
         vehicle.sync_name()
@@ -109,47 +223,46 @@ def edit_vehicle(vehicle_id):
 
     if request.method == "POST":
         old_registration = vehicle.registration
-        registration = request.form.get("registration", "").strip().upper()
+        uploaded_image = request.files.get("image")
 
-        if not registration:
-            flash("Numer rejestracyjny jest wymagany.", "error")
-            return render_template("vehicles/edit.html", vehicle=vehicle)
-
-        vehicle.brand = request.form.get("brand", "").strip() or None
-        vehicle.model = request.form.get("model", "").strip() or None
-        vehicle.registration = registration
-        vehicle.mileage = parse_int(request.form.get("mileage"))
-        vehicle.type = request.form.get("type") or None
-        vehicle.category = request.form.get("category", "").strip() or None
-        vehicle.production_year = parse_int(request.form.get("production_year"))
-        vehicle.vin = request.form.get("vin", "").strip().upper() or None
-        vehicle.assigned_driver = request.form.get("assigned_driver", "").strip() or None
-
-        vehicle.oc_date = parse_date(request.form.get("oc_date"))
-        vehicle.inspection_date = parse_date(request.form.get("inspection_date"))
-
-        tachograph_expiry_date_raw = request.form.get("tachograph_expiry_date")
-        vehicle.tachograph_expiry_date = (
-            parse_date(tachograph_expiry_date_raw)
-            if vehicle.category in TACHOGRAPH_CATEGORIES and tachograph_expiry_date_raw
-            else None
+        errors, data = validate_vehicle_form(
+            request.form,
+            uploaded_image=uploaded_image,
+            current_vehicle_id=vehicle.id,
         )
 
-        registration_changed = old_registration != registration
+        if errors:
+            for error in errors:
+                flash(error, "error")
+            return render_template("vehicles/edit.html", vehicle=vehicle)
+
+        registration_changed = old_registration != data["registration"]
+
+        vehicle.brand = data["brand"]
+        vehicle.model = data["model"]
+        vehicle.registration = data["registration"]
+        vehicle.mileage = data["mileage"]
+        vehicle.type = data["vehicle_type"]
+        vehicle.category = data["category"]
+        vehicle.production_year = data["production_year"]
+        vehicle.vin = data["vin"]
+        vehicle.assigned_driver = data["assigned_driver"]
+        vehicle.oc_date = data["oc_date"]
+        vehicle.inspection_date = data["inspection_date"]
+        vehicle.tachograph_expiry_date = data["tachograph_expiry_date"]
 
         if registration_changed:
             try:
-                move_vehicle_storage_dir(old_registration, registration)
-                update_vehicle_file_references(vehicle, old_registration, registration)
+                move_vehicle_storage_dir(old_registration, data["registration"])
+                update_vehicle_file_references(vehicle, old_registration, data["registration"])
             except StorageError as exc:
                 flash(str(exc), "error")
                 vehicle.registration = old_registration
                 return render_template("vehicles/edit.html", vehicle=vehicle)
 
-        uploaded_image = request.files.get("image")
         if uploaded_image and uploaded_image.filename:
             try:
-                new_image_path = save_vehicle_image(uploaded_image, registration)
+                new_image_path = save_vehicle_image(uploaded_image, data["registration"])
             except StorageError as exc:
                 flash(str(exc), "error")
                 return render_template("vehicles/edit.html", vehicle=vehicle)

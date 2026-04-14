@@ -10,7 +10,7 @@
     </div>
 
     <div class="vehicle-page-layout">
-        <form method="POST" enctype="multipart/form-data" class="vehicle-page-card vehicle-create-card">
+        <form method="POST" enctype="multipart/form-data" class="vehicle-page-card vehicle-create-card" id="vehicle-edit-form" novalidate>
             <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
 
             <div class="vehicle-create-main">
@@ -20,12 +20,30 @@
                     <div class="vehicle-create-grid">
                         <div class="form-group">
                             <label for="brand">Marka <span class="field-required">*</span></label>
-                            <input type="text" id="brand" name="brand" value="{{ vehicle.brand or '' }}" required>
+                            <input
+                                type="text"
+                                id="brand"
+                                name="brand"
+                                value="{{ vehicle.brand or '' }}"
+                                required
+                                maxlength="40"
+                                autocomplete="off"
+                            >
+                            <div class="field-error" id="brand-error"></div>
                         </div>
 
                         <div class="form-group">
                             <label for="model">Model <span class="field-required">*</span></label>
-                            <input type="text" id="model" name="model" value="{{ vehicle.model or '' }}" required>
+                            <input
+                                type="text"
+                                id="model"
+                                name="model"
+                                value="{{ vehicle.model or '' }}"
+                                required
+                                maxlength="60"
+                                autocomplete="off"
+                            >
+                            <div class="field-error" id="model-error"></div>
                         </div>
 
                         <div class="form-group">
@@ -36,6 +54,7 @@
                                 <option value="Leasing" {% if vehicle.type == "Leasing" %}selected{% endif %}>Leasing</option>
                                 <option value="Prywatne" {% if vehicle.type == "Prywatne" %}selected{% endif %}>Prywatne</option>
                             </select>
+                            <div class="field-error" id="type-error"></div>
                         </div>
 
                         <div class="form-group">
@@ -51,34 +70,80 @@
                                 <option value="Przyczepa / naczepa" {% if vehicle.category == "Przyczepa / naczepa" %}selected{% endif %}>Przyczepa / naczepa</option>
                                 <option value="Inne" {% if vehicle.category == "Inne" %}selected{% endif %}>Inne</option>
                             </select>
+                            <div class="field-error" id="category-error"></div>
                         </div>
 
                         <div class="form-group">
                             <label for="registration">Numer rejestracyjny <span class="field-required">*</span></label>
-                            <input type="text" id="registration" name="registration" value="{{ vehicle.registration }}" required>
+                            <input
+                                type="text"
+                                id="registration"
+                                name="registration"
+                                value="{{ vehicle.registration }}"
+                                required
+                                maxlength="12"
+                                autocomplete="off"
+                            >
+                            <div class="field-error" id="registration-error"></div>
                         </div>
 
                         <div class="form-group">
                             <label for="production_year">Rok produkcji <span class="field-required">*</span></label>
-                            <input type="number" id="production_year" name="production_year" min="1950" max="2100" value="{{ vehicle.production_year or '' }}" required>
+                            <input
+                                type="number"
+                                id="production_year"
+                                name="production_year"
+                                min="1950"
+                                max="2100"
+                                step="1"
+                                value="{{ vehicle.production_year or '' }}"
+                                required
+                            >
+                            <div class="field-error" id="production_year-error"></div>
                         </div>
 
                         <div class="form-group">
                             <label for="mileage">Przebieg</label>
                             <div class="input-with-suffix">
-                                <input type="number" id="mileage" name="mileage" min="0" value="{{ vehicle.mileage or '' }}">
+                                <input
+                                    type="number"
+                                    id="mileage"
+                                    name="mileage"
+                                    min="0"
+                                    max="9999999"
+                                    step="1"
+                                    value="{{ vehicle.mileage or '' }}"
+                                >
                                 <span>km</span>
                             </div>
+                            <div class="field-error" id="mileage-error"></div>
                         </div>
 
                         <div class="form-group">
                             <label for="vin">Numer VIN</label>
-                            <input type="text" id="vin" name="vin" maxlength="32" value="{{ vehicle.vin or '' }}">
+                            <input
+                                type="text"
+                                id="vin"
+                                name="vin"
+                                maxlength="17"
+                                minlength="17"
+                                value="{{ vehicle.vin or '' }}"
+                                autocomplete="off"
+                            >
+                            <div class="field-error" id="vin-error"></div>
                         </div>
 
                         <div class="form-group form-group-full">
                             <label for="assigned_driver">Przypisany kierowca</label>
-                            <input type="text" id="assigned_driver" name="assigned_driver" value="{{ vehicle.assigned_driver or '' }}">
+                            <input
+                                type="text"
+                                id="assigned_driver"
+                                name="assigned_driver"
+                                value="{{ vehicle.assigned_driver or '' }}"
+                                maxlength="80"
+                                autocomplete="off"
+                            >
+                            <div class="field-error" id="assigned_driver-error"></div>
                         </div>
                     </div>
                 </section>
@@ -97,13 +162,15 @@
                         <div class="upload-box-file-name" id="image-file-name">
                             {% if vehicle.image %}Aktualne zdjęcie zapisane w systemie{% else %}Nie wybrano pliku{% endif %}
                         </div>
-                        <input type="file" id="image" name="image" accept=".jpg,.jpeg,.png,.webp">
+                        <input type="file" id="image" name="image" accept=".jpg,.jpeg,.png,.webp,image/jpeg,image/png,image/webp">
                     </div>
 
                     <div class="upload-success" id="upload-success" hidden>
                         <i class="bi bi-check-circle-fill"></i>
                         <span>Plik został pomyślnie załadowany.</span>
                     </div>
+
+                    <div class="field-error" id="image-error"></div>
 
                     <div class="form-group">
                         <label for="oc_date">Data ważności OC</label>
@@ -115,6 +182,7 @@
                             autocomplete="off"
                             value="{{ vehicle.oc_date.strftime('%Y-%m-%d') if vehicle.oc_date else '' }}"
                         >
+                        <div class="field-error" id="oc_date-error"></div>
                     </div>
 
                     <div class="form-group">
@@ -127,6 +195,7 @@
                             autocomplete="off"
                             value="{{ vehicle.inspection_date.strftime('%Y-%m-%d') if vehicle.inspection_date else '' }}"
                         >
+                        <div class="field-error" id="inspection_date-error"></div>
                     </div>
 
                     <div class="form-group {% if not vehicle.requires_tachograph %}form-group-disabled{% else %}form-group-enabled{% endif %}" id="tachograph-group">
@@ -143,6 +212,7 @@
                         <div class="field-helper-text" id="tachograph-helper">
                             Dostępne tylko dla samochodów ciężarowych powyżej 3,5 t oraz autobusów.
                         </div>
+                        <div class="field-error" id="tachograph_expiry_date-error"></div>
                     </div>
                 </section>
             </div>
@@ -180,9 +250,37 @@
     </div>
 </div>
 
+<style>
+.field-error {
+    margin-top: 6px;
+    font-size: 0.86rem;
+    color: #c62828;
+    min-height: 18px;
+}
+
+.input-invalid,
+select.input-invalid {
+    border-color: #c62828 !important;
+    box-shadow: 0 0 0 3px rgba(198, 40, 40, 0.10) !important;
+}
+</style>
+
 <script>
 document.addEventListener("DOMContentLoaded", function () {
+    const form = document.getElementById("vehicle-edit-form");
+
+    const brandInput = document.getElementById("brand");
+    const modelInput = document.getElementById("model");
+    const typeSelect = document.getElementById("type");
     const categorySelect = document.getElementById("category");
+    const registrationInput = document.getElementById("registration");
+    const productionYearInput = document.getElementById("production_year");
+    const mileageInput = document.getElementById("mileage");
+    const vinInput = document.getElementById("vin");
+    const assignedDriverInput = document.getElementById("assigned_driver");
+
+    const ocDateInput = document.getElementById("oc_date");
+    const inspectionDateInput = document.getElementById("inspection_date");
     const tachographGroup = document.getElementById("tachograph-group");
     const tachographInput = document.getElementById("tachograph_expiry_date");
 
@@ -190,10 +288,39 @@ document.addEventListener("DOMContentLoaded", function () {
     const imageFileName = document.getElementById("image-file-name");
     const uploadSuccess = document.getElementById("upload-success");
 
+    const MAX_IMAGE_SIZE = 10 * 1024 * 1024;
+    const allowedImageTypes = ["image/jpeg", "image/png", "image/webp"];
+
     const tachographCategories = [
         "Samochód ciężarowy powyżej 3,5 t DMC",
         "Autobus"
     ];
+
+    function normalizeSpaces(value) {
+        return value.replace(/\s+/g, " ").trim();
+    }
+
+    function setError(input, message) {
+        const errorBox = document.getElementById(input.id + "-error");
+        if (errorBox) {
+            errorBox.textContent = message || "";
+        }
+
+        if (message) {
+            input.classList.add("input-invalid");
+        } else {
+            input.classList.remove("input-invalid");
+        }
+    }
+
+    function clearError(input) {
+        setError(input, "");
+    }
+
+    function isValidDateString(value) {
+        if (!value) return true;
+        return /^\d{4}-\d{2}-\d{2}$/.test(value);
+    }
 
     function setFlatpickrEnabled(input, enabled) {
         input.disabled = !enabled;
@@ -216,6 +343,7 @@ document.addEventListener("DOMContentLoaded", function () {
         } else {
             tachographGroup.classList.add("form-group-disabled");
             tachographGroup.classList.remove("form-group-enabled");
+            clearError(tachographInput);
         }
     }
 
@@ -230,6 +358,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
         if (!file) {
             uploadSuccess.hidden = true;
+            clearError(imageInput);
             return;
         }
 
@@ -237,11 +366,335 @@ document.addEventListener("DOMContentLoaded", function () {
         uploadSuccess.hidden = false;
     }
 
-    categorySelect.addEventListener("change", toggleTachographField);
-    imageInput.addEventListener("change", updateUploadState);
+    function validateBrand() {
+        const value = normalizeSpaces(brandInput.value);
+        brandInput.value = value;
+
+        if (!value) {
+            setError(brandInput, "Podaj markę pojazdu.");
+            return false;
+        }
+
+        if (value.length < 2) {
+            setError(brandInput, "Marka jest za krótka.");
+            return false;
+        }
+
+        if (value.length > 40) {
+            setError(brandInput, "Marka może mieć maksymalnie 40 znaków.");
+            return false;
+        }
+
+        if (!/^[A-Za-zÀ-ž0-9 .,'\/\-()]+$/.test(value)) {
+            setError(brandInput, "Marka zawiera niedozwolone znaki.");
+            return false;
+        }
+
+        clearError(brandInput);
+        return true;
+    }
+
+    function validateModel() {
+        const value = normalizeSpaces(modelInput.value);
+        modelInput.value = value;
+
+        if (!value) {
+            setError(modelInput, "Podaj model pojazdu.");
+            return false;
+        }
+
+        if (value.length < 1) {
+            setError(modelInput, "Model jest za krótki.");
+            return false;
+        }
+
+        if (value.length > 60) {
+            setError(modelInput, "Model może mieć maksymalnie 60 znaków.");
+            return false;
+        }
+
+        if (!/^[A-Za-zÀ-ž0-9 .,'\/\-()]+$/.test(value)) {
+            setError(modelInput, "Model zawiera niedozwolone znaki.");
+            return false;
+        }
+
+        clearError(modelInput);
+        return true;
+    }
+
+    function validateType() {
+        if (!typeSelect.value) {
+            setError(typeSelect, "Wybierz typ pojazdu.");
+            return false;
+        }
+
+        clearError(typeSelect);
+        return true;
+    }
+
+    function validateCategory() {
+        if (!categorySelect.value) {
+            setError(categorySelect, "Wybierz kategorię pojazdu.");
+            return false;
+        }
+
+        clearError(categorySelect);
+        return true;
+    }
+
+    function validateRegistration() {
+        let value = normalizeSpaces(registrationInput.value).toUpperCase();
+        value = value.replace(/[^A-Z0-9]/g, "");
+        registrationInput.value = value;
+
+        if (!value) {
+            setError(registrationInput, "Podaj numer rejestracyjny.");
+            return false;
+        }
+
+        if (value.length < 4) {
+            setError(registrationInput, "Numer rejestracyjny jest za krótki.");
+            return false;
+        }
+
+        if (value.length > 12) {
+            setError(registrationInput, "Numer rejestracyjny może mieć maksymalnie 12 znaków.");
+            return false;
+        }
+
+        clearError(registrationInput);
+        return true;
+    }
+
+    function validateProductionYear() {
+        const rawValue = productionYearInput.value;
+
+        if (!rawValue) {
+            setError(productionYearInput, "Podaj rok produkcji.");
+            return false;
+        }
+
+        const year = Number(rawValue);
+        const currentYear = new Date().getFullYear() + 1;
+
+        if (!Number.isInteger(year)) {
+            setError(productionYearInput, "Rok produkcji musi być liczbą całkowitą.");
+            return false;
+        }
+
+        if (year < 1950 || year > currentYear) {
+            setError(productionYearInput, "Podaj poprawny rok produkcji.");
+            return false;
+        }
+
+        clearError(productionYearInput);
+        return true;
+    }
+
+    function validateMileage() {
+        const rawValue = mileageInput.value;
+
+        if (!rawValue) {
+            clearError(mileageInput);
+            return true;
+        }
+
+        const mileage = Number(rawValue);
+
+        if (!Number.isInteger(mileage)) {
+            setError(mileageInput, "Przebieg musi być liczbą całkowitą.");
+            return false;
+        }
+
+        if (mileage < 0) {
+            setError(mileageInput, "Przebieg nie może być ujemny.");
+            return false;
+        }
+
+        if (mileage > 9999999) {
+            setError(mileageInput, "Przebieg jest zbyt duży.");
+            return false;
+        }
+
+        clearError(mileageInput);
+        return true;
+    }
+
+    function validateVin() {
+    let value = normalizeSpaces(vinInput.value).toUpperCase();
+    value = value.replace(/\s+/g, "");
+    vinInput.value = value;
+
+    if (!value) {
+        clearError(vinInput);
+        return true;
+    }
+
+    if (value.length < 3) {
+        setError(vinInput, "Identyfikator jest za krótki.");
+        return false;
+    }
+
+    if (value.length > 32) {
+        setError(vinInput, "Identyfikator może mieć maksymalnie 32 znaki.");
+        return false;
+    }
+
+    if (!/^[A-Z0-9\-\/]+$/.test(value)) {
+        setError(vinInput, "Pole VIN / identyfikator zawiera niedozwolone znaki.");
+        return false;
+    }
+
+    clearError(vinInput);
+    return true;
+}
+
+    function validateAssignedDriver() {
+        const value = normalizeSpaces(assignedDriverInput.value);
+        assignedDriverInput.value = value;
+
+        if (!value) {
+            clearError(assignedDriverInput);
+            return true;
+        }
+
+        if (value.length > 80) {
+            setError(assignedDriverInput, "Imię i nazwisko kierowcy może mieć maksymalnie 80 znaków.");
+            return false;
+        }
+
+        if (!/^[A-Za-zÀ-ž .'\-]+$/.test(value)) {
+            setError(assignedDriverInput, "Pole kierowcy zawiera niedozwolone znaki.");
+            return false;
+        }
+
+        clearError(assignedDriverInput);
+        return true;
+    }
+
+    function validateImage() {
+        const file = imageInput.files[0];
+
+        if (!file) {
+            clearError(imageInput);
+            return true;
+        }
+
+        if (!allowedImageTypes.includes(file.type)) {
+            setError(imageInput, "Dozwolone są tylko pliki JPG, PNG lub WEBP.");
+            return false;
+        }
+
+        if (file.size > MAX_IMAGE_SIZE) {
+            setError(imageInput, "Plik jest za duży. Maksymalny rozmiar to 10 MB.");
+            return false;
+        }
+
+        clearError(imageInput);
+        return true;
+    }
+
+    function validateDateField(input, labelText) {
+        const value = input.value ? input.value.trim() : "";
+
+        if (!value) {
+            clearError(input);
+            return true;
+        }
+
+        if (!isValidDateString(value)) {
+            setError(input, labelText + " musi mieć format RRRR-MM-DD.");
+            return false;
+        }
+
+        clearError(input);
+        return true;
+    }
+
+    function validateTachograph() {
+        const isRequiredCategory = tachographCategories.includes(categorySelect.value);
+
+        if (!isRequiredCategory) {
+            clearError(tachographInput);
+            return true;
+        }
+
+        return validateDateField(tachographInput, "Data tachografu");
+    }
+
+    function validateForm() {
+        const results = [
+            validateBrand(),
+            validateModel(),
+            validateType(),
+            validateCategory(),
+            validateRegistration(),
+            validateProductionYear(),
+            validateMileage(),
+            validateVin(),
+            validateAssignedDriver(),
+            validateImage(),
+            validateDateField(ocDateInput, "Data OC"),
+            validateDateField(inspectionDateInput, "Data przeglądu"),
+            validateTachograph()
+        ];
+
+        return results.every(Boolean);
+    }
+
+    brandInput.addEventListener("blur", validateBrand);
+    modelInput.addEventListener("blur", validateModel);
+    typeSelect.addEventListener("change", validateType);
+    categorySelect.addEventListener("change", function () {
+        toggleTachographField();
+        validateCategory();
+        validateTachograph();
+    });
+    registrationInput.addEventListener("input", function () {
+        registrationInput.value = registrationInput.value.toUpperCase().replace(/[^A-Z0-9]/g, "");
+    });
+    registrationInput.addEventListener("blur", validateRegistration);
+    productionYearInput.addEventListener("blur", validateProductionYear);
+    mileageInput.addEventListener("blur", validateMileage);
+    vinInput.addEventListener("input", function () {
+        vinInput.value = vinInput.value.toUpperCase().replace(/[^A-HJ-NPR-Z0-9]/g, "");
+    });
+    vinInput.addEventListener("blur", validateVin);
+    assignedDriverInput.addEventListener("blur", validateAssignedDriver);
+
+    imageInput.addEventListener("change", function () {
+        updateUploadState();
+        validateImage();
+    });
+
+    ocDateInput.addEventListener("blur", function () {
+        validateDateField(ocDateInput, "Data OC");
+    });
+
+    inspectionDateInput.addEventListener("blur", function () {
+        validateDateField(inspectionDateInput, "Data przeglądu");
+    });
+
+    tachographInput.addEventListener("blur", validateTachograph);
+
+    form.addEventListener("submit", function (event) {
+        brandInput.value = normalizeSpaces(brandInput.value);
+        modelInput.value = normalizeSpaces(modelInput.value);
+        assignedDriverInput.value = normalizeSpaces(assignedDriverInput.value);
+        registrationInput.value = normalizeSpaces(registrationInput.value).toUpperCase().replace(/[^A-Z0-9]/g, "");
+        vinInput.value = normalizeSpaces(vinInput.value).toUpperCase().replace(/\s+/g, "");
+
+        if (!validateForm()) {
+            event.preventDefault();
+
+            const firstInvalid = form.querySelector(".input-invalid");
+            if (firstInvalid) {
+                firstInvalid.focus();
+            }
+        }
+    });
 
     uploadSuccess.hidden = true;
-
     toggleTachographField();
     updateUploadState();
 });
