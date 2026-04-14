@@ -11,6 +11,7 @@
 
     <div class="vehicle-create-layout">
         <form method="POST" enctype="multipart/form-data" class="vehicle-create-card">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
             <div class="vehicle-create-main">
                 <section class="vehicle-create-section vehicle-create-section-left">
                     <h2>Dane pojazdu</h2>

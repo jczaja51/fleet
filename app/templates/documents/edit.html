@@ -17,6 +17,7 @@
     <div class="vehicle-create-layout">
         <section class="vehicle-create-form-card document-create-card">
             <form method="POST" enctype="multipart/form-data" class="vehicle-create-form">
+                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
                 <div class="vehicle-create-grid">
                     <div class="form-group form-group-full">
                         <label for="vehicle_preview">Pojazd</label>
@@ -48,7 +49,7 @@
                             id="file"
                             name="file"
                             class="form-control"
-                            accept=".pdf,.jpg,.jpeg,.png,.webp,.doc,.docx"
+                            accept=".pdf,.jpg,.jpeg,.png,.webp"
                         >
                     </div>
 

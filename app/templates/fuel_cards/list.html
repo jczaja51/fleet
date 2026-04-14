@@ -48,7 +48,7 @@
                         data-station="{{ card.station or '-' }}"
                         data-plate="{{ card.vehicle.registration if card.vehicle else 'Nie przypisano' }}"
                         data-expiry="{% if card.expiry %}{{ card.expiry.strftime('%d.%m.%Y') }}{% else %}-{% endif %}"
-                        data-pin="{{ card.pin or '-' }}"
+                        data-pin="{% if card.has_pin %}Ustawiony{% else %}Brak{% endif %}"
                         data-status="{{ status_text }}"
                         data-status-class="{{ status_class }}"
                         data-edit-url="{{ url_for('fuel_cards.edit_card', card_id=card.id) }}"
@@ -170,6 +170,7 @@
                         </a>
 
                         <form method="POST" action="#" id="detailDeleteForm" data-confirm="Na pewno usunąć tę kartę?">
+                            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
                             <button type="submit" class="fuel-action-btn danger">
                                 <i class="bi bi-trash3"></i>
                                 Usuń
@@ -236,7 +237,7 @@ document.addEventListener("DOMContentLoaded", function () {
             const station = this.dataset.station || "-";
             const plate = this.dataset.plate || "-";
             const expiry = this.dataset.expiry || "-";
-            const pin = this.dataset.pin || "-";
+            const pin = this.dataset.pin || "Brak";
             const status = this.dataset.status || "Brak statusu";
             const statusClass = this.dataset.statusClass || "neutral";
             const editUrl = this.dataset.editUrl || "#";

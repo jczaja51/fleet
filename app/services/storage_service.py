@@ -11,6 +11,20 @@ from werkzeug.utils import secure_filename
 
 DOCUMENT_ALLOWED_EXTENSIONS = {"pdf", "jpg", "jpeg", "png", "webp"}
 IMAGE_ALLOWED_EXTENSIONS = {"jpg", "jpeg", "png", "webp"}
+ALLOWED_MIME_TYPES = {
+    "pdf": {"application/pdf"},
+    "jpg": {"image/jpeg"},
+    "jpeg": {"image/jpeg"},
+    "png": {"image/png"},
+    "webp": {"image/webp"},
+}
+FILE_SIGNATURES = {
+    "pdf": [b"%PDF-"],
+    "jpg": [b"\xff\xd8\xff"],
+    "jpeg": [b"\xff\xd8\xff"],
+    "png": [b"\x89PNG\r\n\x1a\n"],
+    "webp": [b"RIFF"],
+}
 
 __all__ = [
     "StorageError",
@@ -47,6 +61,29 @@ def _safe_suffix(filename: str, allowed_extensions: set[str]) -> str:
     return f".{suffix}"
 
 
+def _validate_file_content(uploaded_file: FileStorage, suffix: str) -> None:
+    uploaded_file.stream.seek(0)
+    header = uploaded_file.stream.read(16)
+    uploaded_file.stream.seek(0)
+
+    expected_signatures = FILE_SIGNATURES.get(suffix, [])
+    if not expected_signatures:
+        raise StorageError("Nie udało się potwierdzić typu pliku.")
+
+    if suffix == "webp":
+        is_valid = header.startswith(b"RIFF") and len(header) >= 12 and header[8:12] == b"WEBP"
+    else:
+        is_valid = any(header.startswith(signature) for signature in expected_signatures)
+
+    if not is_valid:
+        raise StorageError("Zawartość pliku nie zgadza się z jego rozszerzeniem.")
+
+    content_type = (uploaded_file.mimetype or "").lower().strip()
+    allowed_mime_types = ALLOWED_MIME_TYPES.get(suffix, set())
+    if content_type and content_type not in allowed_mime_types:
+        raise StorageError("Nieprawidłowy typ przesyłanego pliku.")
+
+
 def _normalize_registration(registration: str) -> str:
     value = (registration or "").strip().upper()
     value = unicodedata.normalize("NFKD", value).encode("ascii", "ignore").decode("ascii")
@@ -72,6 +109,8 @@ def save_document_file(uploaded_file: FileStorage, registration: str) -> tuple[s
         raise StorageError("Nie wybrano pliku dokumentu.")
 
     suffix = _safe_suffix(uploaded_file.filename, DOCUMENT_ALLOWED_EXTENSIONS)
+    suffix_without_dot = suffix.lstrip(".")
+    _validate_file_content(uploaded_file, suffix_without_dot)
     original_name = secure_filename(uploaded_file.filename)
 
     upload_dir = _ensure_vehicle_subdir(registration, "documents")
@@ -88,6 +127,8 @@ def save_vehicle_image(uploaded_file: FileStorage, registration: str) -> str:
         raise StorageError("Nie wybrano zdjęcia pojazdu.")
 
     suffix = _safe_suffix(uploaded_file.filename, IMAGE_ALLOWED_EXTENSIONS)
+    suffix_without_dot = suffix.lstrip(".")
+    _validate_file_content(uploaded_file, suffix_without_dot)
 
     upload_dir = _ensure_vehicle_subdir(registration, "image")
 

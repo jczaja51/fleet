@@ -90,7 +90,7 @@ class FuelCard(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     station = db.Column(db.String(100), nullable=True)
     number = db.Column(db.String(50), nullable=True)
-    pin = db.Column(db.String(10), nullable=True)
+    pin = db.Column(db.String(255), nullable=True)
     expiry = db.Column(db.Date, nullable=True)
 
     vehicle_id = db.Column(db.Integer, db.ForeignKey("vehicles.id", ondelete="CASCADE"), nullable=True)
@@ -101,6 +101,10 @@ class FuelCard(db.Model):
     )
 
     created_at = db.Column(db.DateTime, default=datetime.utcnow, nullable=False)
+
+    @property
+    def has_pin(self):
+        return bool(self.pin)
 
     def __repr__(self):
         return f"<FuelCard {self.station} {self.number}>"

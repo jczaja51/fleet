@@ -82,6 +82,7 @@
                                           action="{{ url_for('maintenance.delete_task', task_id=task.id) }}"
                                           class="action-form"
                                           data-confirm="Na pewno usunąć ten serwis?">
+                                        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
                                         <button type="submit" class="btn-danger btn-sm">Usuń</button>
                                     </form>
                                 </div>

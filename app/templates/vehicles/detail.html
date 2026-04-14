@@ -74,6 +74,7 @@
                                                   action="{{ url_for('documents.delete_document_route', document_id=document.id) }}"
                                                   class="vehicle-document-delete-form"
                                                   data-confirm="Na pewno usunąć ten dokument?">
+                                                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
                                                 <button type="submit" class="btn-ghost btn-ghost-danger btn-sm">
                                                     Usuń
                                                 </button>
@@ -212,6 +213,7 @@
                               action="{{ url_for('vehicles.delete_vehicle', vehicle_id=vehicle.id) }}"
                               class="action-form"
                               data-confirm="Na pewno usunąć pojazd?">
+                            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
                             <button type="submit" class="btn-danger">Usuń</button>
                         </form>
                     </div>

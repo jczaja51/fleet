@@ -8,6 +8,7 @@
 
 <div class="card">
     <form method="POST" class="maintenance-form">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
         <div class="form-grid">
             <div class="form-group">
                 <label for="vehicle_id">Pojazd</label>
