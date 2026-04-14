@@ -457,3 +457,47 @@
         border-top: 0;
     }
 }
+
+.vehicle-details-media-panel {
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+    min-height: 100%;
+}
+
+.vehicle-documents-card {
+    display: flex;
+    flex-direction: column;
+    max-height: 370px;
+    min-height: 370px;
+}
+
+.vehicle-documents-list-scroll {
+    overflow-y: auto;
+    max-height: 220px;
+    padding-right: 6px;
+}
+
+.vehicle-documents-head {
+    flex-shrink: 0;
+}
+
+.vehicle-documents-list-scroll::-webkit-scrollbar {
+    width: 8px;
+}
+
+.vehicle-documents-list-scroll::-webkit-scrollbar-thumb {
+    background: rgba(120, 136, 168, 0.35);
+    border-radius: 999px;
+}
+
+.vehicle-documents-list-scroll::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+.vehicle-document-row:last-child {
+    margin-bottom: 0;
+    padding-bottom: 0;
+    border-bottom: 0;
+}
+
