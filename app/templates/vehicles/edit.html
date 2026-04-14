@@ -2,15 +2,17 @@
 {% block title %}Fleet Lite – Edytuj pojazd{% endblock %}
 
 {% block content %}
-<div class="vehicle-create-page">
-    <div class="vehicle-create-header">
+<div class="page-wrap vehicle-page-shell">
+    <div class="vehicle-page-header vehicle-create-header">
         <div class="vehicle-create-breadcrumbs">Pojazdy / Edytuj pojazd</div>
         <h1>Edytuj pojazd</h1>
+        <p>Aktualizuj dane pojazdu, zdjęcie oraz terminy powiązanych dokumentów i przeglądów.</p>
     </div>
 
-    <div class="vehicle-create-layout">
-        <form method="POST" enctype="multipart/form-data" class="vehicle-create-card">
+    <div class="vehicle-page-layout">
+        <form method="POST" enctype="multipart/form-data" class="vehicle-page-card vehicle-create-card">
             <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+
             <div class="vehicle-create-main">
                 <section class="vehicle-create-section vehicle-create-section-left">
                     <h2>Dane pojazdu</h2>
@@ -40,9 +42,9 @@
                             <label for="category">Kategoria <span class="field-required">*</span></label>
                             <select id="category" name="category" required>
                                 <option value="">— Wybierz —</option>
-                                <option value="Samochód osobowy do 3,5 t DMC" {% if vehicle.category == "Samochód osobowy do 3,5 t" %}selected{% endif %}>Samochód osobowy do 3,5 t</option>
-                                <option value="Samochód ciężarowy do 3,5 t DMC" {% if vehicle.category == "Samochód ciężarowy do 3,5 t" %}selected{% endif %}>Samochód ciężarowy do 3,5 t</option>
-                                <option value="Samochód ciężarowy powyżej 3,5 t DMC" {% if vehicle.category == "Samochód ciężarowy powyżej 3,5 t" %}selected{% endif %}>Samochód ciężarowy powyżej 3,5 t</option>
+                                <option value="Samochód osobowy do 3,5 t DMC" {% if vehicle.category == "Samochód osobowy do 3,5 t DMC" or vehicle.category == "Samochód osobowy do 3,5 t" %}selected{% endif %}>Samochód osobowy do 3,5 t</option>
+                                <option value="Samochód ciężarowy do 3,5 t DMC" {% if vehicle.category == "Samochód ciężarowy do 3,5 t DMC" or vehicle.category == "Samochód ciężarowy do 3,5 t" %}selected{% endif %}>Samochód ciężarowy do 3,5 t</option>
+                                <option value="Samochód ciężarowy powyżej 3,5 t DMC" {% if vehicle.category == "Samochód ciężarowy powyżej 3,5 t DMC" or vehicle.category == "Samochód ciężarowy powyżej 3,5 t" %}selected{% endif %}>Samochód ciężarowy powyżej 3,5 t</option>
                                 <option value="Pojazd specjalny" {% if vehicle.category == "Pojazd specjalny" %}selected{% endif %}>Pojazd specjalny</option>
                                 <option value="Ciągnik siodłowy" {% if vehicle.category == "Ciągnik siodłowy" %}selected{% endif %}>Ciągnik siodłowy</option>
                                 <option value="Autobus" {% if vehicle.category == "Autobus" %}selected{% endif %}>Autobus</option>
@@ -154,7 +156,7 @@
             </div>
         </form>
 
-        <aside class="vehicle-create-tips">
+        <aside class="vehicle-page-aside vehicle-create-tips">
             <div class="vehicle-create-tips-head">
                 <i class="bi bi-lightbulb"></i>
                 <h3>Podpowiedzi</h3>

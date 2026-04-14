@@ -2,16 +2,17 @@
 {% block title %}Fleet Lite – Dodaj pojazd{% endblock %}
 
 {% block content %}
-<div class="vehicle-create-page">
-    <div class="vehicle-create-header">
+<div class="page-wrap vehicle-page-shell">
+    <div class="vehicle-page-header vehicle-create-header">
         <div class="vehicle-create-breadcrumbs">Pojazdy / Dodaj pojazd</div>
         <h1>Dodaj pojazd</h1>
         <p>Wprowadź dane nowego pojazdu do swojej floty firmowej i przypisz go do kierowcy.</p>
     </div>
 
-    <div class="vehicle-create-layout">
-        <form method="POST" enctype="multipart/form-data" class="vehicle-create-card">
+    <div class="vehicle-page-layout">
+        <form method="POST" enctype="multipart/form-data" class="vehicle-page-card vehicle-create-card">
             <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+
             <div class="vehicle-create-main">
                 <section class="vehicle-create-section vehicle-create-section-left">
                     <h2>Dane pojazdu</h2>
@@ -138,7 +139,7 @@
             </div>
         </form>
 
-        <aside class="vehicle-create-tips">
+        <aside class="vehicle-page-aside vehicle-create-tips">
             <div class="vehicle-create-tips-head">
                 <i class="bi bi-lightbulb"></i>
                 <h3>Podpowiedzi</h3>

@@ -2,16 +2,17 @@
 {% block title %}Fleet Lite – Szczegóły pojazdu{% endblock %}
 
 {% block content %}
-<main class="page-wrap vehicle-details-page">
-    <div class="vehicle-create-header vehicle-details-header">
+<div class="page-wrap vehicle-page-shell">
+    <div class="vehicle-page-header vehicle-create-header">
         <div class="vehicle-create-breadcrumbs">
             Pojazdy / {{ vehicle.display_name }} / Szczegóły pojazdu
         </div>
         <h1>Szczegóły pojazdu</h1>
+        <p>Przegląd najważniejszych informacji, dokumentów i terminów związanych z tym pojazdem.</p>
     </div>
 
-    <div class="vehicle-details-shell">
-        <div class="vehicle-details-card">
+    <div class="vehicle-page-layout vehicle-page-layout-detail">
+        <div class="vehicle-page-card vehicle-details-card">
             <div class="vehicle-details-tabs" role="tablist" aria-label="Sekcje pojazdu">
                 <button type="button" class="vehicle-details-tab is-active">Informacje</button>
                 <button type="button" class="vehicle-details-tab">Przeglądy ({{ vehicle.maintenance_tasks|length }})</button>
@@ -31,6 +32,7 @@
                             <img src="{{ url_for('static', filename='img/car-placeholder.jpg') }}" alt="{{ vehicle.display_name }}">
                         {% endif %}
                     </div>
+
                     <div class="vehicle-documents-card">
                         <div class="vehicle-documents-head">
                             <h3>Dokumenty</h3>
@@ -46,13 +48,13 @@
                                         <div class="vehicle-document-main">
                                             <div>
                                                 <div class="vehicle-document-title">{{ document.name }}</div>
-                                                    <div class="vehicle-document-meta">
-                                                        {% if document.original_filename %}
-                                                            {{ document.original_filename }}
-                                                        {% else %}
-                                                            Dokument dodany do pojazdu
-                                                        {% endif %}
-                                                    </div>
+                                                <div class="vehicle-document-meta">
+                                                    {% if document.original_filename %}
+                                                        {{ document.original_filename }}
+                                                    {% else %}
+                                                        Dokument dodany do pojazdu
+                                                    {% endif %}
+                                                </div>
                                             </div>
 
                                             <div class="vehicle-document-side">
@@ -65,15 +67,16 @@
                                         </div>
 
                                         <div class="vehicle-document-actions">
-                                            <a href="{{ url_for('documents.edit_document', document_id=document.id) }}"
-                                               class="btn-ghost btn-sm">
+                                            <a href="{{ url_for('documents.edit_document', document_id=document.id) }}" class="btn-ghost btn-sm">
                                                 Edytuj
                                             </a>
 
-                                            <form method="POST"
-                                                  action="{{ url_for('documents.delete_document_route', document_id=document.id) }}"
-                                                  class="vehicle-document-delete-form"
-                                                  data-confirm="Na pewno usunąć ten dokument?">
+                                            <form
+                                                method="POST"
+                                                action="{{ url_for('documents.delete_document_route', document_id=document.id) }}"
+                                                class="vehicle-document-delete-form"
+                                                data-confirm="Na pewno usunąć ten dokument?"
+                                            >
                                                 <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
                                                 <button type="submit" class="btn-ghost btn-ghost-danger btn-sm">
                                                     Usuń
@@ -115,11 +118,13 @@
 
                         <div class="vehicle-info-item vehicle-info-item-wide">
                             <span>Typ pojazdu</span>
-                                <strong>
-                                    {{ (vehicle.category or vehicle.type or '-')
-                                        | replace(' DMC', '')
-                                        | replace('dmc', '') }}
-                                </strong>                        </div>
+                            <strong>
+                                {{ (vehicle.category or vehicle.type or '-')
+                                    | replace(' DMC', '')
+                                    | replace('dmc', '') }}
+                            </strong>
+                        </div>
+
                         <div class="vehicle-info-item">
                             <span>Kategoria własności</span>
                             <strong>{{ vehicle.type or '-' }}</strong>
@@ -209,10 +214,12 @@
                     <div class="vehicle-side-actions vehicle-side-actions-detail">
                         <a href="{{ url_for('vehicles.edit_vehicle', vehicle_id=vehicle.id) }}" class="btn-primary">Edytuj</a>
 
-                        <form method="POST"
-                              action="{{ url_for('vehicles.delete_vehicle', vehicle_id=vehicle.id) }}"
-                              class="action-form"
-                              data-confirm="Na pewno usunąć pojazd?">
+                        <form
+                            method="POST"
+                            action="{{ url_for('vehicles.delete_vehicle', vehicle_id=vehicle.id) }}"
+                            class="action-form"
+                            data-confirm="Na pewno usunąć pojazd?"
+                        >
                             <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
                             <button type="submit" class="btn-danger">Usuń</button>
                         </form>
@@ -221,7 +228,7 @@
             </div>
         </div>
 
-        <aside class="vehicle-create-tips vehicle-details-tips">
+        <aside class="vehicle-page-aside vehicle-create-tips vehicle-details-tips">
             <div class="vehicle-create-tips-head">
                 <i class="bi bi-lightbulb"></i>
                 <h3>Podpowiedzi</h3>
@@ -243,5 +250,5 @@
             </div>
         </aside>
     </div>
-</main>
+</div>
 {% endblock %}

@@ -2,8 +2,8 @@
 {% block title %}Fleet Lite – Dodaj dokument{% endblock %}
 
 {% block content %}
-<main class="page-wrap vehicle-create-page document-create-page">
-    <div class="vehicle-create-header">
+<div class="page-wrap vehicle-page-shell document-page-shell">
+    <div class="vehicle-page-header vehicle-create-header">
         <div class="vehicle-create-breadcrumbs">
             Pojazdy / {{ vehicle.display_name }} / Dokumenty / Dodaj dokument
         </div>
@@ -11,10 +11,11 @@
         <p>Dodaj nowy dokument przypisany do pojazdu i uzupełnij jego podstawowe dane.</p>
     </div>
 
-    <div class="vehicle-create-layout">
-        <section class="vehicle-create-form-card document-create-card">
+    <div class="vehicle-page-layout document-page-layout">
+        <section class="vehicle-page-card vehicle-create-form-card document-create-card">
             <form method="POST" enctype="multipart/form-data" class="vehicle-create-form">
                 <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+
                 <div class="vehicle-create-grid">
                     <div class="form-group form-group-full">
                         <label for="vehicle_preview">Pojazd</label>
@@ -68,7 +69,7 @@
                     </div>
                     <div class="document-upload-content">
                         <h3>Plik dokumentu</h3>
-                        <p>Możesz dodać skan, PDF albo zdjęcie dokumentu. Najlepiej w formacie PDF lub JPG/PNG.</p>
+                        <p>Możesz dodać skan, PDF albo zdjęcie dokumentu. Najlepiej w formacie PDF lub JPG lub PNG.</p>
                     </div>
                 </div>
 
@@ -83,7 +84,7 @@
             </form>
         </section>
 
-        <aside class="vehicle-create-tips">
+        <aside class="vehicle-page-aside vehicle-create-tips document-page-tips">
             <div class="vehicle-create-tips-head">
                 <i class="bi bi-lightbulb"></i>
                 <h3>Podpowiedzi</h3>
@@ -100,5 +101,5 @@
             </div>
         </aside>
     </div>
-</main>
+</div>
 {% endblock %}
