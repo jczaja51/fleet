@@ -2,12 +2,12 @@
 {% set current_type = filters.type if filters else request.args.get('type', '') %}
 {% set current_sort = filters.sort if filters else request.args.get('sort', '') %}
 
-<section class="filters-row">
-    <div class="filters-shell">
+<section class="filters-toolbar">
+    <div class="filters-toolbar-main">
         <form
             method="GET"
             action="{{ url_for('main.dashboard') }}"
-            class="search-box search-box-inline"
+            class="search-box search-box-inline filters-search-box"
             hx-get="{{ url_for('main.dashboard') }}"
             hx-trigger="keyup changed delay:300ms from:input[name='q']"
             hx-target="#dashboard-content"
@@ -73,7 +73,7 @@
             </a>
         </div>
 
-        <div class="sort-dropdown" data-sort-dropdown>
+        <div class="sort-dropdown filters-sort-dropdown" data-sort-dropdown>
             <button type="button" class="sort-dropdown-toggle">
                 <span>
                     {% if current_sort == 'brand_asc' %}
@@ -191,8 +191,10 @@
         </div>
     </div>
 
-    <a href="{{ url_for('vehicles.add_vehicle') }}" class="btn-primary btn-add-vehicle">
-        <i class="bi bi-plus-lg"></i>
-        Dodaj pojazd
-    </a>
+    <div class="filters-toolbar-actions">
+        <a href="{{ url_for('vehicles.add_vehicle') }}" class="btn-primary btn-add-vehicle">
+            <i class="bi bi-plus-lg"></i>
+            Dodaj pojazd
+        </a>
+    </div>
 </section>
