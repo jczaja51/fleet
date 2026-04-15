@@ -88,9 +88,9 @@ class FuelCard(db.Model):
     __tablename__ = "fuel_cards"
 
     id = db.Column(db.Integer, primary_key=True)
-    station = db.Column(db.String(100), nullable=True)
-    number = db.Column(db.String(50), nullable=True)
-    pin = db.Column(db.String(255), nullable=True)
+    station = db.Column(db.String(60), nullable=True)
+    number = db.Column(db.String(4), nullable=True)
+    pin = db.Column(db.String(6), nullable=True)
     expiry = db.Column(db.Date, nullable=True)
 
     vehicle_id = db.Column(db.Integer, db.ForeignKey("vehicles.id", ondelete="CASCADE"), nullable=True)
@@ -106,9 +106,12 @@ class FuelCard(db.Model):
     def has_pin(self):
         return bool(self.pin)
 
+    @property
+    def masked_number(self):
+        return f"•• {self.number}" if self.number else "••••"
+
     def __repr__(self):
         return f"<FuelCard {self.station} {self.number}>"
-
 
 class Alert(db.Model):
     __tablename__ = "alerts"

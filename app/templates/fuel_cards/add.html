@@ -1,58 +1,375 @@
 {% extends "base.html" %}
+{% block title %}Fleet Lite – Dodaj kartę paliwową{% endblock %}
+
 {% block content %}
-
-<main class="page-wrap">
-    <div class="page-header">
-        <div>
-            <h2>Dodaj kartę paliwową</h2>
-            <div class="page-subtitle">Utwórz nową kartę i przypisz ją do pojazdu</div>
-        </div>
-
-        <a href="{{ url_for('fuel_cards.list_cards') }}" class="btn-secondary">
-            ← Wróć
-        </a>
+<div class="page-wrap vehicle-page-shell fuel-form-page-shell">
+    <div class="vehicle-page-header vehicle-create-header fuel-form-header">
+        <div class="vehicle-create-breadcrumbs">Karty paliwowe / Dodaj kartę</div>
+        <h1>Dodaj kartę paliwową</h1>
+        <p>Dodaj nową kartę, wpisz 4 ostatnie cyfry, PIN i opcjonalnie przypisz ją do wybranego pojazdu.</p>
     </div>
 
-    <form method="POST" class="form-card">
-        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
-        <div class="form-grid">
+    <div class="vehicle-page-layout fuel-form-layout">
+        <form method="POST" class="vehicle-page-card vehicle-create-card fuel-form-card" id="fuel-card-create-form" novalidate>
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
 
-            <div class="form-group">
-                <label for="station">Stacja</label>
-                <input type="text" id="station" name="station" required>
+            <div class="vehicle-create-main fuel-form-main">
+                <section class="vehicle-create-section vehicle-create-section-left fuel-form-section">
+                    <div class="fuel-form-section-head">
+                        <div class="fuel-form-section-icon">
+                            <i class="bi bi-credit-card-2-front"></i>
+                        </div>
+                        <div>
+                            <h2>Dane karty</h2>
+                            <p>Wpisz tylko najważniejsze dane karty paliwowej w układzie spójnym z resztą systemu.</p>
+                        </div>
+                    </div>
+
+                    <div class="vehicle-create-grid fuel-form-grid">
+                        <div class="form-group">
+                            <label for="station">Stacja <span class="field-required">*</span></label>
+                            <input
+                                type="text"
+                                id="station"
+                                name="station"
+                                required
+                                maxlength="60"
+                                autocomplete="off"
+                                placeholder="Np. Orlen, Shell, BP"
+                                value="{{ request.form.get('station', '') }}"
+                            >
+                            <div class="field-error" id="station-error">{{ errors.get('station', '') if errors else '' }}</div>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="number">4 ostatnie cyfry karty <span class="field-required">*</span></label>
+                            <input
+                                type="text"
+                                id="number"
+                                name="number"
+                                required
+                                maxlength="4"
+                                inputmode="numeric"
+                                autocomplete="off"
+                                placeholder="Np. 6033"
+                                value="{{ request.form.get('number', '') }}"
+                            >
+                            <div class="field-helper-text">Wpisz tylko końcówkę numeru karty.</div>
+                            <div class="field-error" id="number-error">{{ errors.get('number', '') if errors else '' }}</div>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="pin">PIN <span class="field-required">*</span></label>
+                            <input
+                                type="text"
+                                id="pin"
+                                name="pin"
+                                required
+                                maxlength="6"
+                                inputmode="numeric"
+                                autocomplete="off"
+                                placeholder="4–6 cyfr"
+                                value="{{ request.form.get('pin', '') }}"
+                            >
+                            <div class="field-helper-text">PIN jest widoczny w aplikacji. Dozwolone: 4 do 6 cyfr.</div>
+                            <div class="field-error" id="pin-error">{{ errors.get('pin', '') if errors else '' }}</div>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="expiry">Data ważności</label>
+                            <input
+                                type="text"
+                                id="expiry"
+                                name="expiry"
+                                class="js-date-picker"
+                                autocomplete="off"
+                                placeholder="RRRR-MM-DD"
+                                value="{{ request.form.get('expiry', '') }}"
+                            >
+                            <div class="field-error" id="expiry-error">{{ errors.get('expiry', '') if errors else '' }}</div>
+                        </div>
+
+                        <div class="form-group form-group-full">
+                            <label for="vehicle_id">Pojazd</label>
+                            <select id="vehicle_id" name="vehicle_id">
+                                <option value="">— brak przypisania —</option>
+                                {% for v in vehicles %}
+                                    <option value="{{ v.id }}" {% if request.form.get('vehicle_id') == (v.id|string) %}selected{% endif %}>
+                                        {{ v.name }} ({{ v.registration }})
+                                    </option>
+                                {% endfor %}
+                            </select>
+                            <div class="field-helper-text">Kartę możesz dodać bez przypisania i przypisać ją później.</div>
+                            <div class="field-error" id="vehicle_id-error">{{ errors.get('vehicle_id', '') if errors else '' }}</div>
+                        </div>
+                    </div>
+                </section>
+
+                <section class="vehicle-create-section vehicle-create-section-right fuel-form-preview-section">
+                    <div class="fuel-form-section-head fuel-form-section-head-compact">
+                        <div class="fuel-form-section-icon">
+                            <i class="bi bi-fuel-pump"></i>
+                        </div>
+                        <div>
+                            <h2>Podgląd</h2>
+                            <p>Dynamiczny podgląd danych.</p>
+                        </div>
+                    </div>
+
+                    <div class="fuel-card-preview-wrap">
+                        <div class="fuel-card-preview-mini">
+                            <div class="fuel-card-preview-pattern fuel-card-preview-pattern-a"></div>
+                            <div class="fuel-card-preview-pattern fuel-card-preview-pattern-b"></div>
+                            <div class="fuel-card-preview-shine"></div>
+
+                            <div class="fuel-card-preview-topbar">
+                                <div class="fuel-card-preview-brand" id="preview-station">STACJA</div>
+                                <div class="fuel-card-preview-contactless">
+                                    <span></span><span></span><span></span>
+                                </div>
+                            </div>
+
+                            <div class="fuel-card-preview-chip"></div>
+
+                            <div class="fuel-card-preview-number" id="preview-number">**** **** **** 0000</div>
+
+                            <div class="fuel-card-preview-footer">
+                                <div class="fuel-card-preview-col">
+                                    <span>PIN</span>
+                                    <strong id="preview-pin">----</strong>
+                                </div>
+                                <div class="fuel-card-preview-col">
+                                    <span>ważność</span>
+                                    <strong id="preview-expiry">—</strong>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
             </div>
 
-            <div class="form-group">
-                <label for="number">Numer karty</label>
-                <input type="text" id="number" name="number" required>
+            <div class="vehicle-create-actions">
+                <a href="{{ url_for('fuel_cards.list_cards') }}" class="btn-secondary btn-create-cancel">Anuluj</a>
+                <button type="submit" class="btn-primary btn-create-submit">
+                    <i class="bi bi-floppy"></i>
+                    Zapisz kartę
+                </button>
+            </div>
+        </form>
+
+        <aside class="vehicle-page-aside vehicle-create-tips fuel-form-tips">
+            <div class="vehicle-create-tips-head">
+                <i class="bi bi-lightbulb"></i>
+                <h3>Podpowiedzi</h3>
             </div>
 
-            <div class="form-group">
-                <label for="pin">PIN</label>
-                <input type="password" id="pin" name="pin" autocomplete="new-password">
+            <div class="vehicle-tip">
+                <i class="bi bi-123"></i>
+                <p>W systemie zapisujesz tylko 4 ostatnie cyfry numeru, więc lista kart będzie czytelniejsza.</p>
             </div>
 
-            <div class="form-group">
-                <label for="expiry">Data ważności</label>
-                <input type="text" id="expiry" name="expiry" class="js-date-picker" autocomplete="off">
+            <div class="vehicle-tip">
+                <i class="bi bi-keypad"></i>
+                <p>PIN może mieć od 4 do 6 cyfr i jest walidowany zarówno na froncie, jak i w backendzie.</p>
             </div>
 
-            <div class="form-group">
-                <label for="vehicle_id">Pojazd</label>
-                <select id="vehicle_id" name="vehicle_id">
-                    <option value="">— brak przypisania —</option>
-                    {% for v in vehicles %}
-                        <option value="{{ v.id }}">
-                            {{ v.name }} ({{ v.registration }})
-                        </option>
-                    {% endfor %}
-                </select>
+            <div class="vehicle-tip">
+                <i class="bi bi-car-front"></i>
+                <p>Przypisanie karty do pojazdu ułatwia szybkie znalezienie właściwej karty w codziennej pracy.</p>
             </div>
+        </aside>
+    </div>
+</div>
+{% endblock %}
 
-        </div>
+{% block scripts %}
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+    const form = document.getElementById("fuel-card-create-form");
+    const stationInput = document.getElementById("station");
+    const numberInput = document.getElementById("number");
+    const pinInput = document.getElementById("pin");
+    const expiryInput = document.getElementById("expiry");
 
-        <button type="submit" class="btn-primary">Zapisz kartę</button>
-    </form>
-</main>
+    const previewStation = document.getElementById("preview-station");
+    const previewNumber = document.getElementById("preview-number");
+    const previewPin = document.getElementById("preview-pin");
+    const previewExpiry = document.getElementById("preview-expiry");
 
+    function normalizeSpaces(value) {
+        return value.replace(/\s+/g, " ").trim();
+    }
+
+    function setError(input, message) {
+        const errorBox = document.getElementById(input.id + "-error");
+        if (errorBox) {
+            errorBox.textContent = message || "";
+        }
+
+        if (message) {
+            input.classList.add("input-invalid");
+        } else {
+            input.classList.remove("input-invalid");
+        }
+    }
+
+    function clearError(input) {
+        setError(input, "");
+    }
+
+    function isValidDateString(value) {
+        if (!value) return true;
+        return /^\d{4}-\d{2}-\d{2}$/.test(value);
+    }
+
+    function formatExpiryPreview(value) {
+        if (!value || !/^\d{4}-\d{2}-\d{2}$/.test(value)) {
+            return "—";
+        }
+
+        const parts = value.split("-");
+        return parts[1] + "/" + parts[0].slice(2);
+    }
+
+    function updatePreview() {
+        const station = normalizeSpaces(stationInput.value);
+        const number = numberInput.value.trim();
+        const pin = pinInput.value.trim();
+        const expiry = expiryInput.value.trim();
+
+        previewStation.textContent = station || "STACJA";
+        previewNumber.textContent = number ? "**** **** **** " + number : "**** **** **** 0000";
+        previewPin.textContent = pin || "----";
+        previewExpiry.textContent = formatExpiryPreview(expiry);
+    }
+
+    function validateStation() {
+        const value = normalizeSpaces(stationInput.value);
+        stationInput.value = value;
+
+        if (!value) {
+            setError(stationInput, "Podaj nazwę stacji.");
+            return false;
+        }
+
+        if (value.length < 2) {
+            setError(stationInput, "Nazwa stacji jest za krótka.");
+            return false;
+        }
+
+        if (value.length > 60) {
+            setError(stationInput, "Nazwa stacji może mieć maksymalnie 60 znaków.");
+            return false;
+        }
+
+        clearError(stationInput);
+        return true;
+    }
+
+    function validateNumber() {
+        let value = numberInput.value.replace(/\D/g, "");
+        numberInput.value = value;
+
+        if (!value) {
+            setError(numberInput, "Podaj 4 ostatnie cyfry karty.");
+            return false;
+        }
+
+        if (!/^\d{4}$/.test(value)) {
+            setError(numberInput, "Pole musi zawierać dokładnie 4 cyfry.");
+            return false;
+        }
+
+        clearError(numberInput);
+        return true;
+    }
+
+    function validatePin() {
+        let value = pinInput.value.replace(/\D/g, "");
+        pinInput.value = value;
+
+        if (!value) {
+            setError(pinInput, "Podaj PIN.");
+            return false;
+        }
+
+        if (!/^\d{4,6}$/.test(value)) {
+            setError(pinInput, "PIN musi zawierać od 4 do 6 cyfr.");
+            return false;
+        }
+
+        clearError(pinInput);
+        return true;
+    }
+
+    function validateExpiry() {
+        const value = expiryInput.value ? expiryInput.value.trim() : "";
+
+        if (!value) {
+            clearError(expiryInput);
+            return true;
+        }
+
+        if (!isValidDateString(value)) {
+            setError(expiryInput, "Data ważności musi mieć format RRRR-MM-DD.");
+            return false;
+        }
+
+        clearError(expiryInput);
+        return true;
+    }
+
+    function validateForm() {
+        return [
+            validateStation(),
+            validateNumber(),
+            validatePin(),
+            validateExpiry()
+        ].every(Boolean);
+    }
+
+    stationInput.addEventListener("input", updatePreview);
+    stationInput.addEventListener("blur", function () {
+        validateStation();
+        updatePreview();
+    });
+
+    numberInput.addEventListener("input", function () {
+        numberInput.value = numberInput.value.replace(/\D/g, "").slice(0, 4);
+        updatePreview();
+    });
+    numberInput.addEventListener("blur", validateNumber);
+
+    pinInput.addEventListener("input", function () {
+        pinInput.value = pinInput.value.replace(/\D/g, "").slice(0, 6);
+        updatePreview();
+    });
+    pinInput.addEventListener("blur", validatePin);
+
+    expiryInput.addEventListener("change", function () {
+        validateExpiry();
+        updatePreview();
+    });
+    expiryInput.addEventListener("blur", function () {
+        validateExpiry();
+        updatePreview();
+    });
+
+    form.addEventListener("submit", function (event) {
+        stationInput.value = normalizeSpaces(stationInput.value);
+        numberInput.value = numberInput.value.replace(/\D/g, "").slice(0, 4);
+        pinInput.value = pinInput.value.replace(/\D/g, "").slice(0, 6);
+
+        if (!validateForm()) {
+            event.preventDefault();
+            const firstInvalid = form.querySelector(".input-invalid");
+            if (firstInvalid) {
+                firstInvalid.focus();
+            }
+        }
+    });
+
+    updatePreview();
+});
+</script>
 {% endblock %}

@@ -4,10 +4,35 @@
 
 {% block content %}
 <div class="fuel-cards-page">
+    {% set total_cards = cards|length if cards else 0 %}
+    {% set active_cards = namespace(value=0) %}
+    {% set expiring_cards = namespace(value=0) %}
+    {% set no_pin_cards = namespace(value=0) %}
+
+    {% if cards %}
+        {% for card in cards %}
+            {% if card.expiry %}
+                {% set days_left = (card.expiry - today).days %}
+                {% if days_left >= 0 %}
+                    {% set active_cards.value = active_cards.value + 1 %}
+                {% endif %}
+                {% if days_left >= 0 and days_left <= 30 %}
+                    {% set expiring_cards.value = expiring_cards.value + 1 %}
+                {% endif %}
+            {% endif %}
+
+            {% if not card.has_pin %}
+                {% set no_pin_cards.value = no_pin_cards.value + 1 %}
+            {% endif %}
+        {% endfor %}
+    {% endif %}
+
     <div class="fuel-cards-topbar">
         <div>
             <h1 class="fuel-cards-title">Karty paliwowe</h1>
-            <p class="fuel-cards-subtitle">Kliknij kartę, aby zobaczyć szczegóły</p>
+            <p class="fuel-cards-subtitle">
+                Zarządzaj kartami przypisanymi do pojazdów i kliknij kartę, aby zobaczyć szczegóły
+            </p>
         </div>
 
         <a href="{{ url_for('fuel_cards.add_card') }}" class="fuel-add-btn">
@@ -17,6 +42,48 @@
     </div>
 
     {% if cards %}
+        <div class="fuel-stats-row">
+            <div class="fuel-stat-card">
+                <div class="fuel-stat-icon blue">
+                    <i class="bi bi-credit-card-2-front-fill"></i>
+                </div>
+                <div class="fuel-stat-content">
+                    <span>Wszystkie karty</span>
+                    <strong>{{ total_cards }}</strong>
+                </div>
+            </div>
+
+            <div class="fuel-stat-card">
+                <div class="fuel-stat-icon green">
+                    <i class="bi bi-patch-check-fill"></i>
+                </div>
+                <div class="fuel-stat-content">
+                    <span>Aktywne</span>
+                    <strong>{{ active_cards.value }}</strong>
+                </div>
+            </div>
+
+            <div class="fuel-stat-card">
+                <div class="fuel-stat-icon amber">
+                    <i class="bi bi-exclamation-triangle-fill"></i>
+                </div>
+                <div class="fuel-stat-content">
+                    <span>Wygasają wkrótce</span>
+                    <strong>{{ expiring_cards.value }}</strong>
+                </div>
+            </div>
+
+            <div class="fuel-stat-card">
+                <div class="fuel-stat-icon red">
+                    <i class="bi bi-shield-lock-fill"></i>
+                </div>
+                <div class="fuel-stat-content">
+                    <span>Bez PIN-u</span>
+                    <strong>{{ no_pin_cards.value }}</strong>
+                </div>
+            </div>
+        </div>
+
         <div class="fuel-cards-layout">
             <div class="fuel-cards-grid">
                 {% for card in cards %}
@@ -55,15 +122,16 @@
                         data-delete-url="{{ url_for('fuel_cards.delete_card', card_id=card.id) }}"
                     >
                         <div class="fuel-card-visual">
+                            <div class="fuel-card-glow"></div>
                             <div class="fuel-card-chip"></div>
+
+                            <div class="fuel-card-status {{ status_class }}">
+                                {{ status_text }}
+                            </div>
 
                             <div class="fuel-card-logo">
                                 <i class="bi bi-fuel-pump-fill"></i>
                                 <span>FleetCard</span>
-                            </div>
-
-                            <div class="fuel-card-status {{ status_class }}">
-                                {{ status_text }}
                             </div>
 
                             <div class="fuel-card-number">{{ masked_number }}</div>
@@ -102,15 +170,16 @@
 
                     <div class="fuel-side-preview">
                         <div class="fuel-card-visual large">
+                            <div class="fuel-card-glow"></div>
                             <div class="fuel-card-chip"></div>
+
+                            <div class="fuel-card-status neutral" id="detailStatusBadgeTop">
+                                Brak statusu
+                            </div>
 
                             <div class="fuel-card-logo">
                                 <i class="bi bi-fuel-pump-fill"></i>
                                 <span>FleetCard</span>
-                            </div>
-
-                            <div class="fuel-card-status neutral" id="detailStatusBadgeTop">
-                                Brak statusu
                             </div>
 
                             <div class="fuel-card-number" id="detailMaskedNumber">••••  ••••  ••••  ----</div>
@@ -266,6 +335,16 @@ document.addEventListener("DOMContentLoaded", function () {
             panel.classList.remove("is-hidden");
         });
     });
+
+    const deleteForm = document.getElementById("detailDeleteForm");
+    if (deleteForm) {
+        deleteForm.addEventListener("submit", function (e) {
+            const message = this.dataset.confirm || "Na pewno usunąć?";
+            if (!confirm(message)) {
+                e.preventDefault();
+            }
+        });
+    }
 });
 </script>
 {% endblock %}
