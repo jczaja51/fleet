@@ -54,7 +54,6 @@
                                 placeholder="Np. 6033"
                                 value="{{ request.form.get('number', card.number or '') }}"
                             >
-                            <div class="field-helper-text">W bazie przechowujesz tylko 4 ostatnie cyfry.</div>
                             <div class="field-error" id="number-error">{{ errors.get('number', '') if errors else '' }}</div>
                         </div>
 
@@ -71,7 +70,6 @@
                                 placeholder="4–6 cyfr"
                                 value="{{ request.form.get('pin', card.pin or '') }}"
                             >
-                            <div class="field-helper-text">PIN jest przechowywany normalnie i można go edytować bezpośrednio z poziomu aplikacji.</div>
                             <div class="field-error" id="pin-error">{{ errors.get('pin', '') if errors else '' }}</div>
                         </div>
 

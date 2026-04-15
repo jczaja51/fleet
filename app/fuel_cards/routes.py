@@ -1,7 +1,6 @@
 from datetime import datetime, date
 
 from flask import Blueprint, flash, render_template, request, redirect, url_for
-
 from app import db
 from app.models import FuelCard, Vehicle
 from app.utils import calculate_status
@@ -15,32 +14,40 @@ def parse_date(value):
     return datetime.strptime(value, "%Y-%m-%d").date()
 
 
-def normalize_optional_text(value):
-    cleaned = (value or "").strip()
-    return cleaned or None
-
-
 def normalize_station(value):
-    cleaned = " ".join((value or "").split()).strip()
-    return cleaned
+    cleaned = (value or "").strip()
+    return cleaned[:60] if cleaned else None
 
 
 def normalize_card_number(value):
-    return "".join(ch for ch in (value or "") if ch.isdigit())
+    digits = "".join(ch for ch in (value or "") if ch.isdigit())
+    return digits[:4] if digits else None
 
 
 def normalize_pin(value):
-    return "".join(ch for ch in (value or "") if ch.isdigit())
+    digits = "".join(ch for ch in (value or "") if ch.isdigit())
+    return digits[:6] if digits else None
 
 
-def validate_fuel_card_form(station, number, pin, expiry, vehicle_id):
+def is_legacy_hashed_pin(value):
+    if not value:
+        return False
+    value = str(value)
+    return (
+        value.startswith("scrypt:")
+        or value.startswith("pbkdf2:")
+        or value.startswith("sha256:")
+    )
+
+
+def safe_pin_for_display(value):
+    if not value or is_legacy_hashed_pin(value):
+        return ""
+    return str(value)
+
+
+def validate_card_form(station, number, pin, expiry, vehicle_id):
     errors = {}
-
-    station = normalize_station(station)
-    number = normalize_card_number(number)
-    pin = normalize_pin(pin)
-    expiry = (expiry or "").strip()
-    vehicle_id = (vehicle_id or "").strip()
 
     if not station:
         errors["station"] = "Podaj nazwę stacji."
@@ -51,138 +58,199 @@ def validate_fuel_card_form(station, number, pin, expiry, vehicle_id):
 
     if not number:
         errors["number"] = "Podaj 4 ostatnie cyfry karty."
-    elif len(number) != 4:
-        errors["number"] = "Numer karty musi zawierać dokładnie 4 cyfry."
+    elif not number.isdigit() or len(number) != 4:
+        errors["number"] = "Pole musi zawierać dokładnie 4 cyfry."
 
     if not pin:
         errors["pin"] = "Podaj PIN."
-    elif not (4 <= len(pin) <= 6):
+    elif not pin.isdigit() or not (4 <= len(pin) <= 6):
         errors["pin"] = "PIN musi zawierać od 4 do 6 cyfr."
 
-    parsed_expiry = None
     if expiry:
         try:
-            parsed_expiry = parse_date(expiry)
+            parse_date(expiry)
         except ValueError:
             errors["expiry"] = "Data ważności musi mieć format RRRR-MM-DD."
 
-    parsed_vehicle_id = None
     if vehicle_id:
-        if not vehicle_id.isdigit():
-            errors["vehicle_id"] = "Wybrano niepoprawny pojazd."
-        else:
-            parsed_vehicle_id = int(vehicle_id)
-            vehicle_exists = db.session.get(Vehicle, parsed_vehicle_id)
-            if not vehicle_exists:
-                errors["vehicle_id"] = "Wybrany pojazd nie istnieje."
+        vehicle = Vehicle.query.get(vehicle_id)
+        if not vehicle:
+            errors["vehicle_id"] = "Wybrany pojazd nie istnieje."
 
+    return errors
+
+
+def attach_card_helpers(card):
+    card.status = calculate_status(card.expiry)
+    card.safe_pin = safe_pin_for_display(card.pin)
+    return card
+
+
+def build_filters():
     return {
-        "errors": errors,
-        "station": station,
-        "number": number,
-        "pin": pin,
-        "expiry": parsed_expiry,
-        "vehicle_id": parsed_vehicle_id,
+        "q": (request.args.get("q") or "").strip(),
+        "assigned": (request.args.get("assigned") or "").strip(),
+        "sort": (request.args.get("sort") or "").strip(),
+    }
+
+
+def build_stats(cards):
+    return {
+        "total_cards": len(cards),
+        "assigned_cards": sum(1 for c in cards if c.vehicle_id),
+        "warning_cards": sum(
+            1 for c in cards if c.expiry and 0 <= (c.expiry - date.today()).days <= 30
+        ),
+        "danger_cards": sum(
+            1 for c in cards if c.expiry and (c.expiry - date.today()).days < 0
+        ),
     }
 
 
 @fuel_bp.route("/")
 def list_cards():
-    cards = FuelCard.query.order_by(FuelCard.id.desc()).all()
+    filters = build_filters()
+    q = filters["q"]
+    assigned = filters["assigned"]
+    sort = filters["sort"]
 
-    for c in cards:
-        c.status = calculate_status(c.expiry)
+    query = FuelCard.query.outerjoin(Vehicle)
 
-    return render_template("fuel_cards/list.html", cards=cards, today=date.today())
+    if q:
+        like_value = f"%{q}%"
+        query = query.filter(
+            db.or_(
+                FuelCard.station.ilike(like_value),
+                FuelCard.number.ilike(like_value),
+                FuelCard.pin.ilike(like_value),
+                Vehicle.registration.ilike(like_value),
+                Vehicle.brand.ilike(like_value),
+                Vehicle.model.ilike(like_value),
+            )
+        )
+
+    if assigned == "assigned":
+        query = query.filter(FuelCard.vehicle_id.isnot(None))
+    elif assigned == "unassigned":
+        query = query.filter(FuelCard.vehicle_id.is_(None))
+
+    if sort == "station_asc":
+        query = query.order_by(FuelCard.station.asc().nullslast(), FuelCard.id.desc())
+    elif sort == "station_desc":
+        query = query.order_by(FuelCard.station.desc().nullslast(), FuelCard.id.desc())
+    elif sort == "number_asc":
+        query = query.order_by(FuelCard.number.asc().nullslast(), FuelCard.id.desc())
+    elif sort == "number_desc":
+        query = query.order_by(FuelCard.number.desc().nullslast(), FuelCard.id.desc())
+    elif sort == "expiry_asc":
+        query = query.order_by(FuelCard.expiry.asc().nullslast(), FuelCard.id.desc())
+    elif sort == "expiry_desc":
+        query = query.order_by(FuelCard.expiry.desc().nullslast(), FuelCard.id.desc())
+    elif sort == "vehicle_asc":
+        query = query.order_by(Vehicle.registration.asc().nullslast(), FuelCard.id.desc())
+    elif sort == "vehicle_desc":
+        query = query.order_by(Vehicle.registration.desc().nullslast(), FuelCard.id.desc())
+    else:
+        query = query.order_by(FuelCard.id.desc())
+
+    cards = query.all()
+
+    for card in cards:
+        attach_card_helpers(card)
+
+    stats = build_stats(cards)
+
+    if request.headers.get("HX-Request") == "true":
+        return render_template(
+            "partials/fuel_cards_results.html",
+            cards=cards,
+            today=date.today(),
+            filters=filters,
+            stats=stats,
+        )
+
+    return render_template(
+        "fuel_cards/list.html",
+        cards=cards,
+        today=date.today(),
+        filters=filters,
+        stats=stats,
+    )
 
 
 @fuel_bp.route("/add", methods=["GET", "POST"])
 def add_card():
     vehicles = Vehicle.query.order_by(Vehicle.registration.asc()).all()
+    errors = {}
 
     if request.method == "POST":
-        validated = validate_fuel_card_form(
-            station=request.form.get("station"),
-            number=request.form.get("number"),
-            pin=request.form.get("pin"),
-            expiry=request.form.get("expiry"),
-            vehicle_id=request.form.get("vehicle_id"),
-        )
+        station = normalize_station(request.form.get("station"))
+        number = normalize_card_number(request.form.get("number"))
+        pin = normalize_pin(request.form.get("pin"))
+        expiry_raw = (request.form.get("expiry") or "").strip()
+        vehicle_id_raw = (request.form.get("vehicle_id") or "").strip()
+        vehicle_id = int(vehicle_id_raw) if vehicle_id_raw.isdigit() else None
 
-        errors = validated["errors"]
+        errors = validate_card_form(station, number, pin, expiry_raw, vehicle_id)
 
-        if errors:
-            for message in errors.values():
-                flash(message, "danger")
-
-            return render_template(
-                "fuel_cards/add.html",
-                vehicles=vehicles,
-                errors=errors,
+        if not errors:
+            card = FuelCard(
+                station=station,
+                number=number,
+                pin=pin,
+                expiry=parse_date(expiry_raw) if expiry_raw else None,
+                vehicle_id=vehicle_id,
             )
+            db.session.add(card)
+            db.session.commit()
 
-        card = FuelCard(
-            station=validated["station"],
-            number=validated["number"],
-            pin=validated["pin"],
-            expiry=validated["expiry"],
-            vehicle_id=validated["vehicle_id"],
-        )
+            flash("Karta paliwowa została dodana.", "success")
+            return redirect(url_for("fuel_cards.list_cards"))
 
-        db.session.add(card)
-        db.session.commit()
+    return render_template("fuel_cards/add.html", vehicles=vehicles, errors=errors)
 
-        flash("Karta paliwowa została dodana.", "success")
-        return redirect(url_for("fuel_cards.list_cards"))
 
-    return render_template("fuel_cards/add.html", vehicles=vehicles, errors={})
+@fuel_bp.route("/<int:card_id>")
+def detail_card(card_id):
+    card = FuelCard.query.get_or_404(card_id)
+    attach_card_helpers(card)
+    return render_template("fuel_cards/detail.html", card=card, today=date.today())
 
 
 @fuel_bp.route("/<int:card_id>/edit", methods=["GET", "POST"])
 def edit_card(card_id):
     card = FuelCard.query.get_or_404(card_id)
     vehicles = Vehicle.query.order_by(Vehicle.registration.asc()).all()
+    errors = {}
 
     if request.method == "POST":
-        validated = validate_fuel_card_form(
-            station=request.form.get("station"),
-            number=request.form.get("number"),
-            pin=request.form.get("pin"),
-            expiry=request.form.get("expiry"),
-            vehicle_id=request.form.get("vehicle_id"),
-        )
+        station = normalize_station(request.form.get("station"))
+        number = normalize_card_number(request.form.get("number"))
+        pin = normalize_pin(request.form.get("pin"))
+        expiry_raw = (request.form.get("expiry") or "").strip()
+        vehicle_id_raw = (request.form.get("vehicle_id") or "").strip()
+        vehicle_id = int(vehicle_id_raw) if vehicle_id_raw.isdigit() else None
 
-        errors = validated["errors"]
+        errors = validate_card_form(station, number, pin, expiry_raw, vehicle_id)
 
-        if errors:
-            for message in errors.values():
-                flash(message, "danger")
+        if not errors:
+            card.station = station
+            card.number = number
+            card.pin = pin
+            card.expiry = parse_date(expiry_raw) if expiry_raw else None
+            card.vehicle_id = vehicle_id
 
-            return render_template(
-                "fuel_cards/edit.html",
-                card=card,
-                vehicles=vehicles,
-                errors=errors,
-            )
+            db.session.commit()
+            flash("Karta została zaktualizowana.", "success")
+            return redirect(url_for("fuel_cards.detail_card", card_id=card.id))
 
-        card.station = validated["station"]
-        card.number = validated["number"]
-        card.pin = validated["pin"]
-        card.expiry = validated["expiry"]
-        card.vehicle_id = validated["vehicle_id"]
-
-        db.session.commit()
-
-        flash("Karta została zaktualizowana.", "success")
-        return redirect(url_for("fuel_cards.list_cards"))
-
-    return render_template("fuel_cards/edit.html", card=card, vehicles=vehicles, errors={})
+    attach_card_helpers(card)
+    return render_template("fuel_cards/edit.html", card=card, vehicles=vehicles, errors=errors)
 
 
 @fuel_bp.route("/<int:card_id>/delete", methods=["POST"])
 def delete_card(card_id):
     card = FuelCard.query.get_or_404(card_id)
-
     db.session.delete(card)
     db.session.commit()
 

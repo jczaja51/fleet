@@ -1,0 +1,129 @@
+{% if cards %}
+<section class="vehicles-grid fuel-vehicles-grid">
+    {% for card in cards %}
+        {% set status_class = 'ok' %}
+        {% set status_text = 'Aktywna' %}
+
+        {% if card.expiry %}
+            {% set days_left = (card.expiry - today).days %}
+            {% if days_left < 0 %}
+                {% set status_class = 'danger' %}
+                {% set status_text = 'Po terminie' %}
+            {% elif days_left <= 30 %}
+                {% set status_class = 'warning' %}
+                {% set status_text = 'Wygasa wkrótce' %}
+            {% endif %}
+        {% else %}
+            {% set status_class = 'neutral' %}
+            {% set status_text = 'Brak daty' %}
+        {% endif %}
+
+        <a href="{{ url_for('fuel_cards.detail_card', card_id=card.id) }}" class="vehicle-card-link">
+            <article class="vehicle-card fuel-card-clone">
+                <div class="vehicle-info fuel-card-info">
+                    <div class="vehicle-topline">
+                        <h3>{{ card.station or 'Karta paliwowa' }}</h3>
+                        <div class="plate-chip">
+                            **** {{ card.number or '----' }}
+                            <i class="bi bi-chevron-right"></i>
+                        </div>
+                    </div>
+
+                    <div class="vehicle-divider"></div>
+
+                    <div class="vehicle-main-stats">
+                        <div class="mileage-row">
+                            <i class="bi bi-keypad"></i>
+                            <strong>PIN:</strong>
+                            <span>{{ card.safe_pin or 'Brak' }}</span>
+                        </div>
+
+                        <div class="vehicle-extra-chips">
+                            <span class="vehicle-mini-stat">
+                                <i class="bi bi-car-front"></i>
+                                {{ 1 if card.vehicle else 0 }}
+                            </span>
+
+                            <span class="vehicle-mini-stat text">
+                                {% if card.vehicle %}
+                                    {{ card.vehicle.registration }}
+                                {% else %}
+                                    Bez pojazdu
+                                {% endif %}
+                            </span>
+                        </div>
+                    </div>
+
+                    <div class="vehicle-divider"></div>
+
+                    <p class="meta-line">
+                        <span>Ważność:</span>
+                        <strong>
+                            {% if card.expiry %}
+                                {{ card.expiry.strftime('%d.%m.%Y') }}
+                            {% else %}
+                                Brak
+                            {% endif %}
+                        </strong>
+                    </p>
+
+                    <p class="meta-line meta-line-last">
+                        <span>Status:</span>
+                        <strong class="fuel-status-text fuel-status-{{ status_class }}">{{ status_text }}</strong>
+                    </p>
+                </div>
+
+                <div class="vehicle-image-wrap fuel-card-preview-side">
+                    <div class="fuel-card-preview-mini fuel-card-preview-mini-list">
+                        <div class="fuel-card-preview-pattern fuel-card-preview-pattern-a"></div>
+                        <div class="fuel-card-preview-pattern fuel-card-preview-pattern-b"></div>
+                        <div class="fuel-card-preview-shine"></div>
+
+                        <div class="fuel-card-preview-topbar">
+                            <div class="fuel-card-preview-brand">{{ card.station or "STACJA" }}</div>
+                            <div class="fuel-card-preview-contactless">
+                                <span></span><span></span><span></span>
+                            </div>
+                        </div>
+
+                        <div class="fuel-card-preview-chip"></div>
+
+                        <div class="fuel-card-preview-number">**** **** **** {{ card.number or '0000' }}</div>
+
+                        <div class="fuel-card-preview-footer">
+                            <div class="fuel-card-preview-col">
+                                <span>PIN</span>
+                                <strong>{{ card.safe_pin or 'Brak' }}</strong>
+                            </div>
+                            <div class="fuel-card-preview-col">
+                                <span>ważność</span>
+                                <strong>
+                                    {% if card.expiry %}
+                                        {{ card.expiry.strftime('%m/%y') }}
+                                    {% else %}
+                                        —
+                                    {% endif %}
+                                </strong>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </article>
+        </a>
+    {% endfor %}
+</section>
+{% else %}
+<section class="empty-section">
+    <div class="empty-card">
+        <div class="empty-icon">
+            <i class="bi bi-credit-card-2-front"></i>
+        </div>
+        <h3>Brak kart paliwowych</h3>
+        <p>Dodaj pierwszą kartę, aby zobaczyć ją na liście.</p>
+        <a href="{{ url_for('fuel_cards.add_card') }}" class="btn-primary btn-add-vehicle">
+            <i class="bi bi-plus-lg"></i>
+            Dodaj kartę
+        </a>
+    </div>
+</section>
+{% endif %}

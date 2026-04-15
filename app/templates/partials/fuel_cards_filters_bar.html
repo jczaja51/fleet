@@ -1,0 +1,110 @@
+{% set current_q = filters.q if filters else request.args.get('q', '') %}
+{% set current_assigned = filters.assigned if filters else request.args.get('assigned', '') %}
+{% set current_sort = filters.sort if filters else request.args.get('sort', '') %}
+
+<section class="filters-toolbar">
+    <div class="filters-toolbar-main">
+        <form
+            method="GET"
+            action="{{ url_for('fuel_cards.list_cards') }}"
+            class="search-box search-box-inline filters-search-box"
+            hx-get="{{ url_for('fuel_cards.list_cards') }}"
+            hx-trigger="keyup changed delay:350ms from:input[name='q']"
+            hx-target="#fuel-cards-results"
+            hx-swap="innerHTML"
+            hx-push-url="true"
+        >
+            <i class="bi bi-search"></i>
+            <input
+                type="text"
+                name="q"
+                value="{{ current_q }}"
+                placeholder="Szukaj karty..."
+                autocomplete="off"
+            >
+
+            <input type="hidden" name="assigned" value="{{ current_assigned }}">
+            <input type="hidden" name="sort" value="{{ current_sort }}">
+        </form>
+
+        <div class="filters-group">
+            <a
+                href="{{ url_for('fuel_cards.list_cards', q=current_q, sort=current_sort) }}"
+                class="filter-chip {% if not current_assigned %}active{% endif %}"
+                hx-get="{{ url_for('fuel_cards.list_cards', q=current_q, sort=current_sort) }}"
+                hx-target="#fuel-cards-results"
+                hx-swap="innerHTML"
+                hx-push-url="true"
+            >
+                Wszystkie
+            </a>
+
+            <a
+                href="{{ url_for('fuel_cards.list_cards', assigned='assigned', q=current_q, sort=current_sort) }}"
+                class="filter-chip {% if current_assigned == 'assigned' %}active{% endif %}"
+                hx-get="{{ url_for('fuel_cards.list_cards', assigned='assigned', q=current_q, sort=current_sort) }}"
+                hx-target="#fuel-cards-results"
+                hx-swap="innerHTML"
+                hx-push-url="true"
+            >
+                Przypisane
+            </a>
+
+            <a
+                href="{{ url_for('fuel_cards.list_cards', assigned='unassigned', q=current_q, sort=current_sort) }}"
+                class="filter-chip {% if current_assigned == 'unassigned' %}active{% endif %}"
+                hx-get="{{ url_for('fuel_cards.list_cards', assigned='unassigned', q=current_q, sort=current_sort) }}"
+                hx-target="#fuel-cards-results"
+                hx-swap="innerHTML"
+                hx-push-url="true"
+            >
+                Bez pojazdu
+            </a>
+        </div>
+
+        <div class="sort-dropdown filters-sort-dropdown" data-sort-dropdown>
+            <button type="button" class="sort-dropdown-toggle">
+                <span>
+                    {% if current_sort == 'station_asc' %}
+                        Stacja A–Z
+                    {% elif current_sort == 'station_desc' %}
+                        Stacja Z–A
+                    {% elif current_sort == 'number_asc' %}
+                        Numer rosnąco
+                    {% elif current_sort == 'number_desc' %}
+                        Numer malejąco
+                    {% elif current_sort == 'expiry_asc' %}
+                        Najbliższa ważność
+                    {% elif current_sort == 'expiry_desc' %}
+                        Najdalsza ważność
+                    {% elif current_sort == 'vehicle_asc' %}
+                        Pojazd A–Z
+                    {% elif current_sort == 'vehicle_desc' %}
+                        Pojazd Z–A
+                    {% else %}
+                        Sortuj
+                    {% endif %}
+                </span>
+                <i class="bi bi-chevron-down"></i>
+            </button>
+
+            <div class="sort-dropdown-menu">
+                <a href="{{ url_for('fuel_cards.list_cards', assigned=current_assigned, q=current_q, sort='station_asc') }}" class="sort-dropdown-item {% if current_sort == 'station_asc' %}active{% endif %}" hx-get="{{ url_for('fuel_cards.list_cards', assigned=current_assigned, q=current_q, sort='station_asc') }}" hx-target="#fuel-cards-results" hx-swap="innerHTML" hx-push-url="true">Stacja A–Z</a>
+                <a href="{{ url_for('fuel_cards.list_cards', assigned=current_assigned, q=current_q, sort='station_desc') }}" class="sort-dropdown-item {% if current_sort == 'station_desc' %}active{% endif %}" hx-get="{{ url_for('fuel_cards.list_cards', assigned=current_assigned, q=current_q, sort='station_desc') }}" hx-target="#fuel-cards-results" hx-swap="innerHTML" hx-push-url="true">Stacja Z–A</a>
+                <a href="{{ url_for('fuel_cards.list_cards', assigned=current_assigned, q=current_q, sort='number_asc') }}" class="sort-dropdown-item {% if current_sort == 'number_asc' %}active{% endif %}" hx-get="{{ url_for('fuel_cards.list_cards', assigned=current_assigned, q=current_q, sort='number_asc') }}" hx-target="#fuel-cards-results" hx-swap="innerHTML" hx-push-url="true">Numer rosnąco</a>
+                <a href="{{ url_for('fuel_cards.list_cards', assigned=current_assigned, q=current_q, sort='number_desc') }}" class="sort-dropdown-item {% if current_sort == 'number_desc' %}active{% endif %}" hx-get="{{ url_for('fuel_cards.list_cards', assigned=current_assigned, q=current_q, sort='number_desc') }}" hx-target="#fuel-cards-results" hx-swap="innerHTML" hx-push-url="true">Numer malejąco</a>
+                <a href="{{ url_for('fuel_cards.list_cards', assigned=current_assigned, q=current_q, sort='expiry_asc') }}" class="sort-dropdown-item {% if current_sort == 'expiry_asc' %}active{% endif %}" hx-get="{{ url_for('fuel_cards.list_cards', assigned=current_assigned, q=current_q, sort='expiry_asc') }}" hx-target="#fuel-cards-results" hx-swap="innerHTML" hx-push-url="true">Najbliższa ważność</a>
+                <a href="{{ url_for('fuel_cards.list_cards', assigned=current_assigned, q=current_q, sort='expiry_desc') }}" class="sort-dropdown-item {% if current_sort == 'expiry_desc' %}active{% endif %}" hx-get="{{ url_for('fuel_cards.list_cards', assigned=current_assigned, q=current_q, sort='expiry_desc') }}" hx-target="#fuel-cards-results" hx-swap="innerHTML" hx-push-url="true">Najdalsza ważność</a>
+                <a href="{{ url_for('fuel_cards.list_cards', assigned=current_assigned, q=current_q, sort='vehicle_asc') }}" class="sort-dropdown-item {% if current_sort == 'vehicle_asc' %}active{% endif %}" hx-get="{{ url_for('fuel_cards.list_cards', assigned=current_assigned, q=current_q, sort='vehicle_asc') }}" hx-target="#fuel-cards-results" hx-swap="innerHTML" hx-push-url="true">Pojazd A–Z</a>
+                <a href="{{ url_for('fuel_cards.list_cards', assigned=current_assigned, q=current_q, sort='vehicle_desc') }}" class="sort-dropdown-item {% if current_sort == 'vehicle_desc' %}active{% endif %}" hx-get="{{ url_for('fuel_cards.list_cards', assigned=current_assigned, q=current_q, sort='vehicle_desc') }}" hx-target="#fuel-cards-results" hx-swap="innerHTML" hx-push-url="true">Pojazd Z–A</a>
+            </div>
+        </div>
+    </div>
+
+    <div class="filters-toolbar-actions">
+        <a href="{{ url_for('fuel_cards.add_card') }}" class="btn-primary btn-add-vehicle">
+            <i class="bi bi-plus-lg"></i>
+            Dodaj kartę
+        </a>
+    </div>
+</section>

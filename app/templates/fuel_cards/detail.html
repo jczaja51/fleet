@@ -1,0 +1,164 @@
+{% extends "base.html" %}
+{% block title %}Fleet Lite – Szczegóły karty paliwowej{% endblock %}
+
+{% block content %}
+<div class="page-wrap vehicle-page-shell fuel-form-page-shell">
+    <div class="vehicle-page-header vehicle-create-header fuel-form-header">
+        <div class="vehicle-create-breadcrumbs">Karty paliwowe / {{ card.station or 'Karta' }} / Szczegóły karty</div>
+        <h1>Szczegóły karty paliwowej</h1>
+        <p>Przegląd najważniejszych informacji, przypisania do pojazdu i terminu ważności karty paliwowej.</p>
+    </div>
+
+    <div class="vehicle-page-layout fuel-form-layout">
+        <div class="vehicle-page-card vehicle-create-card fuel-form-card">
+            <div class="vehicle-create-main fuel-form-main">
+                <section class="vehicle-create-section vehicle-create-section-left fuel-form-section">
+                    <div class="fuel-form-section-head">
+                        <div class="fuel-form-section-icon">
+                            <i class="bi bi-credit-card-2-front"></i>
+                        </div>
+                        <div>
+                            <h2>Dane karty</h2>
+                            <p>Podstawowe informacje zapisane dla tej karty paliwowej.</p>
+                        </div>
+                    </div>
+
+                    <div class="vehicle-create-grid fuel-form-grid">
+                        <div class="form-group">
+                            <label>Stacja</label>
+                            <input type="text" value="{{ card.station or '' }}" disabled>
+                        </div>
+
+                        <div class="form-group">
+                            <label>4 ostatnie cyfry karty</label>
+                            <input type="text" value="{{ card.number or '' }}" disabled>
+                        </div>
+
+                        <div class="form-group">
+                            <label>PIN</label>
+                            <input type="text" value="{{ card.safe_pin or '' }}" disabled placeholder="Brak">
+                        </div>
+
+                        <div class="form-group">
+                            <label>Data ważności</label>
+                            <input
+                                type="text"
+                                value="{% if card.expiry %}{{ card.expiry.strftime('%d.%m.%Y') }}{% endif %}"
+                                disabled
+                                placeholder="Brak"
+                            >
+                        </div>
+
+                        <div class="form-group form-group-full">
+                            <label>Przypisany pojazd</label>
+                            <input
+                                type="text"
+                                value="{% if card.vehicle %}{{ card.vehicle.brand or '' }} {{ card.vehicle.model or '' }} ({{ card.vehicle.registration or '' }}){% endif %}"
+                                disabled
+                                placeholder="Nie przypisano pojazdu"
+                            >
+                        </div>
+                    </div>
+                </section>
+
+                <section class="vehicle-create-section vehicle-create-section-right fuel-form-preview-section">
+                    <div class="fuel-form-section-head fuel-form-section-head-compact">
+                        <div class="fuel-form-section-icon">
+                            <i class="bi bi-eye"></i>
+                        </div>
+                        <div>
+                            <h2>Podgląd</h2>
+                            <p>Szybki podgląd numeru, PIN-u i terminu ważności karty.</p>
+                        </div>
+                    </div>
+
+                    <div class="fuel-card-preview-wrap">
+                        <div class="fuel-card-preview-mini">
+                            <div class="fuel-card-preview-pattern fuel-card-preview-pattern-a"></div>
+                            <div class="fuel-card-preview-pattern fuel-card-preview-pattern-b"></div>
+                            <div class="fuel-card-preview-shine"></div>
+
+                            <div class="fuel-card-preview-topbar">
+                                <div class="fuel-card-preview-brand">{{ card.station or "STACJA" }}</div>
+                                <div class="fuel-card-preview-contactless">
+                                    <span></span><span></span><span></span>
+                                </div>
+                            </div>
+
+                            <div class="fuel-card-preview-chip"></div>
+
+                            <div class="fuel-card-preview-number">**** **** **** {{ card.number or '0000' }}</div>
+
+                            <div class="fuel-card-preview-footer">
+                                <div class="fuel-card-preview-col">
+                                    <span>PIN</span>
+                                    <strong>{{ card.safe_pin or 'Brak' }}</strong>
+                                </div>
+                                <div class="fuel-card-preview-col">
+                                    <span>ważność</span>
+                                    <strong>
+                                        {% if card.expiry %}
+                                            {{ card.expiry.strftime('%m/%y') }}
+                                        {% else %}
+                                            —
+                                        {% endif %}
+                                    </strong>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="fuel-form-note-box">
+                            <i class="bi bi-info-circle"></i>
+                            <p>Sprawdź tutaj szybko, czy numer końcówki, PIN i data ważności są zapisane poprawnie.</p>
+                        </div>
+                    </div>
+                </section>
+            </div>
+
+            <div class="vehicle-create-actions fuel-detail-actions-bar">
+                <a href="{{ url_for('fuel_cards.list_cards') }}" class="btn-secondary btn-create-cancel">Wróć</a>
+
+                <div class="fuel-detail-actions-right">
+                    <a href="{{ url_for('fuel_cards.edit_card', card_id=card.id) }}" class="btn-primary fuel-detail-action-btn">
+                        Edytuj
+                    </a>
+
+                    <form
+                        method="POST"
+                        action="{{ url_for('fuel_cards.delete_card', card_id=card.id) }}"
+                        class="action-form fuel-detail-action-form"
+                        data-confirm="Na pewno usunąć kartę?"
+                    >
+                        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                        <button type="submit" class="btn-danger fuel-detail-action-btn fuel-detail-delete-btn">
+                            Usuń
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <aside class="vehicle-page-aside vehicle-create-tips fuel-form-tips">
+            <div class="vehicle-create-tips-head">
+                <i class="bi bi-lightbulb"></i>
+                <h3>Podpowiedzi</h3>
+            </div>
+
+            <div class="vehicle-tip">
+                <i class="bi bi-credit-card-2-front"></i>
+                <p>W systemie przechowujesz tylko 4 ostatnie cyfry numeru karty.</p>
+            </div>
+
+            <div class="vehicle-tip">
+                <i class="bi bi-keypad"></i>
+                <p>PIN jest zapisany jako zwykły tekst. Stare hashe nie są pokazywane użytkownikowi.</p>
+            </div>
+
+            <div class="vehicle-tip">
+                <i class="bi bi-car-front"></i>
+                <p>Jeśli karta jest przypisana do pojazdu, zobaczysz tu tylko najważniejsze dane pojazdu.</p>
+            </div>
+        </aside>
+    </div>
+</div>
+{% endblock %}

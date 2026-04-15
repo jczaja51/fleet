@@ -1,562 +1,207 @@
 .fuel-cards-page {
-    padding: 28px;
-    background:
-        radial-gradient(circle at top right, rgba(96, 165, 250, 0.10), transparent 28%),
-        radial-gradient(circle at left center, rgba(59, 130, 246, 0.06), transparent 24%);
+    padding: 0;
 }
 
-.fuel-cards-topbar {
+.fuel-vehicles-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 20px;
+    margin-top: 22px;
+}
+
+.fuel-card-clone.vehicle-card {
+    overflow: hidden;
+}
+
+.fuel-card-clone .vehicle-info {
+    padding: 18px 18px 16px;
+}
+
+.fuel-card-clone .vehicle-image-wrap {
+    position: relative;
+    overflow: hidden;
+    min-height: 220px;
+    height: 100%;
+    border-top-left-radius: 22px;
+    border-bottom-left-radius: 22px;
+    border-top-right-radius: 22px;
+    border-bottom-right-radius: 22px;
+    background: transparent;
+}
+
+.fuel-card-clone .vehicle-image-fade {
+    display: none;
+}
+
+.fuel-card-preview-side {
+    padding: 14px;
+    background: linear-gradient(180deg, #eef3f9 0%, #e7eef7 100%);
+}
+
+.fuel-card-preview-mini-list {
+    width: 100%;
+    max-width: none;
+    min-height: 100%;
+    height: 100%;
+    border-radius: 20px;
+}
+
+.fuel-status-text {
+    font-weight: 800;
+}
+
+.fuel-status-ok {
+    color: #15803d;
+}
+
+.fuel-status-warning {
+    color: #b45309;
+}
+
+.fuel-status-danger {
+    color: #b91c1c;
+}
+
+.fuel-status-neutral {
+    color: #475569;
+}
+
+.empty-section {
+    margin-top: 18px;
+}
+
+.empty-card {
+    background: #ffffff;
+    border: 1px solid #e5ebf4;
+    border-radius: 28px;
+    box-shadow: 0 18px 50px rgba(22, 34, 62, 0.08);
+    padding: 40px 24px;
+    text-align: center;
+}
+
+.empty-icon {
+    width: 72px;
+    height: 72px;
+    margin: 0 auto 16px;
+    border-radius: 22px;
+    background: #eef4ff;
+    color: #3a72e8;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 30px;
+}
+
+.empty-card h3 {
+    margin: 0 0 8px;
+    color: #22314d;
+}
+
+.empty-card p {
+    margin: 0 0 20px;
+    color: #73839a;
+}
+
+.fuel-detail-delete-btn {
+    min-height: 50px;
+    padding: 0 22px;
+    border-radius: 16px;
+    border: 0;
+    font-weight: 800;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 9px;
+}
+
+@media (max-width: 1100px) {
+    .fuel-vehicles-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .fuel-card-clone.vehicle-card {
+        grid-template-columns: 1fr;
+    }
+
+    .fuel-card-clone .vehicle-image-wrap {
+        min-height: 220px;
+        height: 220px;
+        border-top-left-radius: 0;
+        border-bottom-left-radius: 22px;
+    }
+}
+
+@media (max-width: 640px) {
+    .fuel-vehicles-grid {
+        gap: 16px;
+    }
+}
+
+.fuel-detail-actions-bar {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    gap: 18px;
-    margin-bottom: 22px;
+    gap: 16px;
     flex-wrap: wrap;
 }
 
-.fuel-cards-title {
-    margin: 0;
-    font-size: 2.45rem;
-    line-height: 1.05;
-    font-weight: 800;
-    letter-spacing: -0.03em;
-    color: #1e293b;
-}
-
-.fuel-cards-subtitle {
-    margin: 10px 0 0;
-    color: #64748b;
-    font-size: 1.02rem;
-    max-width: 760px;
-}
-
-.fuel-add-btn {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    gap: 9px;
-    min-height: 52px;
-    padding: 0 22px;
-    border-radius: 17px;
-    background: linear-gradient(135deg, #3b82f6, #2563eb 55%, #1d4ed8);
-    color: #fff;
-    text-decoration: none;
-    font-weight: 800;
-    box-shadow:
-        0 14px 28px rgba(37, 99, 235, 0.22),
-        inset 0 1px 0 rgba(255, 255, 255, 0.20);
-    transition: transform 0.2s ease, box-shadow 0.2s ease;
-}
-
-.fuel-add-btn:hover {
-    color: #fff;
-    transform: translateY(-2px);
-    box-shadow:
-        0 18px 34px rgba(37, 99, 235, 0.26),
-        inset 0 1px 0 rgba(255, 255, 255, 0.22);
-}
-
-.fuel-stats-row {
-    display: grid;
-    grid-template-columns: repeat(4, minmax(0, 1fr));
-    gap: 16px;
-    margin-bottom: 24px;
-}
-
-.fuel-stat-card {
+.fuel-detail-actions-right {
     display: flex;
     align-items: center;
     gap: 14px;
-    padding: 18px 18px;
-    border-radius: 22px;
-    background: linear-gradient(180deg, #ffffff, #f8fbff);
-    border: 1px solid #dce7f3;
-    box-shadow: 0 12px 28px rgba(15, 23, 42, 0.06);
+    margin-left: auto;
 }
 
-.fuel-stat-icon {
-    width: 50px;
-    height: 50px;
-    border-radius: 16px;
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 1.3rem;
-    flex-shrink: 0;
-}
-
-.fuel-stat-icon.blue {
-    background: linear-gradient(135deg, #dbeafe, #bfdbfe);
-    color: #2563eb;
-}
-
-.fuel-stat-icon.green {
-    background: linear-gradient(135deg, #dcfce7, #bbf7d0);
-    color: #16a34a;
-}
-
-.fuel-stat-icon.amber {
-    background: linear-gradient(135deg, #fef3c7, #fde68a);
-    color: #d97706;
-}
-
-.fuel-stat-icon.red {
-    background: linear-gradient(135deg, #fee2e2, #fecaca);
-    color: #dc2626;
-}
-
-.fuel-stat-content {
-    display: flex;
-    flex-direction: column;
-    gap: 4px;
-    min-width: 0;
-}
-
-.fuel-stat-content span {
-    font-size: 0.95rem;
-    color: #64748b;
-    font-weight: 700;
-}
-
-.fuel-stat-content strong {
-    font-size: 1.7rem;
-    line-height: 1;
-    color: #1e293b;
-    font-weight: 800;
-}
-
-.fuel-cards-layout {
-    display: grid;
-    grid-template-columns: minmax(0, 1fr) 430px;
-    gap: 24px;
-    align-items: start;
-}
-
-.fuel-cards-grid {
-    display: grid;
-    grid-template-columns: repeat(3, minmax(0, 1fr));
-    gap: 18px;
-    align-items: start;
-}
-
-.fuel-card-tile {
-    border: 0;
-    background: transparent;
-    padding: 0;
-    text-align: left;
-    cursor: pointer;
-    width: 100%;
-}
-
-.fuel-card-visual {
-    position: relative;
-    width: 100%;
-    aspect-ratio: 1.58 / 1;
-    border-radius: 24px;
-    overflow: hidden;
-    padding: 18px;
-    background:
-        radial-gradient(circle at 18% 10%, rgba(255,255,255,0.22), transparent 22%),
-        radial-gradient(circle at 100% 100%, rgba(255,255,255,0.14), transparent 30%),
-        linear-gradient(135deg, #183a8f 0%, #2151d1 48%, #5ca6ff 100%);
-    border: 1px solid rgba(255,255,255,0.26);
-    color: #fff;
-    box-shadow:
-        0 16px 36px rgba(15, 23, 42, 0.14),
-        inset 0 1px 0 rgba(255,255,255,0.18);
-    transition:
-        transform 0.2s ease,
-        box-shadow 0.2s ease,
-        outline-color 0.2s ease;
-}
-
-.fuel-card-glow {
-    position: absolute;
-    inset: auto -12% -28% auto;
-    width: 62%;
-    height: 62%;
-    background: radial-gradient(circle, rgba(255,255,255,0.18), transparent 68%);
-    pointer-events: none;
-}
-
-.fuel-card-tile:hover .fuel-card-visual {
-    transform: translateY(-4px);
-    box-shadow:
-        0 24px 42px rgba(15, 23, 42, 0.16),
-        inset 0 1px 0 rgba(255,255,255,0.2);
-}
-
-.fuel-card-tile.active .fuel-card-visual {
-    transform: translateY(-3px);
-    box-shadow:
-        0 24px 44px rgba(37, 99, 235, 0.26),
-        0 0 0 4px rgba(96, 165, 250, 0.14),
-        inset 0 1px 0 rgba(255,255,255,0.22);
-}
-
-.fuel-card-visual.large {
-    width: 100%;
-}
-
-.fuel-card-chip {
-    position: absolute;
-    top: 18px;
-    left: 18px;
-    width: 40px;
-    height: 30px;
-    border-radius: 9px;
-    background: linear-gradient(135deg, #fde68a, #fbbf24);
-    box-shadow:
-        inset 0 0 0 1px rgba(255,255,255,0.25),
-        0 6px 14px rgba(0,0,0,0.14);
-}
-
-.fuel-card-status {
-    position: absolute;
-    top: 18px;
-    left: 70px;
-    padding: 6px 12px;
-    border-radius: 999px;
-    font-size: 0.72rem;
-    font-weight: 800;
-    line-height: 1;
-    border: 1px solid rgba(255,255,255,0.16);
-    backdrop-filter: blur(10px);
-    -webkit-backdrop-filter: blur(10px);
-}
-
-.fuel-card-logo {
-    position: absolute;
-    top: 18px;
-    right: 18px;
-    display: flex;
-    align-items: center;
-    gap: 7px;
-    font-weight: 800;
-    font-size: 1rem;
-    text-shadow: 0 2px 10px rgba(0,0,0,0.12);
-}
-
-.fuel-card-number {
-    position: absolute;
-    left: 18px;
-    right: 18px;
-    top: 53%;
-    transform: translateY(-50%);
-    font-size: clamp(1rem, 1.35vw, 1.42rem);
-    font-weight: 800;
-    letter-spacing: 0.11em;
-    text-shadow: 0 2px 12px rgba(0, 0, 0, 0.18);
-}
-
-.fuel-card-bottom {
-    position: absolute;
-    left: 18px;
-    right: 18px;
-    bottom: 18px;
-    display: flex;
-    justify-content: space-between;
-    gap: 12px;
-    align-items: flex-end;
-}
-
-.fuel-card-meta {
-    display: flex;
-    flex-direction: column;
-    gap: 3px;
-    min-width: 0;
-}
-
-.fuel-card-meta.text-end {
-    text-align: right;
-}
-
-.meta-label {
-    font-size: 0.68rem;
-    font-weight: 700;
-    letter-spacing: 0.09em;
-    opacity: 0.74;
-}
-
-.meta-value {
-    font-size: 1rem;
-    font-weight: 800;
-    line-height: 1.08;
-    word-break: break-word;
-}
-
-.fuel-side-panel {
-    position: sticky;
-    top: 20px;
-}
-
-.fuel-side-panel.is-hidden {
-    visibility: hidden;
-    pointer-events: none;
-}
-
-.fuel-side-panel-inner {
-    background:
-        radial-gradient(circle at top right, rgba(96, 165, 250, 0.10), transparent 24%),
-        linear-gradient(180deg, #fbfdff, #f4f8fc);
-    border: 1px solid #dbe7f3;
-    border-radius: 26px;
-    padding: 22px;
-    box-shadow:
-        0 20px 40px rgba(15, 23, 42, 0.08),
-        inset 0 1px 0 rgba(255,255,255,0.7);
-}
-
-.fuel-side-header h3 {
-    margin: 0;
-    display: flex;
-    align-items: center;
-    gap: 9px;
-    color: #1e293b;
-    font-size: 1.5rem;
-    font-weight: 800;
-    letter-spacing: -0.02em;
-}
-
-.fuel-side-header p {
-    margin: 8px 0 18px;
-    color: #64748b;
-    font-size: 1rem;
-}
-
-.fuel-side-preview {
-    margin-bottom: 22px;
-}
-
-.fuel-details-list {
-    display: flex;
-    flex-direction: column;
-    border-top: 1px solid rgba(219, 231, 243, 0.7);
-    margin-top: 4px;
-}
-
-.fuel-detail-row {
-    display: flex;
-    justify-content: space-between;
-    gap: 16px;
-    padding: 14px 0;
-    border-bottom: 1px solid #dbe3ee;
-}
-
-.fuel-detail-row .label {
-    color: #64748b;
-    font-weight: 700;
-}
-
-.fuel-detail-row .value {
-    color: #0f172a;
-    font-weight: 800;
-    text-align: right;
-    word-break: break-word;
-}
-
-.fuel-badge {
-    display: inline-flex;
-    align-items: center;
-    padding: 7px 12px;
-    border-radius: 999px;
-    font-size: 0.78rem;
-    font-weight: 800;
-    line-height: 1;
-}
-
-.fuel-card-status.ok,
-.fuel-badge.ok {
-    background: rgba(34, 197, 94, 0.18);
-    color: #ecfdf5;
-}
-
-.fuel-card-status.warning,
-.fuel-badge.warning {
-    background: rgba(245, 158, 11, 0.20);
-    color: #fffbeb;
-}
-
-.fuel-card-status.danger,
-.fuel-card-status.expired,
-.fuel-badge.danger,
-.fuel-badge.expired {
-    background: rgba(239, 68, 68, 0.20);
-    color: #fff1f2;
-}
-
-.fuel-card-status.neutral {
-    background: rgba(255,255,255,0.14);
-    color: #eff6ff;
-}
-
-.fuel-badge.neutral {
-    background: #e2e8f0;
-    color: #334155;
-}
-
-.fuel-actions {
-    display: flex;
-    gap: 12px;
-    margin-top: 22px;
-    justify-content: space-between;
-    align-items: center;
-}
-
-.fuel-actions form {
+.fuel-detail-action-form {
     margin: 0;
 }
 
-.fuel-action-btn {
+.fuel-detail-action-btn {
+    min-width: 114px;
+    min-height: 42px;
+    padding: 0 22px;
+    border-radius: 14px;
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    gap: 8px;
-    min-width: 140px;
-    min-height: 48px;
-    padding: 0 18px;
-    border: 0;
-    border-radius: 16px;
+    font-weight: 800;
     text-decoration: none;
-    font-weight: 800;
-    transition: transform 0.2s ease, box-shadow 0.2s ease, opacity 0.2s ease;
+    border: 0;
+    box-shadow: none;
 }
 
-.fuel-action-btn.secondary {
-    background: linear-gradient(180deg, #eef4ff, #e4edfb);
-    color: #1d4ed8;
-    box-shadow: inset 0 0 0 1px rgba(59, 130, 246, 0.10);
+.fuel-detail-action-btn.btn-primary {
+    background: linear-gradient(135deg, #3b82f6, #2563eb 55%, #1d4ed8);
+    color: #fff;
 }
 
-.fuel-action-btn.secondary:hover {
-    color: #1d4ed8;
-    transform: translateY(-2px);
-    box-shadow:
-        0 10px 20px rgba(59, 130, 246, 0.10),
-        inset 0 0 0 1px rgba(59, 130, 246, 0.12);
+.fuel-detail-action-btn.btn-primary:hover {
+    color: #fff;
 }
 
-.fuel-action-btn.danger {
+.fuel-detail-delete-btn {
     background: linear-gradient(135deg, #ef4444, #dc2626);
     color: #fff;
-    box-shadow: 0 12px 24px rgba(220, 38, 38, 0.20);
 }
 
-.fuel-action-btn.danger:hover {
+.fuel-detail-delete-btn:hover {
     color: #fff;
-    transform: translateY(-2px);
-    box-shadow: 0 16px 28px rgba(220, 38, 38, 0.24);
 }
 
-.fuel-empty-state {
-    padding: 60px 28px;
-    border-radius: 28px;
-    background:
-        radial-gradient(circle at top right, rgba(96, 165, 250, 0.10), transparent 25%),
-        linear-gradient(180deg, #ffffff, #f8fbff);
-    border: 1px solid #dbe7f3;
-    text-align: center;
-    box-shadow: 0 18px 36px rgba(15, 23, 42, 0.05);
-}
-
-.fuel-empty-icon {
-    width: 82px;
-    height: 82px;
-    margin: 0 auto 16px;
-    border-radius: 24px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    background: linear-gradient(135deg, #dbeafe, #bfdbfe);
-    color: #2563eb;
-    font-size: 2.2rem;
-}
-
-.fuel-empty-state h3 {
-    margin: 0 0 10px;
-    color: #0f172a;
-    font-size: 1.5rem;
-    font-weight: 800;
-}
-
-.fuel-empty-state p {
-    margin: 0 0 22px;
-    color: #64748b;
-    font-size: 1rem;
-}
-
-@media (max-width: 1400px) {
-    .fuel-stats-row {
-        grid-template-columns: repeat(2, minmax(0, 1fr));
-    }
-
-    .fuel-cards-grid {
-        grid-template-columns: repeat(2, minmax(0, 1fr));
-    }
-}
-
-@media (max-width: 1200px) {
-    .fuel-cards-layout {
-        grid-template-columns: 1fr;
-    }
-
-    .fuel-cards-grid {
-        grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
-    }
-
-    .fuel-side-panel {
-        position: static;
-    }
-
-    .fuel-side-panel.is-hidden {
-        display: none;
-    }
-
-    .fuel-side-panel:not(.is-hidden) {
-        visibility: visible;
-        pointer-events: auto;
-        display: block;
-    }
-}
-
-@media (max-width: 768px) {
-    .fuel-cards-page {
-        padding: 16px;
-    }
-
-    .fuel-cards-title {
-        font-size: 2rem;
-    }
-
-    .fuel-cards-subtitle {
-        font-size: 0.96rem;
-    }
-
-    .fuel-stats-row {
-        grid-template-columns: 1fr;
-    }
-
-    .fuel-cards-grid {
-        grid-template-columns: 1fr;
-        gap: 14px;
-    }
-
-    .fuel-actions {
+@media (max-width: 640px) {
+    .fuel-detail-actions-bar {
         flex-direction: column;
+        align-items: stretch;
     }
 
-    .fuel-action-btn,
-    .fuel-actions form,
-    .fuel-actions form button {
+    .fuel-detail-actions-right {
         width: 100%;
+        margin-left: 0;
     }
 
-    .fuel-detail-row {
-        flex-direction: column;
-        gap: 6px;
-    }
-
-    .fuel-detail-row .value {
-        text-align: left;
+    .fuel-detail-action-btn,
+    .fuel-detail-action-form,
+    .fuel-detail-action-form button {
+        width: 100%;
     }
 }
