@@ -109,7 +109,12 @@ def build_stats(cards):
 
 @fuel_bp.route("/")
 def list_cards():
-    filters = build_filters()
+    filters = {
+        "q": (request.args.get("q") or "").strip(),
+        "assigned": (request.args.get("assigned") or "").strip(),
+        "sort": (request.args.get("sort") or "").strip(),
+    }
+
     q = filters["q"]
     assigned = filters["assigned"]
     sort = filters["sort"]
@@ -158,11 +163,16 @@ def list_cards():
     for card in cards:
         attach_card_helpers(card)
 
-    stats = build_stats(cards)
+    stats = {
+        "total_cards": len(cards),
+        "assigned_cards": sum(1 for c in cards if c.vehicle_id),
+        "warning_cards": sum(1 for c in cards if c.expiry and 0 <= (c.expiry - date.today()).days <= 30),
+        "danger_cards": sum(1 for c in cards if c.expiry and (c.expiry - date.today()).days < 0),
+    }
 
     if request.headers.get("HX-Request") == "true":
         return render_template(
-            "partials/fuel_cards_results.html",
+            "partials/fuel_cards_content.html",
             cards=cards,
             today=date.today(),
             filters=filters,
