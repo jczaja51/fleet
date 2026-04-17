@@ -1,4 +1,5 @@
 from flask import Blueprint, flash, redirect, render_template, request, url_for
+from flask_login import login_required
 
 from app import db
 from app.models import Vehicle, VehicleDocument
@@ -12,7 +13,7 @@ from app.services.storage_service import StorageError
 
 documents_bp = Blueprint("documents", __name__, url_prefix="/documents")
 
-
+@login_required
 @documents_bp.route("/add/<int:vehicle_id>", methods=["GET", "POST"])
 def add_document(vehicle_id):
     vehicle = Vehicle.query.get_or_404(vehicle_id)
@@ -32,7 +33,7 @@ def add_document(vehicle_id):
         vehicle=vehicle,
     )
 
-
+@login_required
 @documents_bp.route("/<int:document_id>/edit", methods=["GET", "POST"])
 def edit_document(document_id):
     document = VehicleDocument.query.get_or_404(document_id)
@@ -54,7 +55,7 @@ def edit_document(document_id):
         vehicle=vehicle,
     )
 
-
+@login_required
 @documents_bp.route("/<int:document_id>/delete", methods=["POST"])
 def delete_document_route(document_id):
     document = VehicleDocument.query.get_or_404(document_id)

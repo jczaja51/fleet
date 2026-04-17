@@ -1,10 +1,26 @@
 from datetime import datetime
 
+from flask_login import UserMixin
 from sqlalchemy import event
 
 from app import db
 from app.services.storage_service import delete_relative_static_file, delete_vehicle_storage_dir
 
+class User(UserMixin, db.Model):
+    __tablename__ = "users"
+
+    id = db.Column(db.Integer, primary_key=True)
+    username = db.Column(db.String(80), unique=True, nullable=False, index=True)
+    password_hash = db.Column(db.String(255), nullable=False)
+    is_active_user = db.Column(db.Boolean, default=True, nullable=False)
+    created_at = db.Column(db.DateTime, default=datetime.utcnow, nullable=False)
+
+    @property
+    def is_active(self):
+        return self.is_active_user
+
+    def __repr__(self):
+        return f"<User {self.username}>"
 
 class Vehicle(db.Model):
     __tablename__ = "vehicles"
@@ -90,7 +106,7 @@ class FuelCard(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     station = db.Column(db.String(60), nullable=True)
     number = db.Column(db.String(4), nullable=True)
-    pin = db.Column(db.String(6), nullable=True)
+    pin = db.Column(db.String(255), nullable=True)
     expiry = db.Column(db.Date, nullable=True)
 
     vehicle_id = db.Column(db.Integer, db.ForeignKey("vehicles.id", ondelete="CASCADE"), nullable=True)

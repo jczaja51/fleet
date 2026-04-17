@@ -1,6 +1,9 @@
 from datetime import datetime, date
 
 from flask import Blueprint, flash, render_template, request, redirect, url_for
+from flask_login import login_required
+from werkzeug.security import generate_password_hash
+
 from app import db
 from app.models import FuelCard, Vehicle
 from app.utils import calculate_status
@@ -11,7 +14,10 @@ fuel_bp = Blueprint("fuel_cards", __name__, url_prefix="/fuel-cards")
 def parse_date(value):
     if not value:
         return None
-    return datetime.strptime(value, "%Y-%m-%d").date()
+    try:
+        return datetime.strptime(value, "%Y-%m-%d").date()
+    except ValueError:
+        return None
 
 
 def normalize_station(value):
@@ -27,24 +33,6 @@ def normalize_card_number(value):
 def normalize_pin(value):
     digits = "".join(ch for ch in (value or "") if ch.isdigit())
     return digits[:6] if digits else None
-
-
-def is_legacy_hashed_pin(value):
-    if not value:
-        return False
-    value = str(value)
-    return (
-        value.startswith("scrypt:")
-        or value.startswith("pbkdf2:")
-        or value.startswith("sha256:")
-    )
-
-
-def safe_pin_for_display(value):
-    if not value or is_legacy_hashed_pin(value):
-        return ""
-    return str(value)
-
 
 def validate_card_form(station, number, pin, expiry, vehicle_id):
     errors = {}
@@ -66,11 +54,8 @@ def validate_card_form(station, number, pin, expiry, vehicle_id):
     elif not pin.isdigit() or not (4 <= len(pin) <= 6):
         errors["pin"] = "PIN musi zawierać od 4 do 6 cyfr."
 
-    if expiry:
-        try:
-            parse_date(expiry)
-        except ValueError:
-            errors["expiry"] = "Data ważności musi mieć format RRRR-MM-DD."
+    if expiry and not parse_date(expiry):
+        errors["expiry"] = "Data ważności musi mieć format RRRR-MM-DD."
 
     if vehicle_id:
         vehicle = Vehicle.query.get(vehicle_id)
@@ -79,10 +64,8 @@ def validate_card_form(station, number, pin, expiry, vehicle_id):
 
     return errors
 
-
 def attach_card_helpers(card):
     card.status = calculate_status(card.expiry)
-    card.safe_pin = safe_pin_for_display(card.pin)
     return card
 
 
@@ -106,7 +89,7 @@ def build_stats(cards):
         ),
     }
 
-
+@login_required
 @fuel_bp.route("/")
 def list_cards():
     filters = {
@@ -127,7 +110,6 @@ def list_cards():
             db.or_(
                 FuelCard.station.ilike(like_value),
                 FuelCard.number.ilike(like_value),
-                FuelCard.pin.ilike(like_value),
                 Vehicle.registration.ilike(like_value),
                 Vehicle.brand.ilike(like_value),
                 Vehicle.model.ilike(like_value),
@@ -187,7 +169,7 @@ def list_cards():
         stats=stats,
     )
 
-
+@login_required
 @fuel_bp.route("/add", methods=["GET", "POST"])
 def add_card():
     vehicles = Vehicle.query.order_by(Vehicle.registration.asc()).all()
@@ -207,7 +189,7 @@ def add_card():
             card = FuelCard(
                 station=station,
                 number=number,
-                pin=pin,
+                pin=generate_password_hash(pin) if pin else None,
                 expiry=parse_date(expiry_raw) if expiry_raw else None,
                 vehicle_id=vehicle_id,
             )
@@ -219,14 +201,14 @@ def add_card():
 
     return render_template("fuel_cards/add.html", vehicles=vehicles, errors=errors)
 
-
+@login_required
 @fuel_bp.route("/<int:card_id>")
 def detail_card(card_id):
     card = FuelCard.query.get_or_404(card_id)
     attach_card_helpers(card)
     return render_template("fuel_cards/detail.html", card=card, today=date.today())
 
-
+@login_required
 @fuel_bp.route("/<int:card_id>/edit", methods=["GET", "POST"])
 def edit_card(card_id):
     card = FuelCard.query.get_or_404(card_id)
@@ -246,7 +228,7 @@ def edit_card(card_id):
         if not errors:
             card.station = station
             card.number = number
-            card.pin = pin
+            card.pin = generate_password_hash(pin) if pin else None
             card.expiry = parse_date(expiry_raw) if expiry_raw else None
             card.vehicle_id = vehicle_id
 
@@ -257,7 +239,7 @@ def edit_card(card_id):
     attach_card_helpers(card)
     return render_template("fuel_cards/edit.html", card=card, vehicles=vehicles, errors=errors)
 
-
+@login_required
 @fuel_bp.route("/<int:card_id>/delete", methods=["POST"])
 def delete_card(card_id):
     card = FuelCard.query.get_or_404(card_id)

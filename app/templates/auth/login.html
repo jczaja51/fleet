@@ -1,0 +1,28 @@
+{% extends "base.html" %}
+
+{% block title %}Logowanie{% endblock %}
+
+{% block content %}
+<div class="card" style="max-width: 480px; margin: 40px auto;">
+    <div class="card-header">
+        <h1 style="margin: 0;">Logowanie</h1>
+        <p style="margin: 8px 0 0; color: var(--muted);">Zaloguj się do systemu floty</p>
+    </div>
+
+    <form method="POST" style="display:flex; flex-direction:column; gap:16px;">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+
+        <div class="field">
+            <label for="username">Login</label>
+            <input id="username" name="username" type="text" required autocomplete="username">
+        </div>
+
+        <div class="field">
+            <label for="password">Hasło</label>
+            <input id="password" name="password" type="password" required autocomplete="current-password">
+        </div>
+
+        <button type="submit" class="btn-primary">Zaloguj</button>
+    </form>
+</div>
+{% endblock %}

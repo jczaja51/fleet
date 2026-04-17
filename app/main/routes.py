@@ -1,4 +1,5 @@
 from flask import Blueprint, render_template, request
+from flask_login import login_required
 from sqlalchemy import case, or_
 
 from app.models import Alert, FuelCard, Vehicle, VehicleDocument
@@ -100,6 +101,7 @@ def apply_vehicle_sort(query, sort_key: str):
 
 
 @main_bp.route("/")
+@login_required
 def dashboard():
     refresh_all_alerts()
 

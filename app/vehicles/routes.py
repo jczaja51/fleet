@@ -2,6 +2,7 @@ import re
 from datetime import datetime
 
 from flask import Blueprint, flash, redirect, render_template, request, url_for
+from flask_login import login_required
 
 from app import db
 from app.constants import TACHOGRAPH_CATEGORIES
@@ -163,7 +164,7 @@ def validate_vehicle_form(form, uploaded_image=None, current_vehicle_id=None):
 
     return errors, cleaned_data
 
-
+@login_required
 @vehicles_bp.route("/add", methods=["GET", "POST"])
 def add_vehicle():
     if request.method == "POST":
@@ -210,13 +211,13 @@ def add_vehicle():
 
     return render_template("vehicles/create.html")
 
-
+@login_required
 @vehicles_bp.route("/<int:vehicle_id>")
 def detail(vehicle_id):
     vehicle = Vehicle.query.get_or_404(vehicle_id)
     return render_template("vehicles/detail.html", vehicle=vehicle)
 
-
+@login_required
 @vehicles_bp.route("/<int:vehicle_id>/edit", methods=["GET", "POST"])
 def edit_vehicle(vehicle_id):
     vehicle = Vehicle.query.get_or_404(vehicle_id)
@@ -278,7 +279,7 @@ def edit_vehicle(vehicle_id):
 
     return render_template("vehicles/edit.html", vehicle=vehicle)
 
-
+@login_required
 @vehicles_bp.route("/<int:vehicle_id>/delete", methods=["POST"])
 def delete_vehicle(vehicle_id):
     vehicle = Vehicle.query.get_or_404(vehicle_id)

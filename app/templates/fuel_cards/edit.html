@@ -68,7 +68,7 @@
                                 inputmode="numeric"
                                 autocomplete="off"
                                 placeholder="4–6 cyfr"
-                                value="{{ request.form.get('pin', card.pin or '') }}"
+                                value="{{ request.form.get('pin', '') }}"
                             >
                             <div class="field-error" id="pin-error">{{ errors.get('pin', '') if errors else '' }}</div>
                         </div>
@@ -136,7 +136,7 @@
                             <div class="fuel-card-preview-footer">
                                 <div class="fuel-card-preview-col">
                                     <span>PIN</span>
-                                    <strong id="preview-pin">{{ request.form.get('pin', card.pin or '----') }}</strong>
+                                    <strong id="preview-pin">{{ request.form.get('pin', '----') }}</strong>
                                 </div>
                                 <div class="fuel-card-preview-col">
                                     <span>ważność</span>

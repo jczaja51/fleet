@@ -5,5 +5,8 @@ instance/
 *.db
 *.sqlite3
 venv/
-.env/
+.venv/
+.idea/
+.git/
 .DS_Store
+__MACOSX/

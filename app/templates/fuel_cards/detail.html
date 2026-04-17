@@ -36,7 +36,7 @@
 
                         <div class="form-group">
                             <label>PIN</label>
-                            <input type="text" value="{{ card.safe_pin or '' }}" disabled placeholder="Brak">
+                            <input type="text" value="" disabled placeholder="Ukryty ze względów bezpieczeństwa">
                         </div>
 
                         <div class="form-group">
@@ -92,7 +92,7 @@
                             <div class="fuel-card-preview-footer">
                                 <div class="fuel-card-preview-col">
                                     <span>PIN</span>
-                                    <strong>{{ card.safe_pin or 'Brak' }}</strong>
+                                    <strong>Ukryty</strong>
                                 </div>
                                 <div class="fuel-card-preview-col">
                                     <span>ważność</span>

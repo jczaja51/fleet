@@ -35,7 +35,7 @@
                         <div class="mileage-row">
                             <i class="bi bi-keypad"></i>
                             <strong>PIN:</strong>
-                            <span>{{ card.safe_pin or 'Brak' }}</span>
+                            <span>{% if card.has_pin %}Ustawiony{% else %}Brak{% endif %}</span>
                         </div>
 
                         <div class="vehicle-extra-chips">
@@ -93,7 +93,7 @@
                         <div class="fuel-card-preview-footer">
                             <div class="fuel-card-preview-col">
                                 <span>PIN</span>
-                                <strong>{{ card.safe_pin or 'Brak' }}</strong>
+                                <strong>{% if card.has_pin %}Ustawiony{% else %}Brak{% endif %}</strong>
                             </div>
                             <div class="fuel-card-preview-col">
                                 <span>ważność</span>

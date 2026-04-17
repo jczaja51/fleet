@@ -40,6 +40,13 @@
             <a href="#" class="nav-item">
                 <span>Alerty</span>
             </a>
+            
+            {% if current_user.is_authenticated %}
+            <form method="POST" action="{{ url_for('auth.logout') }}" style="margin:0;">
+                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                <button type="submit" class="btn-secondary">Wyloguj</button>
+            </form>
+            {% endif %}
         </nav>
 
         <div class="profile-chip">

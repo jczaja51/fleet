@@ -1,0 +1,1 @@
+# aktualnie logowanie obsługiwane jest przez request.form
