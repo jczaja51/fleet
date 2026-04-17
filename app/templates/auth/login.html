@@ -1,28 +1,96 @@
-{% extends "base.html" %}
+{% extends "auth_base.html" %}
 
-{% block title %}Logowanie{% endblock %}
+{% block title %}Logowanie | Fleet Lite{% endblock %}
 
 {% block content %}
-<div class="card" style="max-width: 480px; margin: 40px auto;">
-    <div class="card-header">
-        <h1 style="margin: 0;">Logowanie</h1>
-        <p style="margin: 8px 0 0; color: var(--muted);">Zaloguj się do systemu floty</p>
+<div class="auth-shell">
+    <div class="auth-card">
+        <div class="auth-brand">
+            <i class="bi bi-car-front-fill auth-brand-icon"></i>
+            <div class="auth-brand-text">Fleet Lite</div>
+        </div>
+
+        <h1 class="auth-title">Zaloguj się do Fleet Lite</h1>
+
+        <form method="POST" class="auth-form" novalidate>
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+
+            <div class="auth-field">
+                <div class="auth-input-wrap">
+                    <i class="bi bi-envelope auth-input-icon"></i>
+                    <input
+                        type="text"
+                        id="username"
+                        name="username"
+                        class="auth-input"
+                        placeholder="Login"
+                        value="{{ request.form.get('username', '') }}"
+                        autocomplete="username"
+                        required
+                    >
+                </div>
+            </div>
+
+            <div class="auth-field">
+                <div class="auth-input-wrap">
+                    <i class="bi bi-lock auth-input-icon"></i>
+                    <input
+                        type="password"
+                        id="password"
+                        name="password"
+                        class="auth-input auth-password"
+                        placeholder="Hasło"
+                        autocomplete="current-password"
+                        required
+                    >
+                    <button type="button" class="auth-password-toggle" id="togglePassword" aria-label="Pokaż lub ukryj hasło">
+                        <i class="bi bi-eye"></i>
+                    </button>
+                </div>
+            </div>
+
+            <div class="auth-row">
+                <a href="#" class="auth-link">Nie pamiętasz hasła?</a>
+            </div>
+
+            <button type="submit" class="auth-submit">Zaloguj się</button>
+
+            <div class="auth-divider">Lub</div>
+
+                <a href="#" class="auth-secondary-btn auth-google-btn">
+                    <img src="{{ url_for('static', filename='img/google-logo.png') }}" class="auth-google-logo" alt="Google">
+                    <span>Zaloguj się przez Google</span>
+                </a>
+
+            <div class="auth-footer-note">
+                Nie masz konta?
+                <a href="#">Zarejestruj się</a>
+            </div>
+        </form>
     </div>
-
-    <form method="POST" style="display:flex; flex-direction:column; gap:16px;">
-        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
-
-        <div class="field">
-            <label for="username">Login</label>
-            <input id="username" name="username" type="text" required autocomplete="username">
-        </div>
-
-        <div class="field">
-            <label for="password">Hasło</label>
-            <input id="password" name="password" type="password" required autocomplete="current-password">
-        </div>
-
-        <button type="submit" class="btn-primary">Zaloguj</button>
-    </form>
 </div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        const passwordInput = document.getElementById("password");
+        const toggleButton = document.getElementById("togglePassword");
+
+        if (!passwordInput || !toggleButton) {
+            return;
+        }
+
+        toggleButton.addEventListener("click", function () {
+            const icon = toggleButton.querySelector("i");
+            const isPassword = passwordInput.type === "password";
+
+            passwordInput.type = isPassword ? "text" : "password";
+
+            if (icon) {
+                icon.className = isPassword ? "bi bi-eye-slash" : "bi bi-eye";
+            }
+        });
+    });
+</script>
 {% endblock %}
