@@ -88,23 +88,29 @@
                 openConfirm(form, form.dataset.confirm);
             });
 
-            acceptBtn.addEventListener("click", function () {
-                if (activeForm) {
-                    const form = activeForm;
-                    form.dataset.confirmApproved = "true";
-                    closeConfirm();
-                    form.requestSubmit();
-                }
-            });
+            if (acceptBtn) {
+                acceptBtn.addEventListener("click", function () {
+                    if (activeForm) {
+                        const form = activeForm;
+                        form.dataset.confirmApproved = "true";
+                        closeConfirm();
+                        form.requestSubmit();
+                    }
+                });
+            }
 
-            cancelBtn.addEventListener("click", closeConfirm);
+            if (cancelBtn) {
+                cancelBtn.addEventListener("click", closeConfirm);
+            }
 
-            modal.querySelectorAll("[data-confirm-close]").forEach((el) => {
-                el.addEventListener("click", closeConfirm);
-            });
+            if (modal) {
+                modal.querySelectorAll("[data-confirm-close]").forEach((el) => {
+                    el.addEventListener("click", closeConfirm);
+                });
+            }
 
             document.addEventListener("keydown", function (event) {
-                if (event.key === "Escape" && modal.classList.contains("is-open")) {
+                if (event.key === "Escape" && modal && modal.classList.contains("is-open")) {
                     closeConfirm();
                 }
             });
@@ -144,6 +150,33 @@
                 });
             });
         });
+
+        document.addEventListener("DOMContentLoaded", function () {
+            const userMenu = document.querySelector("[data-user-menu]");
+            const userToggle = document.querySelector("[data-user-menu-toggle]");
+
+            if (!userMenu || !userToggle) {
+                return;
+            }
+
+            userToggle.addEventListener("click", function (event) {
+                event.preventDefault();
+                event.stopPropagation();
+                userMenu.classList.toggle("open");
+            });
+
+            document.addEventListener("click", function (event) {
+                if (!event.target.closest("[data-user-menu]")) {
+                    userMenu.classList.remove("open");
+                }
+            });
+
+            document.addEventListener("keydown", function (event) {
+                if (event.key === "Escape") {
+                    userMenu.classList.remove("open");
+                }
+            });
+        });
     </script>
 
     <div class="confirm-modal" id="confirmModal" aria-hidden="true">
@@ -161,6 +194,7 @@
             </div>
         </div>
     </div>
+
     {% block scripts %}{% endblock %}
 </body>
 </html>

@@ -13,8 +13,8 @@ from app.services.storage_service import StorageError
 
 documents_bp = Blueprint("documents", __name__, url_prefix="/documents")
 
-@login_required
 @documents_bp.route("/add/<int:vehicle_id>", methods=["GET", "POST"])
+@login_required
 def add_document(vehicle_id):
     vehicle = Vehicle.query.get_or_404(vehicle_id)
 
@@ -33,8 +33,8 @@ def add_document(vehicle_id):
         vehicle=vehicle,
     )
 
-@login_required
 @documents_bp.route("/<int:document_id>/edit", methods=["GET", "POST"])
+@login_required
 def edit_document(document_id):
     document = VehicleDocument.query.get_or_404(document_id)
     vehicle = document.vehicle
@@ -55,8 +55,8 @@ def edit_document(document_id):
         vehicle=vehicle,
     )
 
-@login_required
 @documents_bp.route("/<int:document_id>/delete", methods=["POST"])
+@login_required
 def delete_document_route(document_id):
     document = VehicleDocument.query.get_or_404(document_id)
     vehicle_id = document.vehicle_id

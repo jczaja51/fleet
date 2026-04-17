@@ -164,8 +164,8 @@ def validate_vehicle_form(form, uploaded_image=None, current_vehicle_id=None):
 
     return errors, cleaned_data
 
-@login_required
 @vehicles_bp.route("/add", methods=["GET", "POST"])
+@login_required
 def add_vehicle():
     if request.method == "POST":
         uploaded_image = request.files.get("image")
@@ -211,14 +211,14 @@ def add_vehicle():
 
     return render_template("vehicles/create.html")
 
-@login_required
 @vehicles_bp.route("/<int:vehicle_id>")
+@login_required
 def detail(vehicle_id):
     vehicle = Vehicle.query.get_or_404(vehicle_id)
     return render_template("vehicles/detail.html", vehicle=vehicle)
 
-@login_required
 @vehicles_bp.route("/<int:vehicle_id>/edit", methods=["GET", "POST"])
+@login_required
 def edit_vehicle(vehicle_id):
     vehicle = Vehicle.query.get_or_404(vehicle_id)
 
@@ -279,8 +279,8 @@ def edit_vehicle(vehicle_id):
 
     return render_template("vehicles/edit.html", vehicle=vehicle)
 
-@login_required
 @vehicles_bp.route("/<int:vehicle_id>/delete", methods=["POST"])
+@login_required
 def delete_vehicle(vehicle_id):
     vehicle = Vehicle.query.get_or_404(vehicle_id)
 

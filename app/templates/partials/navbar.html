@@ -40,21 +40,57 @@
             <a href="#" class="nav-item">
                 <span>Alerty</span>
             </a>
-            
-            {% if current_user.is_authenticated %}
-            <form method="POST" action="{{ url_for('auth.logout') }}" style="margin:0;">
-                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
-                <button type="submit" class="btn-secondary">Wyloguj</button>
-            </form>
-            {% endif %}
         </nav>
 
-        <div class="profile-chip">
-            <div class="profile-avatar">
-                <i class="bi bi-person-fill"></i>
+        {% if current_user.is_authenticated %}
+        <div class="user-menu" data-user-menu>
+            <button type="button" class="user-menu-toggle" data-user-menu-toggle>
+                <span class="user-menu-avatar">
+                    <i class="bi bi-person-fill"></i>
+                </span>
+                <span class="user-menu-name">{{ current_user.username or 'Admin' }}</span>
+                <i class="bi bi-chevron-down user-menu-chevron"></i>
+            </button>
+
+            <div class="user-menu-dropdown">
+                <div class="user-menu-section-label">Administracja</div>
+
+                <a href="#" class="user-menu-link">
+                    <i class="bi bi-people"></i>
+                    <span>Zarządzaj użytkownikami</span>
+                </a>
+
+                <a href="#" class="user-menu-link">
+                    <i class="bi bi-gear"></i>
+                    <span>Ustawienia systemu</span>
+                </a>
+
+                <a href="#" class="user-menu-link">
+                    <i class="bi bi-arrow-counterclockwise"></i>
+                    <span>Historia zmian</span>
+                </a>
+
+                <a href="#" class="user-menu-link">
+                    <i class="bi bi-clipboard"></i>
+                    <span>Kopia zapasowa</span>
+                </a>
+
+                <div class="user-menu-divider"></div>
+
+                <a href="#" class="user-menu-link">
+                    <i class="bi bi-person"></i>
+                    <span>Profil użytkownika</span>
+                </a>
+
+                <form method="POST" action="{{ url_for('auth.logout') }}" class="user-menu-logout-form">
+                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                    <button type="submit" class="user-menu-link user-menu-link-button" type="submit">
+                        <i class="bi bi-box-arrow-left"></i>
+                        <span>Wyloguj się</span>
+                    </button>
+                </form>
             </div>
-            <span>Admin</span>
-            <i class="bi bi-chevron-down"></i>
         </div>
+        {% endif %}
     </div>
 </header>
