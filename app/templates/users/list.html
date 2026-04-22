@@ -1,0 +1,171 @@
+{% extends "base.html" %}
+
+{% block title %}Użytkownicy | Fleet Lite{% endblock %}
+
+{% block content %}
+<div class="users-page">
+    <section class="users-hero">
+        <div>
+            <div class="users-kicker">Administracja</div>
+            <h1>Zarządzanie użytkownikami</h1>
+            <p>Profesjonalny panel kont z rolami, statusem aktywności i miejscem na dalsze logiki bezpieczeństwa.</p>
+        </div>
+
+        <a href="{{ url_for('users.create_user') }}" class="add-btn users-add-btn">
+            <i class="bi bi-person-plus-fill"></i>
+            Dodaj użytkownika
+        </a>
+    </section>
+
+    <section class="users-stats-grid">
+        <article class="users-stat-card">
+            <span>Wszyscy użytkownicy</span>
+            <strong>{{ stats.all }}</strong>
+        </article>
+        <article class="users-stat-card is-success">
+            <span>Aktywni</span>
+            <strong>{{ stats.active }}</strong>
+        </article>
+        <article class="users-stat-card is-warning">
+            <span>Oczekujący</span>
+            <strong>{{ stats.pending }}</strong>
+        </article>
+        <article class="users-stat-card is-danger">
+            <span>Zablokowani</span>
+            <strong>{{ stats.blocked }}</strong>
+        </article>
+        <article class="users-stat-card is-neutral">
+            <span>Dezaktywowani</span>
+            <strong>{{ stats.deactivated }}</strong>
+        </article>
+    </section>
+
+    <section class="users-panel">
+        <form method="GET" class="users-filters">
+            <div class="search-box users-search-box">
+                <i class="bi bi-search"></i>
+                <input type="text" name="q" value="{{ filters.q }}" placeholder="Szukaj po nazwie, loginie, e-mailu lub dziale">
+            </div>
+
+            <div class="users-filter-select">
+                <label for="status">Status</label>
+                <select name="status" id="status" onchange="this.form.submit()">
+                    <option value="">Wszystkie</option>
+                    {% for value, label in status_choices %}
+                        <option value="{{ value }}" {% if filters.status == value %}selected{% endif %}>{{ label }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <div class="users-filter-select">
+                <label for="role">Profil</label>
+                <select name="role" id="role" onchange="this.form.submit()">
+                    <option value="">Wszystkie</option>
+                    {% for value, label in role_choices %}
+                        <option value="{{ value }}" {% if filters.role == value %}selected{% endif %}>{{ label }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <button type="submit" class="btn-secondary users-filter-submit">Filtruj</button>
+        </form>
+
+        {% if users %}
+        <div class="users-table-wrap">
+            <table class="users-table">
+                <thead>
+                    <tr>
+                        <th>Użytkownik</th>
+                        <th>Rola</th>
+                        <th>Firma / dział</th>
+                        <th>Okres aktywności</th>
+                        <th>Status</th>
+                        <th>Ostatnie logowanie</th>
+                        <th>Akcje</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for user in users %}
+                    <tr>
+                        <td>
+                            <div class="users-identity">
+                                <div class="users-avatar">{{ user.initials }}</div>
+                                <div>
+                                    <div class="users-name">{{ user.display_name }}</div>
+                                    <div class="users-meta">@{{ user.username }}{% if user.email %} · {{ user.email }}{% endif %}</div>
+                                </div>
+                            </div>
+                        </td>
+                        <td>
+                            <span class="users-role-pill role-{{ user.role }}">{{ user.role_label }}</span>
+                        </td>
+                        <td>{{ user.department or '—' }}</td>
+                        <td>
+                            {% if user.activity_mode == 'temporary' %}
+                                <div class="users-activity-cell">
+                                    <strong>Tymczasowy</strong>
+                                    <span>
+                                        {% if user.active_from %}{{ user.active_from.strftime('%d.%m.%Y') }}{% else %}—{% endif %}
+                                        —
+                                        {% if user.active_to %}{{ user.active_to.strftime('%d.%m.%Y') }}{% else %}bez końca{% endif %}
+                                    </span>
+                                </div>
+                            {% else %}
+                                <span class="users-muted">Nieograniczony</span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            <span class="users-status-badge status-{{ user.effective_status_key }}">{{ user.effective_status_label }}</span>
+                        </td>
+                        <td>
+                            {% if user.last_login_at %}
+                                {{ user.last_login_at.strftime('%d.%m.%Y %H:%M') }}
+                            {% else %}
+                                <span class="users-muted">Brak</span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            <div class="users-row-actions">
+                                <a href="{{ url_for('users.user_detail', user_id=user.id) }}" class="btn-ghost">Szczegóły</a>
+                                <a href="{{ url_for('users.edit_user', user_id=user.id) }}" class="btn-ghost">Edytuj</a>
+
+                                {% if user.status == 'blocked' %}
+                                <form method="POST" action="{{ url_for('users.unblock_user', user_id=user.id) }}">
+                                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                                    <button type="submit" class="btn-ghost">Odblokuj</button>
+                                </form>
+                                {% else %}
+                                <form method="POST" action="{{ url_for('users.block_user', user_id=user.id) }}">
+                                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                                    <button type="submit" class="btn-ghost">Zablokuj</button>
+                                </form>
+                                {% endif %}
+
+                                {% if user.status == 'deactivated' %}
+                                <form method="POST" action="{{ url_for('users.activate_user', user_id=user.id) }}">
+                                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                                    <button type="submit" class="btn-ghost">Aktywuj</button>
+                                </form>
+                                {% else %}
+                                <form method="POST" action="{{ url_for('users.deactivate_user', user_id=user.id) }}">
+                                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                                    <button type="submit" class="btn-ghost btn-ghost-danger">Dezaktywuj</button>
+                                </form>
+                                {% endif %}
+                            </div>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% else %}
+        <div class="empty-card users-empty-card">
+            <div class="empty-icon"><i class="bi bi-people"></i></div>
+            <h3>Brak użytkowników do wyświetlenia</h3>
+            <p>Zmień filtry albo dodaj pierwsze konto do panelu administracyjnego.</p>
+        </div>
+        {% endif %}
+    </section>
+</div>
+{% endblock %}

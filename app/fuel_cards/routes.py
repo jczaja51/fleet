@@ -189,7 +189,8 @@ def add_card():
             card = FuelCard(
                 station=station,
                 number=number,
-                pin=generate_password_hash(pin) if pin else None,
+                pin=pin,
+                pin_hash=generate_password_hash(pin) if pin else None,
                 expiry=parse_date(expiry_raw) if expiry_raw else None,
                 vehicle_id=vehicle_id,
             )
@@ -228,7 +229,8 @@ def edit_card(card_id):
         if not errors:
             card.station = station
             card.number = number
-            card.pin = generate_password_hash(pin) if pin else None
+            card.pin = pin
+            card.pin_hash = generate_password_hash(pin) if pin else None
             card.expiry = parse_date(expiry_raw) if expiry_raw else None
             card.vehicle_id = vehicle_id
 

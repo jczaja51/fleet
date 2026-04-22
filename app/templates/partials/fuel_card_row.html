@@ -8,7 +8,7 @@
             <div class="fuel-title">{{ card.station }}</div>
             <div class="fuel-subline">
                 <span>Nr: {{ card.number }}</span>
-                <span>PIN: {% if card.has_pin %}Ustawiony{% else %}Brak{% endif %}</span>
+                <span>PIN: {{ card.pin or ('Brak jawnego PIN-u' if card.has_pin else 'Brak') }}</span>
             </div>
         </div>
     </div>

@@ -1,0 +1,150 @@
+{% extends "base.html" %}
+
+{% block title %}{{ user.display_name }} | Użytkownicy | Fleet Lite{% endblock %}
+
+{% block content %}
+<div class="users-detail-page">
+    <div class="page-header users-detail-header">
+        <div class="users-detail-title-wrap">
+            <div class="users-detail-avatar">{{ user.initials }}</div>
+            <div>
+                <h1>{{ user.display_name }}</h1>
+                <p class="page-subtitle">@{{ user.username }}{% if user.email %} · {{ user.email }}{% endif %}</p>
+            </div>
+        </div>
+
+        <div class="actions-row">
+            <a href="{{ url_for('users.edit_user', user_id=user.id) }}" class="btn-primary">Edytuj</a>
+            <a href="{{ url_for('users.list_users') }}" class="btn-secondary">Powrót</a>
+        </div>
+    </div>
+
+    <div class="users-detail-grid">
+        <section class="form-card users-detail-main-card">
+            <div class="users-detail-badges">
+                <span class="users-role-pill role-{{ user.role }}">{{ user.role_label }}</span>
+                <span class="users-status-badge status-{{ user.effective_status_key }}">{{ user.effective_status_label }}</span>
+            </div>
+
+            <div class="users-detail-info-grid">
+                <div class="users-detail-info-item">
+                    <span>Firma / dział</span>
+                    <strong>{{ user.department or '—' }}</strong>
+                </div>
+                <div class="users-detail-info-item">
+                    <span>Tryb aktywności</span>
+                    <strong>{{ user.activity_mode_label }}</strong>
+                </div>
+                <div class="users-detail-info-item">
+                    <span>Zakres dat</span>
+                    <strong>
+                        {% if user.activity_mode == 'temporary' %}
+                            {% if user.active_from %}{{ user.active_from.strftime('%d.%m.%Y') }}{% else %}—{% endif %}
+                            —
+                            {% if user.active_to %}{{ user.active_to.strftime('%d.%m.%Y') }}{% else %}bez końca{% endif %}
+                        {% else %}
+                            Nie dotyczy
+                        {% endif %}
+                    </strong>
+                </div>
+                <div class="users-detail-info-item">
+                    <span>Ostatnie logowanie</span>
+                    <strong>{{ user.last_login_at.strftime('%d.%m.%Y %H:%M') if user.last_login_at else 'Brak' }}</strong>
+                </div>
+                <div class="users-detail-info-item">
+                    <span>Utworzono</span>
+                    <strong>{{ user.created_at.strftime('%d.%m.%Y %H:%M') }}</strong>
+                </div>
+                <div class="users-detail-info-item">
+                    <span>Aktywacja</span>
+                    <strong>{{ user.activated_at.strftime('%d.%m.%Y %H:%M') if user.activated_at else 'Jeszcze nieaktywny' }}</strong>
+                </div>
+                <div class="users-detail-info-item">
+                    <span>Wysłano zaproszenie</span>
+                    <strong>{{ user.invited_at.strftime('%d.%m.%Y %H:%M') if user.invited_at else 'Brak' }}</strong>
+                </div>
+                <div class="users-detail-info-item">
+                    <span>Reset hasła</span>
+                    <strong>{{ user.reset_requested_at.strftime('%d.%m.%Y %H:%M') if user.reset_requested_at else 'Brak' }}</strong>
+                </div>
+            </div>
+
+            {% if user.notes %}
+            <div class="users-detail-section">
+                <h3>Dodatkowe informacje</h3>
+                <p>{{ user.notes }}</p>
+            </div>
+            {% endif %}
+
+            {% if user.blocked_reason %}
+            <div class="users-detail-section users-detail-highlight">
+                <h3>Powód blokady / uwagi</h3>
+                <p>{{ user.blocked_reason }}</p>
+            </div>
+            {% endif %}
+        </section>
+
+        <aside class="users-detail-sidebar">
+            <section class="form-card users-detail-side-card">
+                <h3>Szybkie akcje</h3>
+                <div class="users-detail-actions-stack">
+                    <form method="POST" action="{{ url_for('users.send_activation', user_id=user.id) }}">
+                        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                        <button type="submit" class="btn-secondary users-full-btn">Wyślij ponownie link aktywacyjny</button>
+                    </form>
+
+                    <form method="POST" action="{{ url_for('users.reset_password', user_id=user.id) }}">
+                        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                        <button type="submit" class="btn-secondary users-full-btn">Reset hasła</button>
+                    </form>
+
+                    {% if user.status == 'blocked' %}
+                    <form method="POST" action="{{ url_for('users.unblock_user', user_id=user.id) }}">
+                        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                        <button type="submit" class="btn-primary users-full-btn">Odblokuj konto</button>
+                    </form>
+                    {% else %}
+                    <form method="POST" action="{{ url_for('users.block_user', user_id=user.id) }}">
+                        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                        <button type="submit" class="btn-secondary users-full-btn">Zablokuj konto</button>
+                    </form>
+                    {% endif %}
+
+                    {% if user.status == 'deactivated' %}
+                    <form method="POST" action="{{ url_for('users.activate_user', user_id=user.id) }}">
+                        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                        <button type="submit" class="btn-primary users-full-btn">Aktywuj konto</button>
+                    </form>
+                    {% else %}
+                    <form method="POST" action="{{ url_for('users.deactivate_user', user_id=user.id) }}">
+                        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                        <button type="submit" class="btn-danger-solid users-full-btn">Dezaktywuj konto</button>
+                    </form>
+                    {% endif %}
+                </div>
+            </section>
+
+            <section class="form-card users-detail-side-card">
+                <h3>Uprawnienia</h3>
+                <div class="users-detail-tags">
+                    {% for item in user.permissions_modules_list %}
+                        <span class="users-tag">{{ item }}</span>
+                    {% endfor %}
+                </div>
+                <h4>Operacje</h4>
+                <div class="users-detail-tags">
+                    {% for item in user.permissions_operations_list %}
+                        <span class="users-tag">{{ item }}</span>
+                    {% endfor %}
+                </div>
+                <h4>Dane wrażliwe</h4>
+                <div class="users-detail-tags">
+                    {% for item in user.sensitive_permissions_list %}
+                        <span class="users-tag">{{ item }}</span>
+                    {% endfor %}
+                </div>
+            </section>
+        </aside>
+    </div>
+</div>
+{% endblock %}

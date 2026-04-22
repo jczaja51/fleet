@@ -68,7 +68,7 @@
                                 inputmode="numeric"
                                 autocomplete="off"
                                 placeholder="4–6 cyfr"
-                                value="{{ request.form.get('pin', '') }}"
+                                value="{{ request.form.get('pin', card.pin or '') }}"
                             >
                             <div class="field-error" id="pin-error">{{ errors.get('pin', '') if errors else '' }}</div>
                         </div>
@@ -97,7 +97,6 @@
                                     </option>
                                 {% endfor %}
                             </select>
-                            <div class="field-helper-text">Kartę możesz też całkowicie odpiąć od pojazdu.</div>
                             <div class="field-error" id="vehicle_id-error">{{ errors.get('vehicle_id', '') if errors else '' }}</div>
                         </div>
                     </div>
@@ -109,8 +108,8 @@
                             <i class="bi bi-eye"></i>
                         </div>
                         <div>
-                            <h2>Podgląd danych</h2>
-                            <p>Dynamiczny podgląd danych.</p>
+                            <h2>Podgląd</h2>
+                            <p>Szybki podgląd numeru, PIN-u i terminu ważności karty.</p>
                         </div>
                     </div>
 
@@ -136,7 +135,7 @@
                             <div class="fuel-card-preview-footer">
                                 <div class="fuel-card-preview-col">
                                     <span>PIN</span>
-                                    <strong id="preview-pin">{{ request.form.get('pin', '----') }}</strong>
+                                    <strong id="preview-pin">{{ request.form.get('pin', card.pin or '----') }}</strong>
                                 </div>
                                 <div class="fuel-card-preview-col">
                                     <span>ważność</span>
@@ -151,6 +150,10 @@
                                     </strong>
                                 </div>
                             </div>
+                        </div>
+                                                <div class="fuel-form-note-box">
+                            <i class="bi bi-info-circle"></i>
+                            <p>Sprawdź tutaj szybko, czy numer końcówki, PIN i data ważności są zapisane poprawnie.</p>
                         </div>
                     </div>
                 </section>

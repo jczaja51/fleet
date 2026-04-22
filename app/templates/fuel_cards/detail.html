@@ -36,7 +36,12 @@
 
                         <div class="form-group">
                             <label>PIN</label>
-                            <input type="text" value="" disabled placeholder="Ukryty ze względów bezpieczeństwa">
+                            <input
+                                type="text"
+                                value="{{ card.pin or '' }}"
+                                disabled
+                                placeholder="{% if card.has_pin and not card.pin %}Brak jawnego PIN-u — wpisz ponownie w edycji{% else %}Brak{% endif %}"
+                            >
                         </div>
 
                         <div class="form-group">
@@ -92,7 +97,7 @@
                             <div class="fuel-card-preview-footer">
                                 <div class="fuel-card-preview-col">
                                     <span>PIN</span>
-                                    <strong>Ukryty</strong>
+                                    <strong>{{ card.pin or ('—' if not card.has_pin else 'Brak jawnego PIN-u') }}</strong>
                                 </div>
                                 <div class="fuel-card-preview-col">
                                     <span>ważność</span>
@@ -151,7 +156,7 @@
 
             <div class="vehicle-tip">
                 <i class="bi bi-keypad"></i>
-                <p>PIN jest zapisany jako zwykły tekst. Stare hashe nie są pokazywane użytkownikowi.</p>
+                <p>PIN jest widoczny w aplikacji, a równolegle system trzyma też jego hash do zgodności z wcześniejszym podejściem.</p>
             </div>
 
             <div class="vehicle-tip">

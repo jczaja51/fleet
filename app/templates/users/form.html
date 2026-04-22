@@ -1,0 +1,232 @@
+{% extends "base.html" %}
+
+{% block title %}{% if mode == 'create' %}Nowy użytkownik{% else %}Edytuj użytkownika{% endif %} | Fleet Lite{% endblock %}
+
+{% block content %}
+<div class="users-form-page">
+    <div class="page-header">
+        <div>
+            <h1>{% if mode == 'create' %}Dodaj użytkownika{% else %}Edytuj użytkownika{% endif %}</h1>
+            <p class="page-subtitle">Uproszczony panel w stylu Webfleet, przygotowany pod dalsze rozbudowanie logik i uprawnień.</p>
+        </div>
+
+        <div class="actions-row">
+            {% if user %}
+            <a href="{{ url_for('users.user_detail', user_id=user.id) }}" class="btn-secondary">Szczegóły</a>
+            {% endif %}
+            <a href="{{ url_for('users.list_users') }}" class="btn-secondary">Powrót do listy</a>
+        </div>
+    </div>
+
+    <form method="POST" class="edit-vehicle-form">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+
+        <div class="edit-vehicle-layout users-form-layout">
+            <div class="edit-sections">
+                <section class="form-card form-section">
+                    <div class="section-head">
+                        <div>
+                            <h2 class="section-title">Dane użytkownika</h2>
+                            <p class="section-subtitle">Podstawowe dane konta, identyfikacja i opis organizacyjny.</p>
+                        </div>
+                    </div>
+
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label for="full_name">Nazwa *</label>
+                            <input type="text" id="full_name" name="full_name" value="{{ form_data.full_name or '' }}" required>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="username">Nazwa użytkownika *</label>
+                            <input type="text" id="username" name="username" value="{{ form_data.username or '' }}" required>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="email">E-mail</label>
+                            <input type="email" id="email" name="email" value="{{ form_data.email or '' }}">
+                        </div>
+
+                        <div class="form-group">
+                            <label for="department">Firma / dział</label>
+                            <input type="text" id="department" name="department" value="{{ form_data.department or '' }}">
+                        </div>
+
+                        <div class="form-group form-group-full">
+                            <label for="notes">Dodatkowe informacje</label>
+                            <textarea id="notes" name="notes" rows="5">{{ form_data.notes or '' }}</textarea>
+                        </div>
+                    </div>
+                </section>
+
+                <section class="form-card form-section">
+                    <div class="section-head">
+                        <div>
+                            <h2 class="section-title">Okres aktywności</h2>
+                            <p class="section-subtitle">Konto może być bezterminowe albo aktywne tylko przez określony zakres dat.</p>
+                        </div>
+                    </div>
+
+                    <div class="users-radio-grid">
+                        {% for value, label in activity_mode_choices %}
+                        <label class="users-choice-card">
+                            <input type="radio" name="activity_mode" value="{{ value }}" {% if (form_data.activity_mode or 'unlimited') == value %}checked{% endif %}>
+                            <span>{{ label }}</span>
+                        </label>
+                        {% endfor %}
+                    </div>
+
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label for="active_from">Ważne od</label>
+                            <input type="text" id="active_from" name="active_from" class="js-date-picker" value="{{ form_data.active_from or '' }}">
+                        </div>
+
+                        <div class="form-group">
+                            <label for="active_to">Ważne do</label>
+                            <input type="text" id="active_to" name="active_to" class="js-date-picker" value="{{ form_data.active_to or '' }}">
+                        </div>
+                    </div>
+                </section>
+
+                <section class="form-card form-section">
+                    <div class="section-head">
+                        <div>
+                            <h2 class="section-title">Profil użytkownika</h2>
+                            <p class="section-subtitle">Na start profile są uproszczone. Potem możesz podpiąć dokładniejsze ACL i zależności.</p>
+                        </div>
+                    </div>
+
+                    <div class="users-radio-grid users-radio-grid-roles">
+                        {% for value, label in role_choices %}
+                        <label class="users-choice-card role-{{ value }}">
+                            <input type="radio" name="role" value="{{ value }}" {% if (form_data.role or 'viewer') == value %}checked{% endif %}>
+                            <span>{{ label }}</span>
+                        </label>
+                        {% endfor %}
+                    </div>
+
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label for="status">Status konta</label>
+                            <select id="status" name="status">
+                                {% for value, label in status_choices %}
+                                    <option value="{{ value }}" {% if (form_data.status or 'pending') == value %}selected{% endif %}>{{ label }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="access_scope">Zakres dostępu</label>
+                            <select id="access_scope" name="access_scope">
+                                {% for value, label in scope_choices %}
+                                    <option value="{{ value }}" {% if (form_data.access_scope or 'readonly') == value %}selected{% endif %}>{{ label }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                    </div>
+                </section>
+
+                <section class="form-card form-section">
+                    <div class="section-head">
+                        <div>
+                            <h2 class="section-title">Uprawnienia</h2>
+                            <p class="section-subtitle">Moduły i akcje są już gotowe wizualnie. Potem podepniesz do nich realne sprawdzanie dostępu.</p>
+                        </div>
+                    </div>
+
+                    <div class="users-permission-groups">
+                        <div class="users-permission-card">
+                            <h3>Dostęp do modułów</h3>
+                            <div class="users-checkbox-grid">
+                                {% set selected_modules = form_data.modules if form_data.modules is iterable and form_data.modules is not string else (form_data.permissions_modules.split(',') if form_data.permissions_modules else []) %}
+                                {% for value, label in module_choices %}
+                                <label class="users-check-pill">
+                                    <input type="checkbox" name="modules" value="{{ value }}" {% if value in selected_modules %}checked{% endif %}>
+                                    <span>{{ label }}</span>
+                                </label>
+                                {% endfor %}
+                            </div>
+                        </div>
+
+                        <div class="users-permission-card">
+                            <h3>Uprawnienia operacyjne</h3>
+                            <div class="users-checkbox-grid">
+                                {% set selected_operations = form_data.operations if form_data.operations is iterable and form_data.operations is not string else (form_data.permissions_operations.split(',') if form_data.permissions_operations else []) %}
+                                {% for value, label in operation_choices %}
+                                <label class="users-check-pill">
+                                    <input type="checkbox" name="operations" value="{{ value }}" {% if value in selected_operations %}checked{% endif %}>
+                                    <span>{{ label }}</span>
+                                </label>
+                                {% endfor %}
+                            </div>
+                        </div>
+
+                        <div class="users-permission-card">
+                            <h3>Dostęp do danych wrażliwych</h3>
+                            <div class="users-checkbox-grid">
+                                {% set selected_sensitive = form_data.sensitive_permissions if form_data.sensitive_permissions is iterable and form_data.sensitive_permissions is not string else (form_data.sensitive_permissions.split(',') if form_data.sensitive_permissions else []) %}
+                                {% for value, label in sensitive_choices %}
+                                <label class="users-check-pill">
+                                    <input type="checkbox" name="sensitive_permissions" value="{{ value }}" {% if value in selected_sensitive %}checked{% endif %}>
+                                    <span>{{ label }}</span>
+                                </label>
+                                {% endfor %}
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <section class="form-card form-section">
+                    <div class="section-head">
+                        <div>
+                            <h2 class="section-title">Bezpieczeństwo</h2>
+                            <p class="section-subtitle">Na razie pole informacyjne pod blokady, aktywację i dalszy workflow resetu hasła.</p>
+                        </div>
+                    </div>
+
+                    <div class="form-grid">
+                        <div class="form-group form-group-full">
+                            <label for="blocked_reason">Powód blokady / uwagi administracyjne</label>
+                            <textarea id="blocked_reason" name="blocked_reason" rows="4">{{ form_data.blocked_reason or '' }}</textarea>
+                        </div>
+                    </div>
+                </section>
+            </div>
+
+            <aside class="users-form-sidebar">
+                <div class="form-card users-sidebar-card">
+                    <h3>Podsumowanie</h3>
+                    <div class="users-sidebar-list">
+                        <div>
+                            <span>Tryb aktywności</span>
+                            <strong>{{ 'Tymczasowy' if (form_data.activity_mode or 'unlimited') == 'temporary' else 'Nieograniczony' }}</strong>
+                        </div>
+                        <div>
+                            <span>Profil</span>
+                            <strong>
+                                {% for value, label in role_choices %}
+                                    {% if (form_data.role or 'viewer') == value %}{{ label }}{% endif %}
+                                {% endfor %}
+                            </strong>
+                        </div>
+                        <div>
+                            <span>Status</span>
+                            <strong>
+                                {% for value, label in status_choices %}
+                                    {% if (form_data.status or 'pending') == value %}{{ label }}{% endif %}
+                                {% endfor %}
+                            </strong>
+                        </div>
+                    </div>
+
+                    <button type="submit" class="add-btn users-submit-btn">
+                        <i class="bi bi-check2-circle"></i>
+                        {% if mode == 'create' %}Utwórz użytkownika{% else %}Zapisz zmiany{% endif %}
+                    </button>
+                </div>
+            </aside>
+        </div>
+    </form>
+</div>
+{% endblock %}
